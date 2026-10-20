@@ -1,0 +1,289 @@
+#!/usr/bin/env python3
+"""Isolated staged-profit paper backtest; reads existing cached candles only."""
+import csv, json, math, importlib.util
+from pathlib import Path
+from collections import defaultdict
+
+HERE = Path(".")
+SOURCE = HERE / "backtest_cached_20261019.py"
+CACHE = HERE / "backtest_cached_20261019_cache"
+REPORT = HERE / "backtest_staged_20261019_report.json"
+TRADES = HERE / "backtest_staged_20261019_trades.csv"
+
+if not SOURCE.is_file():
+    raise SystemExit("ERROR: original backtest script not found.")
+if not CACHE.is_dir():
+    raise SystemExit("ERROR: existing cache directory not found.")
+
+spec = importlib.util.spec_from_file_location("original_backtest_module", SOURCE)
+mod = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(mod)
+
+symbols = list(mod.SYMBOLS)
+raw = {}
+features = {}
+for symbol in symbols:
+    cache_file = CACHE / f"{symbol}_30d.json"
+    if not cache_file.is_file():
+        raise SystemExit(f"ERROR: missing cached candles for {symbol}: {cache_file}")
+    candles = json.loads(cache_file.read_text(encoding="utf-8"))
+    if not candles:
+        raise SystemExit(f"ERROR: empty cached candle file for {symbol}")
+    raw[symbol] = candles
+    rows = mod.build_features(candles)
+    if not rows:
+        raise SystemExit(f"ERROR: no feature rows generated for {symbol}")
+    features[symbol] = sorted(rows, key=lambda r: r["time"])
+
+FEE = float(mod.FEE_RATE)
+RISK_FRACTION = float(mod.RISK_FRACTION)
+MAX_ALLOCATION = float(mod.MAX_ALLOCATION)
+ATR_MULTIPLIER = float(mod.ATR_MULTIPLIER)
+MIN_NOTIONAL = float(mod.MIN_NOTIONAL)
+START_BALANCE = float(getattr(mod, "START_BALANCE", 100.0))
+# Each third is sold at +1%, +2%, +3% net of modeled entry/exit fees.
+TARGET_NETS = (0.01, 0.02, 0.03)
+TARGET_FRACTIONS = (1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0)
+
+by_symbol = {s: {r["time"]: r for r in features[s]} for s in symbols}
+previous_by_symbol = {}
+for s in symbols:
+    prev = {}
+    last = None
+    for row in features[s]:
+        prev[row["time"]] = last
+        last = row
+    previous_by_symbol[s] = prev
+
+all_times = sorted(set().union(*(set(by_symbol[s]) for s in symbols)))
+cash = START_BALANCE
+position = None
+trades = []
+equity_peak = START_BALANCE
+max_drawdown = 0.0
+target_hits = [0, 0, 0]
+stop_exits = 0
+
+def target_price(entry, net_target):
+    return entry * (1.0 + FEE + net_target) / (1.0 - FEE)
+
+def break_even_price(entry):
+    return entry * (1.0 + FEE) / (1.0 - FEE)
+
+def finish_trade(t, reason):
+    global position, cash, stop_exits
+    if position is None:
+        return
+    net = position["exit_proceeds"] - position["entry_cost"]
+    trades.append({
+        "symbol": position["symbol"],
+        "entry_time": position["entry_time"],
+        "exit_time": t,
+        "entry": position["entry"],
+        "exit": position["last_exit_price"],
+        "qty": position["initial_qty"],
+        "net_pnl": net,
+        "reason": reason,
+        "tp1": position["tp_done"][0],
+        "tp2": position["tp_done"][1],
+        "tp3": position["tp_done"][2],
+        "partial_exit_proceeds": position["exit_proceeds"],
+        "entry_cost_including_fee": position["entry_cost"],
+    })
+    if "STOP" in reason:
+        stop_exits += 1
+    position = None
+
+def sell_part(t, price, qty, target_index=None):
+    global cash, position
+    qty = min(float(qty), position["qty"])
+    if qty <= 0:
+        return
+    proceeds = qty * price * (1.0 - FEE)
+    cash += proceeds
+    position["exit_proceeds"] += proceeds
+    position["qty"] -= qty
+    position["last_exit_price"] = price
+    if target_index is not None:
+        position["tp_done"][target_index] = True
+        target_hits[target_index] += 1
+
+def check_exit(t, bar):
+    """Use stop known before candle; if stop and target both touched, stop wins."""
+    global position
+    if position is None or bar is None:
+        return
+    active_stop = position["stop"]
+    if float(bar["low"]) <= active_stop:
+        sell_part(t, min(active_stop, float(bar["open"])), position["qty"])
+        finish_trade(t, "STOP_BEFORE_TARGET" if position["tp_done"][0] else "ATR_OR_PROFIT_STOP")
+        return
+
+    high = float(bar["high"])
+    for i, net_target in enumerate(TARGET_NETS):
+        if position is None:
+            return
+        if not position["tp_done"][i] and high >= target_price(position["entry"], net_target):
+            if i < 2:
+                qty_to_sell = min(position["initial_qty"] * TARGET_FRACTIONS[i], position["qty"])
+            else:
+                qty_to_sell = position["qty"]
+            sell_part(t, target_price(position["entry"], net_target), qty_to_sell, i)
+            if i == 0:
+                # Fee-aware break-even stop applies from the next candle.
+                position["stop"] = max(position["stop"], break_even_price(position["entry"]))
+            elif i == 1:
+                # After TP2, keep stop at fee-aware break-even or better.
+                position["stop"] = max(position["stop"], break_even_price(position["entry"]))
+            if position["qty"] <= max(1e-12, position["initial_qty"] * 1e-10):
+                finish_trade(t, "TP3_STAGED_TARGETS")
+                return
+
+    # Update high-water and trailing stop only after this candle's exit checks,
+    # so the newly computed stop becomes active on subsequent candles.
+    position["high_water"] = max(position["high_water"], high)
+    if position["tp_done"][1]:
+        trail = position["high_water"] - position["atr"] * ATR_MULTIPLIER
+        position["stop"] = max(position["stop"], break_even_price(position["entry"]), trail)
+
+for t in all_times:
+    current = {s: by_symbol[s].get(t) for s in symbols}
+    if position is not None:
+        bar = current.get(position["symbol"])
+        if bar is not None:
+            check_exit(t, bar)
+
+    if position is None:
+        candidates = []
+        for s in symbols:
+            bar = current.get(s)
+            signal_row = previous_by_symbol[s].get(t)
+            if (
+                bar is not None and signal_row is not None
+                and signal_row.get("signal") == "BUY"
+                and signal_row.get("atr") is not None
+                and signal_row["atr"] > 0
+                and signal_row.get("score") is not None
+            ):
+                candidates.append((float(signal_row["score"]), s, signal_row, bar))
+        if candidates:
+            candidates.sort(key=lambda x: (-x[0], x[1]))
+            score, symbol, sig, bar = candidates[0]
+            price = float(bar["open"])
+            volatility = float(sig["atr"])
+            stop = price - ATR_MULTIPLIER * volatility
+            risk_cash = cash * RISK_FRACTION
+            risk_per_unit = (price - stop) + FEE * (price + stop)
+            if price > 0 and risk_per_unit > 0:
+                qty = risk_cash / risk_per_unit
+                qty = min(qty, min(cash / (1.0 + FEE), cash * MAX_ALLOCATION) / price)
+                notional = qty * price
+                cost = notional * (1.0 + FEE)
+                if qty > 0 and notional >= MIN_NOTIONAL and cost <= cash:
+                    cash -= cost
+                    position = {
+                        "symbol": symbol, "entry": price, "qty": qty,
+                        "initial_qty": qty, "stop": stop, "atr": volatility,
+                        "high_water": price, "entry_time": t, "score": score,
+                        "entry_cost": cost, "exit_proceeds": 0.0,
+                        "last_exit_price": price, "tp_done": [False, False, False],
+                    }
+                    # Conservatively inspect entry candle; a touched stop wins.
+                    check_exit(t, bar)
+
+    marked = cash
+    if position is not None:
+        bar = current.get(position["symbol"])
+        if bar is not None:
+            marked += position["qty"] * float(bar["close"]) * (1.0 - FEE)
+    equity_peak = max(equity_peak, marked)
+    if equity_peak > 0:
+        max_drawdown = max(max_drawdown, (equity_peak - marked) / equity_peak)
+
+if position is not None:
+    rows = features[position["symbol"]]
+    if rows:
+        last = rows[-1]
+        marked_exit = float(last["close"])
+        # Do not mutate cash; this is a marked-to-liquidation final equity.
+        final_equity = cash + position["qty"] * marked_exit * (1.0 - FEE)
+        trades.append({
+            "symbol": position["symbol"], "entry_time": position["entry_time"],
+            "exit_time": last["time"], "entry": position["entry"],
+            "exit": marked_exit, "qty": position["initial_qty"],
+            "net_pnl": position["exit_proceeds"] + position["qty"] * marked_exit * (1.0 - FEE) - position["entry_cost"],
+            "reason": "OPEN_AT_END_MARKED_TO_LIQUIDATION",
+            "tp1": position["tp_done"][0], "tp2": position["tp_done"][1],
+            "tp3": position["tp_done"][2],
+            "partial_exit_proceeds": position["exit_proceeds"],
+            "entry_cost_including_fee": position["entry_cost"],
+        })
+else:
+    final_equity = cash
+
+completed = [tr for tr in trades if tr["reason"] != "OPEN_AT_END_MARKED_TO_LIQUIDATION"]
+wins = [tr for tr in trades if tr["net_pnl"] > 0]
+losses = [tr for tr in trades if tr["net_pnl"] < 0]
+gross_win = sum(tr["net_pnl"] for tr in trades if tr["net_pnl"] > 0)
+gross_loss = abs(sum(tr["net_pnl"] for tr in trades if tr["net_pnl"] < 0))
+pf = gross_win / gross_loss if gross_loss else None
+
+report = {
+    "experiment": "isolated staged profit exits; paper simulation only",
+    "source_strategy": str(SOURCE),
+    "cache_directory": str(CACHE),
+    "symbols": symbols,
+    "starting_balance": START_BALANCE,
+    "final_equity_after_estimated_liquidation_fee": final_equity,
+    "net_equity_change": final_equity - START_BALANCE,
+    "net_equity_change_percent": (final_equity / START_BALANCE - 1.0) * 100.0 if START_BALANCE else None,
+    "trade_records_including_open_at_end": len(trades),
+    "completed_trades": len(completed),
+    "wins": len(wins),
+    "losses": len(losses),
+    "win_rate_percent": len(wins) / len(trades) * 100.0 if trades else 0.0,
+    "sum_trade_net_pnl_including_open_mark": sum(tr["net_pnl"] for tr in trades),
+    "gross_winning_trade_pnl": gross_win,
+    "gross_losing_trade_pnl": gross_loss,
+    "profit_factor": pf,
+    "max_marked_equity_drawdown_percent": max_drawdown * 100.0,
+    "target_levels_net_percent": [x * 100.0 for x in TARGET_NETS],
+    "target_hits": {"tp1": target_hits[0], "tp2": target_hits[1], "tp3": target_hits[2]},
+    "stop_exit_count": stop_exits,
+    "fees_rate_each_side": FEE,
+    "assumptions": [
+        "Uses only the existing six 30-day cache files; no network requests.",
+        "Reuses the original script's feature builder, signals, ranking, position sizing, and fee constants.",
+        "Sells one third at each of +1%, +2%, and +3% net price targets, with the final target selling the remainder.",
+        "Target prices account for modeled entry and exit fees.",
+        "If a candle low touches the stop active before that candle, the stop is assumed to occur before any target on that candle.",
+        "Break-even and trailing-stop changes become active only on subsequent candles.",
+        "The last open trade, if any, is marked to liquidation after estimated exit fees; it is not a completed trade.",
+        "Approximate OHLC simulation; not evidence of future profitability."
+    ],
+}
+REPORT.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+with TRADES.open("w", newline="", encoding="utf-8") as f:
+    fields = ["symbol", "entry_time", "exit_time", "entry", "exit", "qty", "net_pnl", "reason", "tp1", "tp2", "tp3", "partial_exit_proceeds", "entry_cost_including_fee"]
+    writer = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
+    writer.writeheader()
+    writer.writerows(trades)
+
+print("=== ISOLATED STAGED-PROFIT BACKTEST COMPLETE ===")
+print("Original script, report, trade CSV, and cache were not modified.")
+print("No bots were stopped.")
+print("Symbols:", ", ".join(symbols))
+print("Starting balance:", f"{START_BALANCE:.6f}")
+print("Final estimated equity:", f"{final_equity:.6f}")
+print("Net equity change:", f"{final_equity - START_BALANCE:+.6f}")
+print("Equity change %:", f"{((final_equity / START_BALANCE - 1) * 100):+.2f}%" if START_BALANCE else "N/A")
+print("Trade records (including open-at-end mark):", len(trades))
+print("Completed trades:", len(completed))
+print("Wins / losses:", len(wins), "/", len(losses))
+print("Win rate:", f"{len(wins) / len(trades) * 100:.2f}%" if trades else "0.00%")
+print("Profit factor:", f"{pf:.3f}" if pf is not None else "undefined (no losing trades)")
+print("Max marked equity drawdown:", f"{max_drawdown * 100:.2f}%")
+print("TP hits:", target_hits, "| Stop exits:", stop_exits)
+print("New report:", REPORT)
+print("New trades:", TRADES)
+print("Report assumptions include conservative stop-first handling for stop/target same-candle ambiguity.")

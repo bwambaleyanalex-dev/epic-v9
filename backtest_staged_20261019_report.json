@@ -1,0 +1,49 @@
+{
+  "experiment": "isolated staged profit exits; paper simulation only",
+  "source_strategy": "backtest_cached_20261019.py",
+  "cache_directory": "backtest_cached_20261019_cache",
+  "symbols": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "BNBUSDT",
+    "SOLUSDT",
+    "XRPUSDT",
+    "ADAUSDT"
+  ],
+  "starting_balance": 100.0,
+  "final_equity_after_estimated_liquidation_fee": 82.50670596558045,
+  "net_equity_change": -17.49329403441955,
+  "net_equity_change_percent": -17.49329403441955,
+  "trade_records_including_open_at_end": 111,
+  "completed_trades": 110,
+  "wins": 36,
+  "losses": 75,
+  "win_rate_percent": 32.432432432432435,
+  "sum_trade_net_pnl_including_open_mark": -17.493294034419563,
+  "gross_winning_trade_pnl": 22.871848766708474,
+  "gross_losing_trade_pnl": 40.36514280112804,
+  "profit_factor": 0.5666237545447084,
+  "max_marked_equity_drawdown_percent": 83.83852105476744,
+  "target_levels_net_percent": [
+    1.0,
+    2.0,
+    3.0
+  ],
+  "target_hits": {
+    "tp1": 36,
+    "tp2": 14,
+    "tp3": 3
+  },
+  "stop_exit_count": 107,
+  "fees_rate_each_side": 0.001,
+  "assumptions": [
+    "Uses only the existing six 30-day cache files; no network requests.",
+    "Reuses the original script's feature builder, signals, ranking, position sizing, and fee constants.",
+    "Sells one third at each of +1%, +2%, and +3% net price targets, with the final target selling the remainder.",
+    "Target prices account for modeled entry and exit fees.",
+    "If a candle low touches the stop active before that candle, the stop is assumed to occur before any target on that candle.",
+    "Break-even and trailing-stop changes become active only on subsequent candles.",
+    "The last open trade, if any, is marked to liquidation after estimated exit fees; it is not a completed trade.",
+    "Approximate OHLC simulation; not evidence of future profitability."
+  ]
+}

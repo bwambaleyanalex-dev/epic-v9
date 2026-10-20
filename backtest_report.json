@@ -1,0 +1,26 @@
+{
+  "symbols": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "BNBUSDT",
+    "SOLUSDT",
+    "XRPUSDT",
+    "ADAUSDT"
+  ],
+  "interval": "5m",
+  "starting_balance": 9.897851010245653,
+  "final_equity": 5.362032506608095,
+  "net_pnl": -4.535818503637557,
+  "return_percent": -45.82629602064483,
+  "closed_trades": 409,
+  "wins": 74,
+  "losses": 335,
+  "win_rate_percent": 18.09290953545232,
+  "max_drawdown_percent": 46.74872594842978,
+  "realized_net_pnl_closed_trades": -4.535818503637815,
+  "open_position_at_end": false,
+  "open_position_symbol": null,
+  "fees_rate_each_side": 0.001,
+  "net_target_percent": 5.0,
+  "note": "Historical simulation only. Approximate signal/ranking reconstruction; stop-first when stop and target touch the same candle. Results do not predict future performance."
+}
