@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: epic-v9-paper
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --workers 1 --threads 4 app:app
+    disk:
+      name: epic-v9-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: STATE_FILE
+        value: /var/data/epic_v9_paper_state.json
+      - key: TRADES_FILE
+        value: /var/data/epic_v9_paper_trades.jsonl
+      - key: INITIAL_STATE_JSON
+        sync: false
+      - key: INITIAL_TRADES_JSONL
+        sync: false
+      - key: DASHBOARD_PASSWORD
+        sync: false

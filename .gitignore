@@ -1,0 +1,6 @@
+epic_v9_paper_state.json
+epic_v9_paper_state.json.tmp
+epic_v9_paper_trades.jsonl
+__pycache__/
+*.pyc
+.env
