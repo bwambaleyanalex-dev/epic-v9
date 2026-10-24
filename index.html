@@ -145,5 +145,31 @@ setInterval(getSession,60000);
 log('📱 EPIC V9 Loaded - No capital needed, paper trading ready');
 log('💡 Save your API keys above - stays on phone only');
 </script><div style="position:fixed;bottom:10px;right:15px;font-size:11px;color:rgba(255,255,255,0.5);font-family:monospace;z-index:9999;pointer-events:none;">⚡ Built by Alex — Epic Bot V9 © 2026</div>
-</body>
+<!-- REFERRAL SYSTEM V9.7 -->
+<div id="refBox" style="position:fixed;top:10px;right:15px;background:rgba(0,0,0,0.8);border:1px solid #00ff88;padding:10px;border-radius:8px;font-size:11px;color:#fff;font-family:monospace;z-index:9999;">
+  <div>⚡ YOUR REF LINK:</div>
+  <div id="refLink" style="color:#00ff88;margin:5px 0;word-break:break-all;"></div>
+  <button onclick="copyRef()" style="background:#00ff88;color:#000;border:0;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:10px;">COPY LINK</button>
+  <div style="margin-top:8px;font-size:10px;">👥 Referred: <span id="refCount">0</span> | Referred by: <span id="refBy">None</span></div>
+</div>
+<script>
+// REFERRAL LOGIC V9.7
+const params = new URLSearchParams(window.location.search);
+const ref = params.get('ref');
+if(ref){
+  localStorage.setItem('referredBy', ref);
+  let count = localStorage.getItem('refCount_'+ref) || 0;
+  document.getElementById('refBy').innerText = ref;
+}
+// YOUR CODE = ALEX
+const myCode = "ALEX";
+const myLink = window.location.origin + window.location.pathname + "?ref=" + myCode;
+document.getElementById('refLink').innerText = myLink;
+function copyRef(){
+  navigator.clipboard.writeText(myLink);
+  alert('Link copied! Share it: ' + myLink);
+}
+// Show count
+document.getElementById('refCount').innerText = localStorage.getItem('totalReferred') || 0;
+</script></body>
 </html>
