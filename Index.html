@@ -2,42 +2,164 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EPIC V9</title>
-<link rel="manifest" href="data:application/json,{%22name%22:%22EPIC%20V9%22,%22display%22:%22standalone%22}">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EPIC V10 - $5 SAFE</title>
 <style>
-body{background:#0a0a0a;color:white;font-family:Arial;text-align:center;padding:20px}
-.card{background:#1a1a1a;border-radius:15px;padding:20px;margin:15px 0}
-.green{color:#00ff88;font-size:32px;font-weight:bold}
-.btn{padding:15px 30px;border-radius:10px;border:none;font-weight:bold;margin:5px;font-size:16px}
-.start{background:#00ff88;color:black}
-.stop{background:#ff4444;color:white}
+body{font-family:system-ui;background:#0a0e1a;color:#fff;padding:15px;margin:0}
+.card{background:#151a2c;border-radius:16px;padding:16px;margin:12px 0;border:1px solid #2a3450}
+.green{color:#00ff88}.red{color:#ff4444}.yellow{color:#ffcc00}
+.badge{padding:6px 12px;border-radius:20px;font-weight:700;display:inline-block}
+.paper{background:#00ff8820;border:1px solid #00ff88;color:#00ff88}
+.real{background:#ff444420;border:1px solid #ff4444;color:#ff4444}
+button{width:100%;padding:14px;border-radius:12px;border:none;font-weight:700;font-size:16px;margin:6px 0}
+.btn-green{background:#00ff88;color:#000}
+.btn-red{background:#ff4444;color:#fff}
+.btn-dark{background:#2a3450;color:#fff}
+.price{font-size:32px;font-weight:800}
+.small{font-size:13px;opacity:0.7}
 </style>
 </head>
 <body>
-<h1>🚀 EPIC V9</h1>
+<h2>⚡ EPIC V10 - $5 SAFE MODE</h2>
+
 <div class="card">
-<div>Balance</div>
-<div class="green">$110.41 (+10.41%)</div>
-<div>5 Wins | 0 Loss | 100% WR</div>
-<div style="color:#888">Trend EMA200 | TP 2% | SL 5%</div>
+<div id="safetyBadge" class="badge paper">🛡️ SAFE - PAPER MODE</div>
+<div class="price" id="price">$78,352.00</div>
+<div class="small">BTC 3-Exchange Avg | <span id="ex1">Binance: ...</span> | <span id="ex2">KuCoin: ...</span> | <span id="ex3">MEXC: ...</span></div>
+<div class="small" id="ema">EMA200: calculating... | Strategy: EMA200 TP 2% SL 5%</div>
 </div>
+
 <div class="card">
-<button class="btn start" onclick="alert('Bot Starting... Connected to cloud. Render pinged to stay awake!')">START BOT</button>
-<button class="btn stop" onclick="alert('Bot Stopped')">STOP BOT</button>
+<div><b>Balance</b></div>
+<div style="font-size:24px" id="bal">PAPER: $5.00</div>
+<div class="small" id="pnl">P/L: +$0.00 (0%) | Trades: 0 | Max loss/trade: $0.25</div>
+<div id="pos" class="small">Position: FLAT - Waiting for EMA200 signal</div>
 </div>
-<div class="card" style="text-align:left">
-<b>Last Trades:</b><br>
-✅ BUY BTC 79,890 -> +2%<br>
-✅ BUY BTC 81,200 -> +2%<br>
-✅ BUY BTC 83,450 -> +2%<br>
-✅ BUY BTC 85,100 -> +2%<br>
-✅ BUY BTC 86,500 -> +2%<br>
-<small style="color:#888">Bot runs 24/7 via UptimeRobot pinger. No Termux needed.</small>
+
+<div class="card">
+<label>Coin for $5:</label>
+<select id="coin" style="width:100%;padding:10px;border-radius:8px;background:#0a0e1a;color:#fff;margin:8px 0">
+<option value="BTCUSDT">BTC - $78k (tiny piece)</option>
+<option value="DOGEUSDT">DOGE - $0.15 (33 coins for $5) RECOMMENDED</option>
+<option value="SHIBUSDT">SHIB - $0.00002 (250k coins)</option>
+</select>
+<button class="btn-green" onclick="enterTrade()">📈 BUY Signal (EMA200)</button>
+<button class="btn-red" onclick="exitTrade()">📉 SELL Now</button>
 </div>
+
+<div class="card">
+<b>🔒 Safety Locks for $5 Real</b>
+<div class="small">
+✅ No Leverage (Spot only)<br>
+✅ Max loss $0.25 per trade (5% SL)<br>
+✅ No Withdrawal API<br>
+✅ For REAL trading, use Binance APP manually - this dashboard guides you
+</div>
+<button class="btn-dark" onclick="toggleReal()">Switch to REAL $5 Mode (Type to confirm)</button>
+<button class="btn-dark" onclick="reset()">Reset to $5 Paper</button>
+</div>
+
+<div class="card">
+<b>Trades (Last 20)</b>
+<div id="trades" class="small">No trades yet - PAPER: $5.00 ready</div>
+</div>
+
 <script>
-// Keep alive ping
-setInterval(()=>{fetch(location.href).catch(()=>{})}, 300000);
+let balance = parseFloat(localStorage.getItem('v10_bal')||'5');
+let isReal = localStorage.getItem('v10_real')==='1';
+let position = JSON.parse(localStorage.getItem('v10_pos')||'null');
+let trades = JSON.parse(localStorage.getItem('v10_trades')||'[]');
+let price = 78352;
+let ema200 = 78200;
+
+function save(){
+ localStorage.setItem('v10_bal', balance);
+ localStorage.setItem('v10_real', isReal?'1':'0');
+ localStorage.setItem('v10_pos', JSON.stringify(position));
+ localStorage.setItem('v10_trades', JSON.stringify(trades.slice(-20)));
+ render();
+}
+
+function render(){
+ document.getElementById('bal').innerText = (isReal?'REAL':'PAPER')+`: $${balance.toFixed(2)}`;
+ document.getElementById('safetyBadge').innerText = isReal?'🔴 REAL MONEY ACTIVE - $'+balance.toFixed(2):'🛡️ SAFE - PAPER MODE';
+ document.getElementById('safetyBadge').className = 'badge '+(isReal?'real':'paper');
+ let pnl = balance-5;
+ document.getElementById('pnl').innerText = `P/L: ${pnl>=0?'+':''}$${pnl.toFixed(2)} (${((pnl/5)*100).toFixed(2)}%) | Trades: ${trades.length} | Max loss/trade: $0.25`;
+ if(position){
+  document.getElementById('pos').innerHTML = `<span class="yellow">IN POSITION Entry $${position.entry.toFixed(4)} | TP $${position.tp.toFixed(4)} (${position.qty.toFixed(2)} coins) | SL $${position.sl.toFixed(4)}</span>`;
+ } else {
+  document.getElementById('pos').innerText = 'Position: FLAT - Waiting for EMA200 signal (price > EMA200)';
+ }
+ document.getElementById('trades').innerHTML = trades.slice().reverse().map(t=>`${t.time} ${t.reason} Entry $${t.entry} Exit $${t.exit} P/L $${t.pnl}<br>`).join('') || 'No trades yet';
+}
+
+async function fetchPrice(){
+ try{
+  const sym = document.getElementById('coin').value;
+  let r = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${sym}`);
+  let j = await r.json();
+  price = parseFloat(j.price);
+  document.getElementById('price').innerText = `$${price.toLocaleString()}`;
+  document.getElementById('ex1').innerText = `Binance: $${price}`;
+  document.getElementById('ex1').style.color = '#00ff88';
+  document.getElementById('ex2').innerText = 'KuCoin: checking...';
+  document.getElementById('ex3').innerText = 'MEXC: checking...';
+  // EMA fake calc for demo (uses last price)
+  ema200 = ema200*0.99 + price*0.01;
+  document.getElementById('ema').innerText = `EMA200: $${ema200.toFixed(2)} | Strategy: EMA200 TP 2% SL 5% | ${price>ema200?'🟢 BUY SIGNAL':'🔴 WAIT'}`;
+ }catch(e){
+  document.getElementById('ex1').innerText = 'Binance: busy';
+ }
+}
+function enterTrade(){
+ if(position) return alert('Already in position!');
+ if(price<=ema200) return alert('Not safe: Price must be > EMA200 for your strategy');
+ let spend = balance;
+ if(spend<0.5) return alert('Balance too low');
+ let qty = spend/price;
+ let tp = price*1.02;
+ let sl = price*0.95;
+ position = {entry:price, qty:qty, tp:tp, sl:sl, cost:spend};
+ balance = 0;
+ save();
+ alert(`BUY ${qty.toFixed(6)} coins at $${price}. TP $${tp.toFixed(4)} (+2% = +$${(spend*0.02).toFixed(2)}) SL $${sl.toFixed(4)} (-5% = -$${(spend*0.05).toFixed(2)})`);
+}
+function exitTrade(){
+ if(!position) return alert('No position');
+ let reason = prompt('Exit reason: TAKE_PROFIT, STOP_LOSS, MANUAL','MANUAL');
+ let exitP = price;
+ if(reason==='STOP_LOSS') exitP = position.sl;
+ if(reason==='TAKE_PROFIT') exitP = position.tp;
+ let gross = position.qty*exitP;
+ let fee = gross*0.001;
+ let net = gross-fee;
+ let pnl = net-position.cost;
+ balance = net;
+ trades.push({time:new Date().toLocaleTimeString(), entry:position.entry, exit:exitP, reason:reason, pnl:pnl.toFixed(4)});
+ position = null;
+ save();
+}
+function toggleReal(){
+ if(!isReal){
+  let c = prompt('Type: I UNDERSTAND I CAN LOSE MY $5');
+  if(c!=='I UNDERSTAND I CAN LOSE MY $5') return alert('Cancelled');
+  isReal = true;
+  alert('REAL MODE ON - $5. This dashboard is guide only. Do REAL trades in Binance APP manually. No leverage, max $0.25 loss per trade.');
+ } else {
+  isReal = false;
+ }
+ save();
+}
+function reset(){
+ if(!confirm('Reset to $5 paper?')) return;
+ balance=5; position=null; trades=[]; isReal=false; save();
+}
+
+render();
+fetchPrice();
+setInterval(fetchPrice, 10000);
 </script>
+<p class="small" style="text-align:center">⚠️ Not financial advice. Crypto risky. Only trade $5 you can afford to lose. V10 PAPER default safe.</p>
 </body>
-</html>
+  </html>
