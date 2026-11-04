@@ -1,105 +1,85 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><title>SLAP DASHBOARD</title><style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,system-ui}
-body{background:#0a0a0f;color:#fff;min-height:100vh;padding-bottom:80px}
-.top{padding:20px 16px 10px}
-.title{font-size:28px;font-weight:700;letter-spacing:-0.5px}
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><title>SLAP DASHBOARD V2 STOP</title><style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,system-ui}body{background:#0a0a0f;color:#fff;min-height:100vh;padding-bottom:80px}
+.top{padding:20px 16px 10px}.title{font-size:28px;font-weight:700}
 .subcard{background:#14141e;border:1px solid #222236;border-radius:16px;padding:12px;margin:10px 16px}
-.row{display:flex;gap:8px;align-items:center}
-.badge{font-size:11px;padding:4px 10px;border-radius:20px;background:#1e1e32;color:#8b8bb5}
+.badge{font-size:11px;padding:4px 10px;border-radius:20px;background:#1e1e32;color:#8b8bb5;display:inline-block;margin-right:6px}
 .badge.active{background:#2a2a4a;color:#7aa8ff;border:1px solid #3a5aff}
-.bal{font-size:32px;font-weight:800;margin:14px 0 6px;letter-spacing:-1px;text-shadow:0 0 20px #3a5aff}
+.bal{font-size:32px;font-weight:800;margin:14px 0 6px}
 .btns{display:flex;justify-content:space-between;margin:16px 0}
 .btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
 .circle{width:48px;height:48px;border-radius:50%;background:#1a1a2e;display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid #2a2a4a}
-.circle.yellow{background:#ffcc00;color:#000;box-shadow:0 0 15px #ffcc0055}
+.circle.yellow{background:#ffcc00;color:#000}
 .circle-txt{font-size:11px;color:#8b8bb5}
-.tabs{display:flex;gap:20px;padding:12px 16px;border-bottom:1px solid #1e1e32;position:relative}
-.tab{font-size:14px;color:#5a5a7a;padding-bottom:8px}
-.tab.on{color:#3a8bff;border-bottom:2px solid #3a8bff}
-.robot{position:absolute;left:38%;top:8px;font-size:18px;background:#1e1e32;border-radius:8px;padding:2px 6px;border:1px solid #333}
+.tabs{display:flex;gap:20px;padding:12px 16px;border-bottom:1px solid #1e1e32;align-items:center}
+.tab{font-size:14px;color:#5a5a7a;padding-bottom:8px}.tab.on{color:#3a8bff;border-bottom:2px solid #3a8bff}
+#stopBtn{margin-left:auto;padding:8px 16px;border-radius:20px;border:none;font-weight:800;font-size:12px;cursor:pointer;transition:0.2s}
+.stop{background:#ff1a4a;color:#fff;box-shadow:0 0 15px #ff1a4a55;animation:pulse 1s infinite}
+.start{background:#00ff88;color:#000;box-shadow:0 0 15px #00ff8855}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
 .pnlrow{display:flex;justify-content:space-between;padding:12px 16px;font-size:13px;color:#8b8bb5}
 .pos{padding:10px 16px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #14141e}
-.posL{display:flex;gap:10px;align-items:center}
-.coinI{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#f7931a,#ffcc00);display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:14px}
-.coinD{font-size:13px}
-.coinD b{font-size:13px;color:#fff;display:block}
-.coinD span{font-size:11px;color:#5a5a7a}
-.posR{text-align:right}
-.posR .usd{font-size:12px;color:#00ff88}
-.posR .price{font-size:11px;color:#5a5a7a}
+.posL{display:flex;gap:10px;align-items:center}.coinI{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#f7931a,#ffcc00);display:flex;align-items:center;justify-content:center;font-weight:800;color:#000}
+.coinD b{font-size:13px;display:block}.coinD span{font-size:11px;color:#5a5a7a}
+.posR{text-align:right}.usd{font-size:12px}.price{font-size:11px;color:#5a5a7a}
 .closeall{margin:16px auto;display:flex;align-items:center;justify-content:center;gap:8px;color:#8b8bb5;font-size:13px;padding:10px;border:1px dashed #2a2a4a;border-radius:20px;width:200px}
-.pov{position:fixed;bottom:90px;left:16px;right:16px;background:rgba(0,0,0,0.8);padding:10px 14px;border-radius:10px;font-size:14px;font-weight:600;text-align:center;backdrop-filter:blur(10px)}
+.pov{position:fixed;bottom:90px;left:16px;right:16px;background:rgba(0,0,0,0.8);padding:10px 14px;border-radius:10px;font-size:14px;font-weight:600;text-align:center}
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0f0f18;border-top:1px solid #1e1e32;display:flex;justify-content:space-around;padding:10px 0 14px}
-.navI{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:#5a5a7a}
-.navI.on{color:#3a8bff}
-.progress{height:3px;background:#1a1a2e;margin:0 16px;border-radius:2px;overflow:hidden}
-.progressB{height:100%;background:linear-gradient(90deg,#3a8bff,#00ff88);width:0%;transition:width 0.3s}
-.smallCtrl{padding:8px 16px;display:flex;gap:8px}
-.smallCtrl select{flex:1;padding:8px;border-radius:8px;background:#14141e;color:#fff;border:1px solid #2a2a4a;font-size:12px}
+.navI{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:#5a5a7a}.navI.on{color:#3a8bff}
+.progress{height:3px;background:#1a1a2e;margin:0 16px;border-radius:2px;overflow:hidden}.progressB{height:100%;background:linear-gradient(90deg,#3a8bff,#00ff88);width:0%;transition:width 0.3s}
+.smallCtrl{padding:8px 16px;display:flex;gap:8px}.smallCtrl select{flex:1;padding:8px;border-radius:8px;background:#14141e;color:#fff;border:1px solid #2a2a4a;font-size:12px}
+#statusDot{width:8px;height:8px;border-radius:50%;background:#00ff88;display:inline-block;margin-right:6px;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
 </style></head><body>
 <div class="top"><div class="title">Accounts</div></div>
-<div class="subcard"><div class="row"><span style="font-size:12px;color:#5a5a7a">Standard # 40997353</span></div><div class="row" style="margin-top:8px"><span class="badge active">Real</span><span class="badge">MT5</span><span class="badge">Standard</span></div><div class="bal" id="bal">10.00 USD</div><div class="btns"><div class="btn"><div class="circle yellow">₮</div><div class="circle-txt">Trade</div></div><div class="btn"><div class="circle">↓</div><div class="circle-txt">Deposit</div></div><div class="btn"><div class="circle">↑</div><div class="circle-txt">Withdraw</div></div><div class="btn"><div class="circle">⇄</div><div class="circle-txt">Transfer</div></div></div></div>
-<div class="tabs"><div class="tab on" id="tabOpen">Open <span id="openCnt">2</span></div><div class="tab">Pending</div><div class="tab">Closed</div><div class="robot">🤖</div></div>
-<div class="pnlrow"><span>Total P/L</span><span id="totalPl" style="color:#00ff88">+0.00 USD</span></div>
+<div class="subcard"><div style="font-size:12px;color:#5a5a7a">Standard # 40997353</div><div style="margin-top:8px"><span class="badge active">Real</span><span class="badge">MT5</span><span class="badge">Standard</span></div><div class="bal" id="bal">10.00 USD</div><div class="btns"><div class="btn"><div class="circle yellow">₮</div><div class="circle-txt">Trade</div></div><div class="btn"><div class="circle">↓</div><div class="circle-txt">Deposit</div></div><div class="btn"><div class="circle">↑</div><div class="circle-txt">Withdraw</div></div><div class="btn"><div class="circle">⇄</div><div class="circle-txt">Transfer</div></div></div></div>
+<div class="tabs"><div class="tab on" id="tabOpen">Open <span id="openCnt">0</span></div><div class="tab">Pending</div><div class="tab">Closed</div><button id="stopBtn" class="stop" onclick="toggleSystem()">⏸ STOP</button></div>
+<div class="pnlrow"><span><span id="statusDot"></span><span id="sysStatus">SYSTEM RUNNING - Weekend Mode</span></span><span id="totalPl" style="color:#00ff88">+0.00 USD</span></div>
 <div class="progress"><div class="progressB" id="prog"></div></div>
 <div id="positions"></div>
 <div class="closeall" onclick="closeAll()">◍ Close all positions</div>
-<div class="smallCtrl"><select id="coin"><option value="BTCUSDT">BTC/USDT - SLAP MODE</option><option value="DOGEUSDT">DOGE</option></select><select id="tpSel"><option value="0.3">0.3% FAST</option><option value="0.5" selected>0.5% SLAP</option><option value="0.8">0.8% BIG SLAP</option><option value="1.5">1.5% MEGA</option></select></div>
-<div class="smallCtrl"><select id="speed"><option value="3000">Weekend Mode ON (like video)</option><option value="1500">Turbo Weekend</option></select><button onclick="resetSlap()" style="padding:8px 14px;border-radius:8px;background:#2a2a4a;color:#fff;border:none;font-size:12px">Reset $10</button></div>
+<div class="smallCtrl"><select id="coin"><option value="BTCUSDT">BTC/USDT - SLAP MODE</option><option value="DOGEUSDT">DOGE</option></select><select id="tpSel"><option value="0.3">0.3% FAST</option><option value="0.5" selected>0.5% SLAP</option><option value="0.8">0.8% BIG SLAP</option></select></div>
+<div class="smallCtrl"><button onclick="resetSlap()" style="flex:1;padding:8px;border-radius:8px;background:#2a2a4a;color:#fff;border:none;font-size:12px">Reset $10</button><select id="speed" style="flex:1"><option value="3000">Weekend ON</option><option value="1500">Turbo</option></select></div>
 <div class="pov">POV: Even on weekends, the system has a job to do.</div>
 <div class="nav"><div class="navI on">◫<span>Accounts</span></div><div class="navI">📈<span>Trade</span></div><div class="navI">◍<span>Insights</span></div><div class="navI">📊<span>Performance</span></div><div class="navI">🛠<span>Tools</span></div></div>
 <script>
-let bal=parseFloat(localStorage.getItem('slap_bal')||'10'), price=0, ema=0, posList=JSON.parse(localStorage.getItem('slap_pos')||'[]'), totalPl=0;
+let bal=parseFloat(localStorage.getItem('slap_bal')||'10'), price=0, ema=0, posList=JSON.parse(localStorage.getItem('slap_pos')||'[]'), totalPl=0, isRunning=true;
 function save(){localStorage.setItem('slap_bal',bal);localStorage.setItem('slap_pos',JSON.stringify(posList))}
-function fmt(n){return n.toFixed(2)+' USD'}
+function toggleSystem(){
+  isRunning=!isRunning;
+  let btn=document.getElementById('stopBtn'), st=document.getElementById('sysStatus'), dot=document.getElementById('statusDot');
+  if(isRunning){btn.innerText='⏸ STOP';btn.className='stop';st.innerText='SYSTEM RUNNING - Weekend Mode';st.style.color='#00ff88';dot.style.background='#00ff88';startInterval()}
+  else{btn.innerText='▶ START';btn.className='start';st.innerText='SYSTEM STOPPED';st.style.color='#ff5566';dot.style.background='#ff5566';clearInterval(interval)}
+}
 function renderPos(){
   let html=''; totalPl=0;
-  posList.forEach((p,i)=>{
-    let curPnL = p.qty*(price-p.entry);
-    let curPct = ((price-p.entry)/p.entry*100);
-    totalPl+=curPnL;
-    html+=`<div class="pos"><div class="posL"><div class="coinI">₿</div><div class="coinD"><b>BTC/USDT</b><span>Buy 0.01 lot at ${p.entry.toFixed(2)}</span></div></div><div class="posR"><div class="usd" style="color:${curPnL>=0?'#00ff88':'#ff5566'}">${curPnL>=0?'+':''}${curPnL.toFixed(2)} USD</div><div class="price">${price.toFixed(2)} ${curPct>=0?'+':''}${curPct.toFixed(2)}%</div></div></div>`;
+  posList.forEach(p=>{
+    let curPnL=p.qty*(price-p.entry); totalPl+=curPnL;
+    html+=`<div class="pos"><div class="posL"><div class="coinI">₿</div><div class="coinD"><b>BTC/USDT</b><span>Buy 0.01 lot at ${p.entry.toFixed(2)}</span></div></div><div class="posR"><div class="usd" style="color:${curPnL>=0?'#00ff88':'#ff5566'}">${curPnL>=0?'+':''}${curPnL.toFixed(2)} USD</div><div class="price">${price.toFixed(2)}</div></div></div>`;
   });
-  document.getElementById('positions').innerHTML=html||'<div style="padding:20px;text-align:center;color:#5a5a7a;font-size:13px">No open positions - AUTO will open soon</div>';
+  document.getElementById('positions').innerHTML=html||'<div style="padding:20px;text-align:center;color:#5a5a7a;font-size:13px">'+(isRunning?'Waiting for signal... AUTO will open soon':'System stopped - Tap START to resume')+'</div>';
   document.getElementById('openCnt').innerText=posList.length;
   document.getElementById('totalPl').innerText=(totalPl>=0?'+':'')+totalPl.toFixed(2)+' USD';
   document.getElementById('totalPl').style.color=totalPl>=0?'#00ff88':'#ff5566';
-  let displayBal = bal + totalPl;
-  document.getElementById('bal').innerText=displayBal.toFixed(2)+' USD';
-  if(posList.length>0){
-    let need = posList[0].tp;
-    let prog = Math.min(100, Math.max(0, (price - posList[0].entry)/(need - posList[0].entry)*100));
-    document.getElementById('prog').style.width=prog+'%';
-  } else document.getElementById('prog').style.width='0%';
+  document.getElementById('bal').innerText=(bal+totalPl).toFixed(2)+' USD';
+  if(posList.length>0){let prog=Math.min(100,Math.max(0,(price-posList[0].entry)/(posList[0].tp-posList[0].entry)*100));document.getElementById('prog').style.width=prog+'%'}else document.getElementById('prog').style.width='0%';
 }
 async function getPrice(){
   try{
     let sym=document.getElementById('coin').value;
-    let r=await fetch('https://api.binance.com/api/v3/ticker/price?symbol='+sym);
-    let j=await r.json(); price=parseFloat(j.price);
+    let r=await fetch('https://api.binance.com/api/v3/ticker/price?symbol='+sym); let j=await r.json(); price=parseFloat(j.price);
     if(ema===0) ema=price*0.999; else ema=ema*0.985+price*0.015;
-    if(posList.length<2 && price>ema && price>0){ // AUTO OPEN like video
+    if(isRunning && posList.length<2 && price>ema && price>0){
       let tpPct=parseFloat(document.getElementById('tpSel').value);
-      let entry=price;
-      posList.push({entry:entry, qty:0.01*price/price, tp:entry*(1+tpPct/100), sl:entry*0.97});
-      save();
+      posList.push({entry:price,qty:0.01,tp:price*(1+tpPct/100),sl:price*0.97}); save();
     }
-    // AUTO CLOSE
-    let newList=[]; let closedProfit=0;
-    posList.forEach(p=>{
-      if(price>=p.tp || price<=p.sl){
-        let pnl = p.qty*(price-p.entry);
-        bal+=pnl; closedProfit+=pnl;
-      } else newList.push(p);
-    });
-    posList=newList;
-    if(closedProfit!==0) save();
+    let newList=[]; let closed=0; posList.forEach(p=>{if(price>=p.tp||price<=p.sl){closed+=p.qty*(price-p.entry)}else newList.push(p)}); if(closed!==0){bal+=closed; posList=newList; save()}
+    else posList=newList;
     renderPos();
   }catch(e){}
 }
-function closeAll(){bal+=totalPl; posList=[]; save(); renderPos();}
-function resetSlap(){if(confirm('Reset to $10 like video?')){bal=10;posList=[];save();renderPos()}}
-renderPos(); getPrice();
-let interval=setInterval(getPrice,3000);
-document.getElementById('speed').addEventListener('change',e=>{clearInterval(interval); interval=setInterval(getPrice,parseInt(e.target.value))});
+function closeAll(){bal+=totalPl; posList=[]; save(); renderPos()}
+function resetSlap(){if(confirm('Reset to $10?')){bal=10;posList=[];save();renderPos()}}
+let interval; function startInterval(){interval=setInterval(getPrice,parseInt(document.getElementById('speed').value))} 
+renderPos(); getPrice(); startInterval();
+document.getElementById('speed').addEventListener('change',e=>{if(isRunning){clearInterval(interval); startInterval()}});
 </script></body></html>
