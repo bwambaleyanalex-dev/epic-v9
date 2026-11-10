@@ -82,6 +82,7 @@ input{width:100%;padding:12px;border-radius:9px;border:1px solid #34435b;backgro
   <button class="sell" id="sellBtn" onclick="closePosition('MANUAL')">SIMULATE SELL</button>
  </div>
  <div class="status" id="status">Bot is paused. Start the paper bot to allow simulated entries.</div>
+ <div class="actions"><button class="secondary" onclick="forceRefresh()">↻ FORCE REFRESH PRICE</button></div>
 </div>
 <h3 class="section">📊 Current Position</h3>
 <div class="card">
@@ -105,7 +106,7 @@ input{width:100%;padding:12px;border-radius:9px;border:1px solid #34435b;backgro
   <button class="secondary" onclick="resetAccount()">RESET PAPER ACCOUNT</button>
  </div>
 </div>
-<div class="footer">SLAP V8.1 FINAL WEALTH · PAPER SIMULATION · State saved locally in this browser · 7-DAY TEST</div>
+<div class="footer">SLAP V8.1 FINAL WEALTH · PAPER SIMULATION · State saved locally in this browser · 7-DAY TEST · FIXED PRICE FEED V2</div>
 </div>
 <script>
 "use strict";
@@ -115,11 +116,4 @@ function todayKey(){return new Date().toLocaleDateString("en-CA");}
 function freshState(){return{cash:CONFIG.initialCash,realized:0,position:null,history:[],dailyCount:0,day:todayKey(),running:false,lastPrice:null,updated:Date.now()};}
 function loadState(){try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));if(!saved||typeof saved.cash!=="number")return freshState();saved.running=false;saved.history=Array.isArray(saved.history)?saved.history:[];saved.dailyCount=Number(saved.dailyCount)||0;saved.realized=Number(saved.realized)||0;saved.position=saved.position||null;if(saved.day!==todayKey()){saved.day=todayKey();saved.dailyCount=0;}return saved;}catch(e){return freshState();}}
 let state=loadState();let currentPrice=null;let pollTimer=null;let fetching=false;
-function save(){state.updated=Date.now();try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){setStatus("Could not save state in browser storage.");}}
-function money(n){return "$"+Number(n||0).toFixed(2);}
-function priceText(n){return n==null?"—":"$"+Number(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
-function setStatus(m){document.getElementById("status").textContent=m;}
-function equity(price){let v=state.cash;if(state.position&&price!=null){v+=state.position.qty*price;}return v;}
-function openProfit(price){if(!state.position||price==null)return 0;const p=state.position;const ef=p.qty*price*CONFIG.fee;return(price-p.entry)*p.qty-p.entryFee-ef;}
-function rolloverDay(){const t=todayKey();if(state.day!==t){state.day=t;state.dailyCount=0;save();}}
-function render(){const price=currentPrice??state.lastPrice;const eq=equity(price);const op=openProfit(price);document.getElementById("price").textContent=priceText(price);document.getElementById("equity").textContent=money(eq);document.getElementById("cash").textContent=money(state.cash);document.getElementById("realized").textContent=money(state.realized);document.getElementById("openpl").textContent=money(op);document.get
+function save(){state.updated=Date.now();try{localStorage.setItem(ST
