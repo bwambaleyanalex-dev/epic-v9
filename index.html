@@ -2,29 +2,28 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>SLAP V8.1 FINAL WEALTH</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SLAP V8.2 FINAL WEALTH</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
-body{background:#080b12;color:#f5f7ff;padding:16px;min-height:100vh}
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif}
+body{background:#080b12;color:#f5f7ff;padding:16px}
 .wrap{max-width:900px;margin:auto}
-header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
-h1{font-size:23px;letter-spacing:.5px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+h1{font-size:23px}
 .sub{color:#8792a8;font-size:12px;margin-top:4px}
 .pill{font-size:11px;padding:7px 10px;border-radius:20px;background:#152b20;color:#69e6a0;border:1px solid #286443}
 .warning{background:#251c0c;border:1px solid #72551c;color:#ffd77b;padding:12px;border-radius:12px;font-size:12px;margin-bottom:15px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.card{background:#111827;border:1px solid #253147;border-radius:15px;padding:15px;min-width:0}
-.label{font-size:11px;color:#8491a8;text-transform:uppercase;letter-spacing:.8px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.card{background:#111827;border:1px solid #253147;border-radius:15px;padding:15px}
+.label{font-size:11px;color:#8491a8;text-transform:uppercase}
 .value{font-size:25px;font-weight:750;margin-top:7px;overflow-wrap:anywhere}
 .small{font-size:12px;color:#8c9ab0;margin-top:5px}
 .green{color:#51e39a}.red{color:#ff6577}.yellow{color:#ffd36d}
 .pricecard{grid-column:1/-1;background:linear-gradient(135deg,#14243a,#111827)}
 .price{font-size:32px;font-weight:800;margin-top:7px}
 .section{font-size:15px;margin:20px 0 10px}
-.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
 button{border:0;border-radius:11px;padding:13px 10px;font-size:14px;font-weight:700;cursor:pointer}
-button:disabled{opacity:.4;cursor:not-allowed}
 .start{background:#19bd78;color:#04170e}
 .stop{background:#bd3448;color:white}
 .buy{background:#1d8c61;color:white}
@@ -33,87 +32,119 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .status{font-size:12px;color:#aab6ca;margin-top:12px;line-height:1.6}
 table{width:100%;border-collapse:collapse;font-size:12px;min-width:510px}
 th,td{text-align:left;padding:10px 8px;border-bottom:1px solid #253147;white-space:nowrap}
-th{color:#8491a8;font-weight:600}
+th{color:#8491a8}
 .tablewrap{overflow-x:auto}
 .empty{text-align:center;color:#8390a5;padding:20px}
 .footer{font-size:11px;color:#68758a;text-align:center;margin:22px 0}
-input{width:100%;padding:12px;border-radius:9px;border:1px solid #34435b;background:#0b1220;color:white;margin-top:8px}
-@media(min-width:650px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.pricecard{grid-column:span 2}.wide{grid-column:span 2}}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,1fr)}.pricecard{grid-column:span 2}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<header>
- <div>
-  <h1>⚡ SLAP V8.1</h1>
-  <div class="sub">FINAL WEALTH · BTC PAPER TRADING</div>
- </div>
- <div class="pill">PAPER TEST</div>
-</header>
-<div class="warning">
- ⚠️ SIMULATION ONLY — No real Binance orders are placed. The dashboard uses public market prices and simulated trades.
-</div>
+<header><div><h1>⚡ SLAP V8.2</h1>
+<div class="sub">FINAL WEALTH · BTC PAPER TRADING</div></div>
+<div class="pill">PAPER TEST</div></header>
+<div class="warning">⚠️ SIMULATION ONLY — No real Binance orders are placed.</div>
 <div class="grid">
- <div class="card pricecard">
-  <div class="label">BTC / USDT MARKET PRICE</div>
-  <div class="price" id="price">Loading...</div>
-  <div class="small" id="feed">Connecting to price feed...</div>
- </div>
- <div class="card"><div class="label">Account Equity</div><div class="value" id="equity">$10.00</div><div class="small">Cash + open position value</div></div>
- <div class="card"><div class="label">Available Cash</div><div class="value" id="cash">$10.00</div><div class="small">Available paper balance</div></div>
- <div class="card"><div class="label">Realized P/L</div><div class="value" id="realized">$0.00</div><div class="small">After estimated fees</div></div>
- <div class="card"><div class="label">Open P/L</div><div class="value" id="openpl">$0.00</div><div class="small">Estimated after exit fee</div></div>
- <div class="card"><div class="label">Today's Trades</div><div class="value" id="trades">0 / 50</div><div class="small">Closed trades today</div></div>
- <div class="card"><div class="label">Win Rate</div><div class="value" id="winrate">0%</div><div class="small">Closed paper trades</div></div>
- <div class="card"><div class="label">Bot Status</div><div class="value yellow" id="botstatus">PAUSED</div><div class="small" id="botdetail">Start when ready</div></div>
+<div class="card pricecard">
+<div class="label">BTC / USDT MARKET PRICE</div>
+<div class="price" id="price">Loading...</div>
+<div class="small" id="feed">Connecting to price feed...</div>
+</div>
+<div class="card"><div class="label">Account Equity</div><div class="value" id="equity">$10.00</div></div>
+<div class="card"><div class="label">Available Cash</div><div class="value" id="cash">$10.00</div></div>
+<div class="card"><div class="label">Realized P/L</div><div class="value" id="realized">$0.00</div></div>
+<div class="card"><div class="label">Open P/L</div><div class="value" id="openpl">$0.00</div></div>
+<div class="card"><div class="label">Today's Trades</div><div class="value" id="trades">0 / 50</div></div>
+<div class="card"><div class="label">Win Rate</div><div class="value" id="winrate">0%</div></div>
+<div class="card"><div class="label">Bot Status</div><div class="value yellow" id="botstatus">PAUSED</div><div class="small" id="botdetail">Start when ready</div></div>
 </div>
 <h3 class="section">⚙️ Trading Controls</h3>
 <div class="card">
- <div class="grid">
-  <div><div class="label">Take Profit</div><div class="value green">+0.50%</div></div>
-  <div><div class="label">Stop Loss</div><div class="value red">-1.50%</div></div>
-  <div><div class="label">Maximum Position</div><div class="value">0.0004 BTC</div></div>
-  <div><div class="label">Estimated Fee</div><div class="value">0.10%</div><div class="small">Each side</div></div>
- </div>
- <div class="actions">
-  <button class="start" id="startBtn" onclick="startBot()">▶ START PAPER BOT</button>
-  <button class="stop" onclick="stopBot()">■ PAUSE BOT</button>
-  <button class="buy" id="buyBtn" onclick="openPosition()">SIMULATE BUY</button>
-  <button class="sell" id="sellBtn" onclick="closePosition('MANUAL')">SIMULATE SELL</button>
- </div>
- <div class="status" id="status">Bot is paused. Start the paper bot to allow simulated entries.</div>
- <div class="actions"><button class="secondary" onclick="forceRefresh()">↻ FORCE REFRESH PRICE</button></div>
+<div class="grid">
+<div><div class="label">Take Profit</div><div class="value green">+0.50%</div></div>
+<div><div class="label">Stop Loss</div><div class="value red">-1.50%</div></div>
+<div><div class="label">Maximum Position</div><div class="value">0.0004 BTC</div></div>
+<div><div class="label">Estimated Fee</div><div class="value">0.10%</div></div>
+</div>
+<div class="actions">
+<button class="start" onclick="startBot()">▶ START PAPER BOT</button>
+<button class="stop" onclick="stopBot()">■ PAUSE BOT</button>
+<button class="buy" onclick="openPosition()">SIMULATE BUY</button>
+<button class="sell" onclick="closePosition('MANUAL')">SIMULATE SELL</button>
+</div>
+<div class="status" id="status">Bot is paused.</div>
+<div class="actions"><button class="secondary" onclick="forceRefresh()">↻ FORCE REFRESH PRICE</button></div>
 </div>
 <h3 class="section">📊 Current Position</h3>
-<div class="card">
- <div class="grid">
-  <div><div class="label">Position</div><div class="value" id="position">NONE</div></div>
-  <div><div class="label">Entry Price</div><div class="value" id="entry">—</div></div>
-  <div><div class="label">Quantity</div><div class="value" id="quantity">0 BTC</div></div>
-  <div><div class="label">Target / Stop</div><div class="value" id="levels" style="font-size:15px">—</div></div>
- </div>
-</div>
+<div class="card"><div class="grid">
+<div><div class="label">Position</div><div class="value" id="position">NONE</div></div>
+<div><div class="label">Entry Price</div><div class="value" id="entry">—</div></div>
+<div><div class="label">Quantity</div><div class="value" id="quantity">0 BTC</div></div>
+<div><div class="label">Target / Stop</div><div class="value" id="levels" style="font-size:15px">—</div></div>
+</div></div>
 <h3 class="section">📜 Trade History</h3>
-<div class="card">
- <div class="tablewrap">
-  <table>
-   <thead><tr><th>Time</th><th>Entry</th><th>Exit</th><th>Net P/L</th><th>Reason</th></tr></thead>
-   <tbody id="history"><tr><td colspan="5" class="empty">No closed trades yet</td></tr></tbody>
-  </table>
- </div>
- <div class="actions">
-  <button class="secondary" onclick="exportTrades()">EXPORT CSV</button>
-  <button class="secondary" onclick="resetAccount()">RESET PAPER ACCOUNT</button>
- </div>
-</div>
-<div class="footer">SLAP V8.1 FINAL WEALTH · PAPER SIMULATION · State saved locally in this browser · 7-DAY TEST · FIXED PRICE FEED V2</div>
+<div class="card"><div class="tablewrap"><table>
+<thead><tr><th>Time</th><th>Entry</th><th>Exit</th><th>Net P/L</th><th>Reason</th></tr></thead>
+<tbody id="history"><tr><td colspan="5" class="empty">No closed trades yet</td></tr></tbody>
+</table></div>
+<div class="actions">
+<button class="secondary" onclick="exportTrades()">EXPORT CSV</button>
+<button class="secondary" onclick="resetAccount()">RESET PAPER ACCOUNT</button>
+</div></div>
+<div class="footer">SLAP V8.2 · PAPER SIMULATION · FIXED MULTI-SOURCE FEED</div>
 </div>
 <script>
-"use strict";
-const CONFIG={initialCash:10,maxEquityLoss:9,takeProfit:0.005,stopLoss:0.015,maxQty:0.0004,fee:0.001,maxDailyTrades:50,pollMs:5000};
-const STORAGE_KEY="slap_v81_paper_state";
-function todayKey(){return new Date().toLocaleDateString("en-CA");}
-function freshState(){return{cash:CONFIG.initialCash,realized:0,position:null,history:[],dailyCount:0,day:todayKey(),running:false,lastPrice:null,updated:Date.now()};}
-function loadState(){try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));if(!saved||typeof saved.cash!=="number")return freshState();saved.running=false;saved.history=Array.isArray(saved.history)?saved.history:[];saved.dailyCount=Number(saved.dailyCount)||0;saved.realized=Number(saved.realized)||0;saved.position=saved.position||null;if(saved.day!==todayKey()){saved.day=todayKey();saved.dailyCount=0;}return saved;}catch(e){return freshState();}}
-let state=loadState();let currentPrice=null;let pollTimer=null;let fetching=false;
-function save(){state.updated=Date.now();try{localStorage.setItem(ST
+const CFG = { cash: 10, tp: 0.005, sl: 0.015, qty: 0.0004, fee: 0.001, maxTrades: 50 };
+const KEY = "slap_v82_state";
+let S = JSON.parse(localStorage.getItem(KEY) || "null") || { cash: 10, realized: 0, pos: null, hist: [], count: 0, day: new Date().toDateString(), running: false };
+if (S.day !== new Date().toDateString()) { S.day = new Date().toDateString(); S.count = 0; }
+S.running = false;
+let price = null, timer = null, fetching = false;
+const $ = id => document.getElementById(id);
+function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
+function fmt(n) { return "$" + n.toFixed(2); }
+function render() {
+  $("cash").textContent = fmt(S.cash);
+  $("realized").textContent = fmt(S.realized);
+  $("realized").style.color = S.realized >= 0 ? "#51e39a" : "#ff6577";
+  let open = 0, eq = S.cash;
+  if (S.pos && price) {
+    open = (price - S.pos.entry) * S.pos.qty - price * S.pos.qty * CFG.fee;
+    eq = S.cash + S.pos.qty * price;
+  }
+  $("openpl").textContent = fmt(open);
+  $("equity").textContent = fmt(eq);
+  $("trades").textContent = S.count + " / 50";
+  let wins = S.hist.filter(h => h.pnl > 0).length;
+  $("winrate").textContent = S.hist.length ? Math.round(wins / S.hist.length * 100) + "%" : "0%";
+  $("botstatus").textContent = S.running ? "RUNNING" : "PAUSED";
+  $("botstatus").style.color = S.running ? "#51e39a" : "#ffd36d";
+  $("botdetail").textContent = S.running ? "Watching for TP/SL" : "Start when ready";
+  if (S.pos) {
+    $("position").textContent = "LONG";
+    $("entry").textContent = fmt(S.pos.entry);
+    $("quantity").textContent = S.pos.qty + " BTC";
+    $("levels").textContent = "TP " + fmt(S.pos.entry * 1.005) + " / SL " + fmt(S.pos.entry * 0.985);
+  } else {
+    $("position").textContent = "NONE";
+    $("entry").textContent = "—";
+    $("quantity").textContent = "0 BTC";
+    $("levels").textContent = "—";
+  }
+  if (!S.hist.length) {
+    $("history").innerHTML = '<tr><td colspan="5" class="empty">No closed trades yet</td></tr>';
+  } else {
+    $("history").innerHTML = S.hist.slice(-20).reverse().map(h =>
+      "<tr><td>" + h.time + "</td><td>" + fmt(h.entry) + "</td><td>" + fmt(h.exit) + "</td><td style='color:" + (h.pnl >= 0 ? "#51e39a" : "#ff6577") + "'>" + fmt(h.pnl) + "</td><td>" + h.reason + "</td></tr>"
+    ).join("");
+  }
+}
+async function tryFetch(url, parse) {
+  const c = new AbortController();
+  const t = setTimeout(() => c.abort(), 6000);
+  try {
+    const r = await fetch(url, { signal: c.signal, cache: "no-store" });
+    const j = await r.json();
+    const p = parse(j);
+    if (p && p > 100
