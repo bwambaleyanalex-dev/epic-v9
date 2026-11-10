@@ -1,150 +1,472 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SLAP V8.2 FINAL WEALTH</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif}
-body{background:#080b12;color:#f5f7ff;padding:16px}
+*{box-sizing:border-box;font-family:system-ui,sans-serif}
+body{margin:0;background:#080b12;color:#f5f7ff;padding:16px}
 .wrap{max-width:900px;margin:auto}
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-h1{font-size:23px}
-.sub{color:#8792a8;font-size:12px;margin-top:4px}
-.pill{font-size:11px;padding:7px 10px;border-radius:20px;background:#152b20;color:#69e6a0;border:1px solid #286443}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+h1{font-size:23px;margin:0}
+.sub{font-size:12px;color:#8792a8;margin-top:4px}
+.pill{padding:7px 10px;border-radius:20px;background:#152b20;color:#69e6a0;border:1px solid #286443;font-size:11px}
 .warning{background:#251c0c;border:1px solid #72551c;color:#ffd77b;padding:12px;border-radius:12px;font-size:12px;margin-bottom:15px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.card{background:#111827;border:1px solid #253147;border-radius:15px;padding:15px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.card{background:#111827;border:1px solid #253147;border-radius:15px;padding:14px}
+.pricecard{grid-column:1/-1;background:linear-gradient(135deg,#14243a,#111827)}
 .label{font-size:11px;color:#8491a8;text-transform:uppercase}
-.value{font-size:25px;font-weight:750;margin-top:7px;overflow-wrap:anywhere}
+.value{font-size:23px;font-weight:750;margin-top:6px}
+.price{font-size:31px;font-weight:800;margin-top:6px}
 .small{font-size:12px;color:#8c9ab0;margin-top:5px}
 .green{color:#51e39a}.red{color:#ff6577}.yellow{color:#ffd36d}
-.pricecard{grid-column:1/-1;background:linear-gradient(135deg,#14243a,#111827)}
-.price{font-size:32px;font-weight:800;margin-top:7px}
 .section{font-size:15px;margin:20px 0 10px}
-.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
-button{border:0;border-radius:11px;padding:13px 10px;font-size:14px;font-weight:700;cursor:pointer}
+.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:13px}
+button{border:0;border-radius:11px;padding:12px 8px;font-size:13px;font-weight:700}
 .start{background:#19bd78;color:#04170e}
 .stop{background:#bd3448;color:white}
 .buy{background:#1d8c61;color:white}
 .sell{background:#a83248;color:white}
 .secondary{background:#25334a;color:#e5edff}
-.status{font-size:12px;color:#aab6ca;margin-top:12px;line-height:1.6}
-table{width:100%;border-collapse:collapse;font-size:12px;min-width:510px}
-th,td{text-align:left;padding:10px 8px;border-bottom:1px solid #253147;white-space:nowrap}
+.status{font-size:12px;color:#aab6ca;margin-top:12px;line-height:1.5}
+.tablewrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:500px}
+th,td{text-align:left;padding:9px 7px;border-bottom:1px solid #253147}
 th{color:#8491a8}
-.tablewrap{overflow-x:auto}
 .empty{text-align:center;color:#8390a5;padding:20px}
-.footer{font-size:11px;color:#68758a;text-align:center;margin:22px 0}
-@media(min-width:650px){.grid{grid-template-columns:repeat(4,1fr)}.pricecard{grid-column:span 2}}
+.footer{text-align:center;color:#68758a;font-size:11px;margin:20px 0}
+@media(min-width:650px){
+.grid{grid-template-columns:repeat(4,1fr)}
+.pricecard{grid-column:span 2}
+}
 </style>
-</head>
-<body>
-<div class="wrap">
-<header><div><h1>⚡ SLAP V8.2</h1>
-<div class="sub">FINAL WEALTH · BTC PAPER TRADING</div></div>
-<div class="pill">PAPER TEST</div></header>
-<div class="warning">⚠️ SIMULATION ONLY — No real Binance orders are placed.</div>
-<div class="grid">
-<div class="card pricecard">
+</head><body>
+<div class="wrap"><header>
+<div>
+<h1>⚡ SLAP V8.2</h1>
+<div class="sub">FINAL WEALTH · BTC PAPER TRADING</div>
+</div>
+<div class="pill">PAPER TEST</div>
+</header><div class="warning">⚠️ SIMULATION ONLY — No real Binance orders are placed.</div><div class="grid"><div class="card pricecard">
 <div class="label">BTC / USDT MARKET PRICE</div>
 <div class="price" id="price">Loading...</div>
-<div class="small" id="feed">Connecting to price feed...</div>
-</div>
-<div class="card"><div class="label">Account Equity</div><div class="value" id="equity">$10.00</div></div>
-<div class="card"><div class="label">Available Cash</div><div class="value" id="cash">$10.00</div></div>
-<div class="card"><div class="label">Realized P/L</div><div class="value" id="realized">$0.00</div></div>
-<div class="card"><div class="label">Open P/L</div><div class="value" id="openpl">$0.00</div></div>
-<div class="card"><div class="label">Today's Trades</div><div class="value" id="trades">0 / 50</div></div>
-<div class="card"><div class="label">Win Rate</div><div class="value" id="winrate">0%</div></div>
-<div class="card"><div class="label">Bot Status</div><div class="value yellow" id="botstatus">PAUSED</div><div class="small" id="botdetail">Start when ready</div></div>
-</div>
-<h3 class="section">⚙️ Trading Controls</h3>
-<div class="card">
-<div class="grid">
-<div><div class="label">Take Profit</div><div class="value green">+0.50%</div></div>
-<div><div class="label">Stop Loss</div><div class="value red">-1.50%</div></div>
-<div><div class="label">Maximum Position</div><div class="value">0.0004 BTC</div></div>
-<div><div class="label">Estimated Fee</div><div class="value">0.10%</div></div>
-</div>
-<div class="actions">
+<div class="small" id="feed">Connecting...</div>
+</div><div class="card">
+<div class="label">Account Equity</div>
+<div class="value" id="equity">$10.00</div>
+</div><div class="card">
+<div class="label">Available Cash</div>
+<div class="value" id="cash">$10.00</div>
+</div><div class="card">
+<div class="label">Realized P/L</div>
+<div class="value" id="realized">$0.00</div>
+</div><div class="card">
+<div class="label">Open P/L</div>
+<div class="value" id="openpl">$0.00</div>
+</div><div class="card">
+<div class="label">Today's Trades</div>
+<div class="value" id="trades">0 / 50</div>
+</div><div class="card">
+<div class="label">Win Rate</div>
+<div class="value" id="winrate">0%</div>
+</div><div class="card">
+<div class="label">Bot Status</div>
+<div class="value yellow" id="botstatus">PAUSED</div>
+<div class="small" id="botdetail">Start when ready</div>
+</div></div><h3 class="section">⚙️ Trading Controls</h3><div class="card"><div class="grid"><div>
+<div class="label">Take Profit</div>
+<div class="value green">+0.50%</div>
+</div><div>
+<div class="label">Stop Loss</div>
+<div class="value red">−1.50%</div>
+</div><div>
+<div class="label">Maximum Position</div>
+<div class="value">0.0004 BTC</div>
+</div><div>
+<div class="label">Estimated Fee</div>
+<div class="value">0.10%</div>
+</div></div><div class="actions">
 <button class="start" onclick="startBot()">▶ START PAPER BOT</button>
 <button class="stop" onclick="stopBot()">■ PAUSE BOT</button>
-<button class="buy" onclick="openPosition()">SIMULATE BUY</button>
-<button class="sell" onclick="closePosition('MANUAL')">SIMULATE SELL</button>
-</div>
-<div class="status" id="status">Bot is paused.</div>
-<div class="actions"><button class="secondary" onclick="forceRefresh()">↻ FORCE REFRESH PRICE</button></div>
-</div>
-<h3 class="section">📊 Current Position</h3>
-<div class="card"><div class="grid">
-<div><div class="label">Position</div><div class="value" id="position">NONE</div></div>
-<div><div class="label">Entry Price</div><div class="value" id="entry">—</div></div>
-<div><div class="label">Quantity</div><div class="value" id="quantity">0 BTC</div></div>
-<div><div class="label">Target / Stop</div><div class="value" id="levels" style="font-size:15px">—</div></div>
+<button class="buy" onclick="buy()">SIMULATE BUY</button>
+<button class="sell" onclick="sell()">SIMULATE SELL</button>
+</div><div class="status" id="status">Bot is paused.</div><div class="actions">
+<button class="secondary" onclick="getPrice()">↻ REFRESH PRICE</button>
+</div></div><h3 class="section">📊 Current Position</h3><div class="card">
+<div class="grid"><div>
+<div class="label">Position</div>
+<div class="value" id="position">NONE</div>
+</div><div>
+<div class="label">Entry Price</div>
+<div class="value" id="entry">—</div>
+</div><div>
+<div class="label">Quantity</div>
+<div class="value" id="quantity">0 BTC</div>
+</div><div>
+<div class="label">Target / Stop</div>
+<div class="value" id="levels" style="font-size:14px">—</div>
 </div></div>
-<h3 class="section">📜 Trade History</h3>
-<div class="card"><div class="tablewrap"><table>
-<thead><tr><th>Time</th><th>Entry</th><th>Exit</th><th>Net P/L</th><th>Reason</th></tr></thead>
-<tbody id="history"><tr><td colspan="5" class="empty">No closed trades yet</td></tr></tbody>
-</table></div>
-<div class="actions">
-<button class="secondary" onclick="exportTrades()">EXPORT CSV</button>
-<button class="secondary" onclick="resetAccount()">RESET PAPER ACCOUNT</button>
-</div></div>
-<div class="footer">SLAP V8.2 · PAPER SIMULATION · FIXED MULTI-SOURCE FEED</div>
-</div>
-<script>
-const CFG = { cash: 10, tp: 0.005, sl: 0.015, qty: 0.0004, fee: 0.001, maxTrades: 50 };
-const KEY = "slap_v82_state";
-let S = JSON.parse(localStorage.getItem(KEY) || "null") || { cash: 10, realized: 0, pos: null, hist: [], count: 0, day: new Date().toDateString(), running: false };
-if (S.day !== new Date().toDateString()) { S.day = new Date().toDateString(); S.count = 0; }
-S.running = false;
-let price = null, timer = null, fetching = false;
-const $ = id => document.getElementById(id);
-function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
-function fmt(n) { return "$" + n.toFixed(2); }
-function render() {
-  $("cash").textContent = fmt(S.cash);
-  $("realized").textContent = fmt(S.realized);
-  $("realized").style.color = S.realized >= 0 ? "#51e39a" : "#ff6577";
-  let open = 0, eq = S.cash;
-  if (S.pos && price) {
-    open = (price - S.pos.entry) * S.pos.qty - price * S.pos.qty * CFG.fee;
-    eq = S.cash + S.pos.qty * price;
-  }
-  $("openpl").textContent = fmt(open);
-  $("equity").textContent = fmt(eq);
-  $("trades").textContent = S.count + " / 50";
-  let wins = S.hist.filter(h => h.pnl > 0).length;
-  $("winrate").textContent = S.hist.length ? Math.round(wins / S.hist.length * 100) + "%" : "0%";
-  $("botstatus").textContent = S.running ? "RUNNING" : "PAUSED";
-  $("botstatus").style.color = S.running ? "#51e39a" : "#ffd36d";
-  $("botdetail").textContent = S.running ? "Watching for TP/SL" : "Start when ready";
-  if (S.pos) {
-    $("position").textContent = "LONG";
-    $("entry").textContent = fmt(S.pos.entry);
-    $("quantity").textContent = S.pos.qty + " BTC";
-    $("levels").textContent = "TP " + fmt(S.pos.entry * 1.005) + " / SL " + fmt(S.pos.entry * 0.985);
-  } else {
-    $("position").textContent = "NONE";
-    $("entry").textContent = "—";
-    $("quantity").textContent = "0 BTC";
-    $("levels").textContent = "—";
-  }
-  if (!S.hist.length) {
-    $("history").innerHTML = '<tr><td colspan="5" class="empty">No closed trades yet</td></tr>';
-  } else {
-    $("history").innerHTML = S.hist.slice(-20).reverse().map(h =>
-      "<tr><td>" + h.time + "</td><td>" + fmt(h.entry) + "</td><td>" + fmt(h.exit) + "</td><td style='color:" + (h.pnl >= 0 ? "#51e39a" : "#ff6577") + "'>" + fmt(h.pnl) + "</td><td>" + h.reason + "</td></tr>"
-    ).join("");
-  }
+</div><h3 class="section">📜 Trade History</h3><div class="card"><div class="tablewrap">
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Entry</th>
+<th>Exit</th>
+<th>Net P/L</th>
+<th>Reason</th>
+</tr>
+</thead><tbody id="history">
+<tr>
+<td colspan="5" class="empty">No closed trades yet</td>
+</tr>
+</tbody></table>
+</div><div class="actions">
+<button class="secondary" onclick="exportCSV()">EXPORT CSV</button>
+<button class="secondary" onclick="resetAccount()">RESET ACCOUNT</button>
+</div></div><div class="footer">
+SLAP V8.2 · PAPER SIMULATION · MULTI-SOURCE PRICE FEED
+</div></div><script>
+
+const CFG={
+startCash:10,
+qty:0.0004,
+tp:0.005,
+sl:0.015,
+fee:0.001
+};
+
+const KEY="slap_v82";
+
+let state=JSON.parse(localStorage.getItem(KEY)||"null")||{
+cash:10,
+realized:0,
+position:null,
+history:[],
+trades:0,
+running:false
+};
+
+let price=0;
+let busy=false;
+
+const $=id=>document.getElementById(id);
+
+function save(){
+localStorage.setItem(KEY,JSON.stringify(state));
 }
-async function tryFetch(url, parse) {
-  const c = new AbortController();
-  const t = setTimeout(() => c.abort(), 6000);
-  try {
-    const r = await fetch(url, { signal: c.signal, cache: "no-store" });
-    const j = await r.json();
-    const p = parse(j);
-    if (p && p > 100
+
+function money(n){
+return "$"+Number(n).toFixed(2);
+}
+
+function render(){
+
+$("cash").textContent=money(state.cash);
+$("realized").textContent=money(state.realized);
+
+let open=0;
+let equity=state.cash;
+
+if(state.position&&price){
+
+open=(price-state.position.entry)*state.position.qty
+-price*state.position.qty*CFG.fee;
+
+equity+=price*state.position.qty;
+
+}
+
+$("openpl").textContent=money(open);
+$("equity").textContent=money(equity);
+
+$("trades").textContent=state.trades+" / 50";
+
+let wins=state.history.filter(x=>x.pnl>0).length;
+
+$("winrate").textContent=
+state.history.length?
+Math.round(wins/state.history.length*100)+"%":"0%";
+
+$("botstatus").textContent=
+state.running?"RUNNING":"PAUSED";
+
+$("botstatus").className=
+"value "+(state.running?"green":"yellow");
+
+$("botdetail").textContent=
+state.running?"Watching TP / SL":"Start when ready";
+
+if(state.position){
+
+$("position").textContent="LONG";
+$("entry").textContent=money(state.position.entry);
+$("quantity").textContent=state.position.qty+" BTC";
+
+$("levels").textContent=
+"TP "+money(state.position.entry*(1+CFG.tp))+
+" / SL "+money(state.position.entry*(1-CFG.sl));
+
+}else{
+
+$("position").textContent="NONE";
+$("entry").textContent="—";
+$("quantity").textContent="0 BTC";
+$("levels").textContent="—";
+
+}
+
+if(!state.history.length){
+
+$("history").innerHTML=
+'<tr><td colspan="5" class="empty">No closed trades yet</td></tr>';
+
+}else{
+
+$("history").innerHTML=
+state.history.slice(-20).reverse().map(x=>
+"<tr>"+
+"<td>"+x.time+"</td>"+
+"<td>"+money(x.entry)+"</td>"+
+"<td>"+money(x.exit)+"</td>"+
+"<td class='"+(x.pnl>=0?"green":"red")+"'>"+money(x.pnl)+"</td>"+
+"<td>"+x.reason+"</td>"+
+"</tr>"
+).join("");
+
+}
+
+}
+
+async function source(url,reader){
+
+try{
+
+let r=await fetch(url,{cache:"no-store"});
+let j=await r.json();
+let p=reader(j);
+
+if(p>1000)return p;
+
+}catch(e){}
+
+return 0;
+
+}
+
+async function getPrice(){
+
+if(busy)return;
+
+busy=true;
+$("feed").textContent="Updating...";
+
+let p=0;
+
+p=await source(
+"https://api.coinbase.com/v2/prices/BTC-USD/spot",
+j=>Number(j.data.amount)
+);
+
+if(!p)p=await source(
+"https://api.kraken.com/0/public/Ticker?pair=XBTUSD",
+j=>Number(j.result.XXBTZUSD.c[0])
+);
+
+if(!p)p=await source(
+"https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
+j=>Number(j.price)
+);
+
+if(!p)p=await source(
+"https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
+j=>Number(j.bitcoin.usd)
+);
+
+busy=false;
+
+if(p){
+
+price=p;
+
+$("price").textContent=money(price);
+
+$("feed").textContent=
+"Live · "+new Date().toLocaleTimeString();
+
+checkExit();
+render();
+
+}else{
+
+$("feed").textContent="Price unavailable — retrying...";
+}
+
+}
+
+function buy(){
+
+if(!price){
+$("status").textContent="Wait for live BTC price.";
+return;
+}
+
+if(state.position){
+$("status").textContent="Position already open.";
+return;
+}
+
+let cost=price*CFG.qty;
+let fee=cost*CFG.fee;
+
+if(state.cash<cost+fee){
+$("status").textContent="Not enough paper cash.";
+return;
+}
+
+state.cash-=cost+fee;
+
+state.position={
+entry:price,
+qty:CFG.qty
+};
+
+$("status").textContent=
+"LONG opened at "+money(price);
+
+save();
+render();
+
+}
+
+function sell(reason="MANUAL"){
+
+if(!state.position||!price)return;
+
+let gross=
+(price-state.position.entry)*state.position.qty;
+
+let fee=
+price*state.position.qty*CFG.fee;
+
+let pnl=gross-fee;
+
+state.cash+=
+price*state.position.qty-fee;
+
+state.realized+=pnl;
+
+state.history.push({
+time:new Date().toLocaleTimeString(),
+entry:state.position.entry,
+exit:price,
+pnl:pnl,
+reason:reason
+});
+
+state.trades++;
+state.position=null;
+
+$("status").textContent=
+"Closed "+reason+" · "+money(pnl);
+
+save();
+render();
+
+}
+
+function checkExit(){
+
+if(!state.running||!state.position||!price)return;
+
+let entry=state.position.entry;
+
+if(price>=entry*(1+CFG.tp)){
+sell("TAKE PROFIT");
+}
+
+else if(price<=entry*(1-CFG.sl)){
+sell("STOP LOSS");
+}
+
+}
+
+function startBot(){
+
+state.running=true;
+
+$("status").textContent=
+"Bot running · watching TP / SL";
+
+save();
+render();
+getPrice();
+
+}
+
+function stopBot(){
+
+state.running=false;
+
+$("status").textContent="Bot paused.";
+
+save();
+render();
+
+}
+
+function exportCSV(){
+
+let rows=[
+["Time","Entry","Exit","Net P/L","Reason"]
+];
+
+state.history.forEach(x=>{
+rows.push([
+x.time,
+x.entry,
+x.exit,
+x.pnl,
+x.reason
+]);
+});
+
+let csv=rows.map(r=>r.join(",")).join("\n");
+
+let a=document.createElement("a");
+
+a.href=URL.createObjectURL(
+new Blob([csv],{type:"text/csv"})
+);
+
+a.download="slap_v82_trades.csv";
+a.click();
+
+}
+
+function resetAccount(){
+
+if(!confirm("Reset paper account to $10?"))return;
+
+state={
+cash:10,
+realized:0,
+position:null,
+history:[],
+trades:0,
+running:false
+};
+
+save();
+render();
+
+$("status").textContent="Paper account reset.";
+
+}
+
+render();
+getPrice();
+setInterval(getPrice,5000);
+
+</script></body>
+</html>
