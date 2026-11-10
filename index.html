@@ -1,88 +1,125 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><title>SLAP V8.1 FINAL WEALTH</title><style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}body{background:#0a0a0f;color:#fff;min-height:100vh;padding-bottom:90px}
-.subcard{background:#14141e;border:1px solid #222236;border-radius:16px;padding:12px;margin:10px 16px}
-.badge{font-size:11px;padding:4px 10px;border-radius:20px;background:#1e1e32;color:#8b8bb5;display:inline-block;margin-right:6px}.badge.active{background:#f7931a;color:#000;border:1px solid #f7931a}
-.bal{font-size:38px;font-weight:800;margin:12px 0 6px}
-.btns{display:flex;justify-content:space-between;margin:16px 0}.btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer}
-.circle{width:48px;height:48px;border-radius:50%;background:#1a1a2e;display:flex;align-items:center;justify-content:center;font-size:18px;border:1px solid #2a2a4a}.circle.yellow{background:#f7931a;color:#000}.circle-txt{font-size:11px;color:#8b8bb5}
-.tabs{display:flex;gap:18px;padding:12px 16px;border-bottom:1px solid #1e1e32;align-items:center}.tab{font-size:14px;color:#5a5a7a;padding-bottom:6px;cursor:pointer}.tab.on{color:#f7931a;border-bottom:2px solid #f7931a}
-#stopBtn{margin-left:auto;padding:8px 14px;border-radius:20px;border:none;font-weight:800;font-size:11px;cursor:pointer}.stop{background:#ff1a4a;color:#fff}.start{background:#00ff88;color:#000}
-.pnlrow{display:flex;justify-content:space-between;padding:12px 16px;font-size:13px;color:#8b8bb5}
-.pos{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #14141e}
-.posL{display:flex;gap:10px;align-items:center}.coinI{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#f7931a,#ffaa00);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:18px}
-.nav{position:fixed;bottom:0;left:0;right:0;background:#0f0f18;border-top:1px solid #1e1e32;display:flex;justify-content:space-around;padding:10px 0 14px;z-index:20}.navI{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:#5a5a7a;cursor:pointer;flex:1}.navI.on{color:#f7931a}
-.progress{height:4px;background:#1a1a2e;margin:0 16px;border-radius:2px;overflow:hidden}.progressB{height:100%;background:linear-gradient(90deg,#f7931a,#ffd700);width:0%;transition:width 0.3s}
-.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:99;padding:20px}.modal.on{display:flex}.box{background:#14141e;border:1px solid #2a2a4a;border-radius:16px;padding:20px;width:100%;max-width:320px}
-.box input{width:100%;padding:12px;border-radius:8px;border:1px solid #2a2a4a;background:#0a0a0f;color:#fff;margin:6px 0;font-size:14px}
-.box button{width:100%;padding:12px;border-radius:10px;border:none;font-weight:700;margin-top:8px;cursor:pointer}.btnY{background:#f7931a;color:#000}.btnG{background:#00ff88;color:#000}
-.page{display:none;padding:16px}.page.on{display:block}
-.autoBanner{background:linear-gradient(90deg,#2a1500,#0a2a0f);border:1px solid #f7931a;padding:14px;border-radius:12px;margin:10px 16px;text-align:center}
-.profitToast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#00ff88;color:#000;padding:14px 20px;border-radius:20px;font-weight:800;z-index:100;display:none;box-shadow:0 0 25px #00ff88;text-align:center}
-.statusPill{padding:6px 12px;border-radius:20px;background:#00ff88;color:#000;font-size:11px;font-weight:800;display:inline-block}
-.completeBadge{background:#00ff88;color:#000;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:800;display:inline-block}
-</style></head><body>
-<div id="toast" class="profitToast">💰 Auto Profit Added!</div>
-<div id="pAccounts" class="page on">
-<div style="padding:18px 16px 6px;font-size:26px;font-weight:700">Accounts <span class="completeBadge">✅ V8.1 WEALTH</span></div>
-<div class="autoBanner"><div style="font-weight:800;color:#f7931a;font-size:16px">🤖 FINAL WEALTH BOT - BTC</div><div style="font-size:11px;color:#ffcc88;margin-top:4px">Chosen For You: TP 0.5% WEALTH - Slow, Safe, Profit Stays After Fees</div><div style="font-size:13px;margin-top:8px">Trades: <b id="loopCount">0</b> | Profit: <b id="loopProfit" style="color:#00ff88">+$0.00</b> | Today: <b id="todayCount">0</b>/50 | 1 Win = <b style="color:#00ff88">+$0.15</b></div><div style="margin-top:8px"><span class="statusPill" id="autoPill">● WEALTH BOT RUNNING</span></div></div>
-<div class="subcard"><div style="font-size:12px;color:#5a5a7a;display:flex;justify-content:space-between"><span>Standard # 40997353 - WEALTH FINAL</span><span style="font-size:11px">⏱️ <span id="timer">00:00</span></span></div>
-<div style="margin-top:8px"><span class="badge active">🤖 WEALTH BTC</span><span class="badge">TP 0.5% CHOSEN</span><span class="badge">SAFETY ON</span></div><div class="bal" id="bal">10.00 USD</div><div style="font-size:11px;color:#5a5a7a">WEALTH: BUY 0.0004 BTC → TP 0.5% (+$0.15) → SELL → Repeat. 1 Loss = -$0.45 = only 3 wins. Auto-pause at $9.00. Max 50/day.</div>
-<div class="btns">
-<div class="btn" onclick="switchPage('Trade')"><div class="circle yellow">₿</div><div class="circle-txt">Chart</div></div>
-<div class="btn" onclick="openDeposit()"><div class="circle">↓</div><div class="circle-txt">Deposit</div></div>
-<div class="btn" onclick="openWithdraw()"><div class="circle">↑</div><div class="circle-txt">Withdraw</div></div>
-<div class="btn" onclick="switchPage('Tools')"><div class="circle">⚙️</div><div class="circle-txt">Settings</div></div>
-</div></div>
-<div class="tabs"><div class="tab on" id="tOpen" onclick="switchTab('open')">Open <span id="openCnt">0</span></div><div class="tab" id="tClose" onclick="switchTab('closed')">Closed <span id="closedCnt">0</span></div><button id="stopBtn" class="stop" onclick="toggleSystem()">⏸ PAUSE BOT</button></div>
-<div class="pnlrow"><span><span id="statusDot" style="width:8px;height:8px;border-radius:50%;background:#00ff88;display:inline-block;margin-right:6px"></span><span id="sysStatus">🤖 WEALTH BOT TRADING</span></span><span id="totalPl" style="color:#00ff88">+0.00 USD</span></div>
-<div class="progress"><div class="progressB" id="prog"></div></div>
-<div id="positions"></div>
-<div id="closedBox" style="display:none;padding:10px 16px"></div>
-<div style="padding:12px 16px;background:#14141e;border-radius:12px;margin:12px 16px;border:1px solid #2a2a4a"><div style="font-size:12px;font-weight:700;color:#f7931a">🤖 WEALTH BOT STATUS</div><div id="debug" style="font-size:12px;color:#ffcc88;margin-top:6px">Wealth Bot starting...</div><div style="font-size:11px;color:#5a5a7a;margin-top:6px">TP 0.5% = +$0.15 per win | SL 1.5% = -$0.45 | Qty 0.0004 BTC | Safety: Pause at $9.00 | Max 50/day | Binance Price</div></div>
-<div style="padding:0 16px;display:flex;gap:8px"><button onclick="toggleSystem()" id="loopBtn" style="flex:1;padding:14px;border-radius:10px;background:#f7931a;color:#000;font-weight:800;border:none;font-size:14px">🤖 WEALTH BOT: ON - Tap to PAUSE</button></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>SLAP V8.1 FINAL WEALTH</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
+body{background:#080b12;color:#f5f7ff;padding:16px;min-height:100vh}
+.wrap{max-width:900px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+h1{font-size:23px;letter-spacing:.5px}
+.sub{color:#8792a8;font-size:12px;margin-top:4px}
+.pill{font-size:11px;padding:7px 10px;border-radius:20px;background:#152b20;color:#69e6a0;border:1px solid #286443}
+.warning{background:#251c0c;border:1px solid #72551c;color:#ffd77b;padding:12px;border-radius:12px;font-size:12px;margin-bottom:15px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:#111827;border:1px solid #253147;border-radius:15px;padding:15px;min-width:0}
+.label{font-size:11px;color:#8491a8;text-transform:uppercase;letter-spacing:.8px}
+.value{font-size:25px;font-weight:750;margin-top:7px;overflow-wrap:anywhere}
+.small{font-size:12px;color:#8c9ab0;margin-top:5px}
+.green{color:#51e39a}.red{color:#ff6577}.yellow{color:#ffd36d}
+.pricecard{grid-column:1/-1;background:linear-gradient(135deg,#14243a,#111827)}
+.price{font-size:32px;font-weight:800;margin-top:7px}
+.section{font-size:15px;margin:20px 0 10px}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+button{border:0;border-radius:11px;padding:13px 10px;font-size:14px;font-weight:700;cursor:pointer}
+button:disabled{opacity:.4;cursor:not-allowed}
+.start{background:#19bd78;color:#04170e}
+.stop{background:#bd3448;color:white}
+.buy{background:#1d8c61;color:white}
+.sell{background:#a83248;color:white}
+.secondary{background:#25334a;color:#e5edff}
+.status{font-size:12px;color:#aab6ca;margin-top:12px;line-height:1.6}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:510px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid #253147;white-space:nowrap}
+th{color:#8491a8;font-weight:600}
+.tablewrap{overflow-x:auto}
+.empty{text-align:center;color:#8390a5;padding:20px}
+.footer{font-size:11px;color:#68758a;text-align:center;margin:22px 0}
+input{width:100%;padding:12px;border-radius:9px;border:1px solid #34435b;background:#0b1220;color:white;margin-top:8px}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.pricecard{grid-column:span 2}.wide{grid-column:span 2}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <div>
+  <h1>⚡ SLAP V8.1</h1>
+  <div class="sub">FINAL WEALTH · BTC PAPER TRADING</div>
+ </div>
+ <div class="pill">PAPER TEST</div>
+</header>
+<div class="warning">
+ ⚠️ SIMULATION ONLY — No real Binance orders are placed. The dashboard uses public market prices and simulated trades.
 </div>
-<div id="pTrade" class="page"><div style="padding:18px 16px;font-size:26px;font-weight:700">Wealth Chart - BTC</div><div class="subcard"><div style="font-size:14px">BTCUSD - Wealth Bot Trading</div><div style="margin-top:10px;padding:30px;background:#0a0a0f;border-radius:12px;text-align:center">₿ Bitcoin: <span id="priceShow" style="color:#f7931a;font-weight:700">---</span><br><br><span>🤖 WEALTH AUTO - TP 0.5% - No manual trading</span><br><span id="priceSrc" style="font-size:10px;color:#5a5a7a"></span></div></div></div>
-<div id="pTools" class="page"><div style="padding:18px 16px;font-size:26px;font-weight:700">Settings - WEALTH FINAL</div>
-<div class="subcard">
-<div style="font-size:13px;font-weight:700;color:#f7931a">🔒 LOCKED WEALTH STRATEGY - Chosen For You</div>
-<div style="font-size:12px;color:#8b8bb5;padding:8px 0">Asset: BTCUSD<br>Qty: 0.0004 BTC<br>TP: 0.5% = +$0.15 per win<br>SL: 1.5% = -$0.45 per loss<br>Ratio: 1 loss = 3 wins (Safe)<br>Safety: Auto-pause at $9.00<br>Max Trades: 50/day<br>Expected: $3-$7/day if wins</div>
-<div style="border-top:1px solid #1e1e32;padding-top:10px"><div style="font-size:13px;font-weight:700">🔑 Binance Connection - LATER</div><div style="font-size:11px;color:#5a5a7a;padding:6px 0">Leave empty for test. Real money only after 50 test trades pass.</div><input id="apiKey" placeholder="Binance API Key - LEAVE EMPTY" style="width:100%;padding:10px;border-radius:8px;background:#0a0a0f;color:#fff;border:1px solid #2a2a4a;margin:4px 0"><button onclick="saveKeys()" style="width:100%;padding:10px;border-radius:8px;background:#1a1a2e;color:#fff;border:none;font-weight:700">Save - Test Mode</button><div id="keyStatus" style="font-size:11px;color:#ffcc88;margin-top:6px">Mode: TEST - No real money yet. Safe.</div></div>
-<div style="border-top:1px solid #1e1e32;margin-top:10px;padding-top:10px;display:flex;justify-content:space-between"><span>Reset Wealth Bot to $10</span><button onclick="wipeAll()" style="padding:6px 12px;border-radius:6px;border:none;background:#ff1a4a;color:#fff">RESET</button></div>
-</div></div>
-<div class="nav"><div class="navI on" id="nAcc" onclick="switchPage('Accounts')">◫<span>Accounts</span></div><div class="navI" id="nTrade" onclick="switchPage('Trade')">₿<span>Trade</span></div><div class="navI" id="nTools" onclick="switchPage('Tools')">🛠<span>Tools</span></div></div>
-<div class="modal" id="mDeposit"><div class="box"><h3>💰 Deposit</h3><input type="number" id="depAmt" value="10"><button class="btnY" onclick="doDeposit()">Deposit Now</button><button style="width:100%;padding:12px;border-radius:10px;border:none;background:#1a1a2e;color:#fff;margin-top:8px" onclick="closeModals()">Cancel</button></div></div>
-<div class="modal" id="mWithdraw"><div class="box"><h3>💸 Withdraw</h3><input type="number" id="withAmt" value="1"><button class="btnY" onclick="doWithdraw()">Withdraw</button><button style="width:100%;padding:12px;border-radius:10px;border:none;background:#1a1a2e;color:#fff;margin-top:8px" onclick="closeModals()">Cancel</button></div></div>
+<div class="grid">
+ <div class="card pricecard">
+  <div class="label">BTC / USDT MARKET PRICE</div>
+  <div class="price" id="price">Loading...</div>
+  <div class="small" id="feed">Connecting to price feed...</div>
+ </div>
+ <div class="card"><div class="label">Account Equity</div><div class="value" id="equity">$10.00</div><div class="small">Cash + open position value</div></div>
+ <div class="card"><div class="label">Available Cash</div><div class="value" id="cash">$10.00</div><div class="small">Available paper balance</div></div>
+ <div class="card"><div class="label">Realized P/L</div><div class="value" id="realized">$0.00</div><div class="small">After estimated fees</div></div>
+ <div class="card"><div class="label">Open P/L</div><div class="value" id="openpl">$0.00</div><div class="small">Estimated after exit fee</div></div>
+ <div class="card"><div class="label">Today's Trades</div><div class="value" id="trades">0 / 50</div><div class="small">Closed trades today</div></div>
+ <div class="card"><div class="label">Win Rate</div><div class="value" id="winrate">0%</div><div class="small">Closed paper trades</div></div>
+ <div class="card"><div class="label">Bot Status</div><div class="value yellow" id="botstatus">PAUSED</div><div class="small" id="botdetail">Start when ready</div></div>
+</div>
+<h3 class="section">⚙️ Trading Controls</h3>
+<div class="card">
+ <div class="grid">
+  <div><div class="label">Take Profit</div><div class="value green">+0.50%</div></div>
+  <div><div class="label">Stop Loss</div><div class="value red">-1.50%</div></div>
+  <div><div class="label">Maximum Position</div><div class="value">0.0004 BTC</div></div>
+  <div><div class="label">Estimated Fee</div><div class="value">0.10%</div><div class="small">Each side</div></div>
+ </div>
+ <div class="actions">
+  <button class="start" id="startBtn" onclick="startBot()">▶ START PAPER BOT</button>
+  <button class="stop" onclick="stopBot()">■ PAUSE BOT</button>
+  <button class="buy" id="buyBtn" onclick="openPosition()">SIMULATE BUY</button>
+  <button class="sell" id="sellBtn" onclick="closePosition('MANUAL')">SIMULATE SELL</button>
+ </div>
+ <div class="status" id="status">Bot is paused. Start the paper bot to allow simulated entries.</div>
+</div>
+<h3 class="section">📊 Current Position</h3>
+<div class="card">
+ <div class="grid">
+  <div><div class="label">Position</div><div class="value" id="position">NONE</div></div>
+  <div><div class="label">Entry Price</div><div class="value" id="entry">—</div></div>
+  <div><div class="label">Quantity</div><div class="value" id="quantity">0 BTC</div></div>
+  <div><div class="label">Target / Stop</div><div class="value" id="levels" style="font-size:15px">—</div></div>
+ </div>
+</div>
+<h3 class="section">📜 Trade History</h3>
+<div class="card">
+ <div class="tablewrap">
+  <table>
+   <thead><tr><th>Time</th><th>Entry</th><th>Exit</th><th>Net P/L</th><th>Reason</th></tr></thead>
+   <tbody id="history"><tr><td colspan="5" class="empty">No closed trades yet</td></tr></tbody>
+  </table>
+ </div>
+ <div class="actions">
+  <button class="secondary" onclick="exportTrades()">EXPORT CSV</button>
+  <button class="secondary" onclick="resetAccount()">RESET PAPER ACCOUNT</button>
+ </div>
+</div>
+<div class="footer">SLAP V8.1 FINAL WEALTH · PAPER SIMULATION · State saved locally in this browser · 7-DAY TEST</div>
+</div>
 <script>
-let bal=parseFloat(localStorage.getItem('slap_wealth_bal')||'10');
-let posList=[];let closedList=JSON.parse(localStorage.getItem('slap_wealth_closed')||'[]');
-let loopCount=parseInt(localStorage.getItem('slap_wealth_loops')||'0');
-let totalLoopProfit=parseFloat(localStorage.getItem('slap_wealth_profit')||'0');
-let todayCount=parseInt(localStorage.getItem('slap_wealth_today')||'0');
-let todayDate=localStorage.getItem('slap_wealth_date')||new Date().toDateString();
-if(todayDate!==new Date().toDateString()){todayCount=0;todayDate=new Date().toDateString();}
-function save(){localStorage.setItem('slap_wealth_bal',bal);localStorage.setItem('slap_wealth_closed',JSON.stringify(closedList));localStorage.setItem('slap_wealth_loops',loopCount);localStorage.setItem('slap_wealth_profit',totalLoopProfit);localStorage.setItem('slap_wealth_today',todayCount);localStorage.setItem('slap_wealth_date',todayDate);}
-save();
-let price=74700,totalPl=0,isRunning=true,sec=0,cooldown=0;
-function vibrate(){if(navigator.vibrate)navigator.vibrate(20)}
-function showToast(m){let t=document.getElementById('toast');t.innerText=m;t.style.display='block';setTimeout(()=>t.style.display='none',3000);}
-function closeModals(){document.querySelectorAll('.modal').forEach(m=>m.classList.remove('on'))}
-function openDeposit(){document.getElementById('mDeposit').classList.add('on')}
-function openWithdraw(){document.getElementById('withAmt').value=Math.max(0,Math.floor(bal));document.getElementById('mWithdraw').classList.add('on')}
-function doDeposit(){let a=parseFloat(document.getElementById('depAmt').value);if(a>0){bal+=a;save();renderPos();closeModals();showToast('💰 +$'+a+' Deposited');}}
-function doWithdraw(){let a=parseFloat(document.getElementById('withAmt').value);if(a>0&&a<=bal){bal-=a;save();renderPos();closeModals();}else alert('Not enough');}
-function saveKeys(){document.getElementById('keyStatus').innerText='⚠️ Saved locally - Still TEST mode. No real money until 50 trades pass!';showToast('Still TEST mode - Safe');}
-function wipeAll(){if(confirm('RESET WEALTH BOT to $10?')){localStorage.removeItem('slap_wealth_bal');localStorage.removeItem('slap_wealth_closed');localStorage.removeItem('slap_wealth_loops');localStorage.removeItem('slap_wealth_profit');localStorage.removeItem('slap_wealth_today');location.reload();}}
-function switchTab(t){document.getElementById('tOpen').classList.remove('on');document.getElementById('tClose').classList.remove('on');document.getElementById('positions').style.display='none';document.getElementById('closedBox').style.display='none';if(t=='open'){document.getElementById('tOpen').classList.add('on');document.getElementById('positions').style.display='block'}else{document.getElementById('tClose').classList.add('on');document.getElementById('closedBox').style.display='block';renderClosed();}}
-function switchPage(p){document.querySelectorAll('.page').forEach(e=>e.classList.remove('on'));document.querySelectorAll('.navI').forEach(e=>e.classList.remove('on'));document.getElementById('p'+p).classList.add('on');if(p=='Accounts')document.getElementById('nAcc').classList.add('on');if(p=='Trade')document.getElementById('nTrade').classList.add('on');if(p=='Tools')document.getElementById('nTools').classList.add('on');}
-function toggleSystem(){isRunning=!isRunning;let b=document.getElementById('stopBtn'),s=document.getElementById('sysStatus'),d=document.getElementById('statusDot'),l=document.getElementById('loopBtn'),pill=document.getElementById('autoPill');if(isRunning){b.innerText='⏸ PAUSE BOT';b.className='stop';s.innerText='🤖 WEALTH BOT TRADING';d.style.background='#00ff88';l.innerText='🤖 WEALTH BOT: ON - Tap to PAUSE';l.style.background='#f7931a';pill.innerText='● WEALTH BOT RUNNING';pill.style.background='#00ff88';startInterval();}else{b.innerText='▶ START BOT';b.className='start';s.innerText='⏸ WEALTH BOT PAUSED';d.style.background='#ff5566';l.innerText='⏸ PAUSED - Tap to START';l.style.background='#ff1a4a';pill.innerText='⏸ PAUSED';pill.style.background='#ff1a4a';clearInterval(interval);}}
-function renderPos(){let html='';totalPl=0;posList.forEach(p=>{let pnl=(price-p.entry)*p.qty;totalPl+=pnl;let prog=Math.min(100,Math.max(0,(price-p.entry)/(p.tp-p.entry)*100));html+=`<div class="pos"><div class="posL"><div class="coinI">₿</div><div style="display:flex;flex-direction:column"><b style="font-size:13px">BTCUSD • WEALTH LOOP #${loopCount+1}</b><span style="font-size:11px;color:#8b8bb5">Bought 0.0004 at ${p.entry.toFixed(2)} → Sell at ${p.tp.toFixed(2)} (+$0.15)</span><span style="font-size:11px;color:#00ff88">Progress: ${prog.toFixed(0)}% - Wealth is patience</span></div></div><div style="text-align:right"><div style="color:${pnl>=0?'#00ff88':'#ff5566'};font-weight:700">${pnl>=0?'+':''}${pnl.toFixed(2)} USD</div><div style="font-size:11px;color:#8b8bb5">${price.toFixed(2)}</div></div></div>`});document.getElementById('positions').innerHTML=html||'<div style="padding:20px;text-align:center;color:#5a5a7a">🤖 Wealth Bot waiting for next auto-buy in '+cooldown+'s... Patience = Wealth</div>';document.getElementById('openCnt').innerText=posList.length;document.getElementById('closedCnt').innerText=closedList.length;let eq=bal+totalPl;document.getElementById('totalPl').innerText=(totalPl>=0?'+':'')+totalPl.toFixed(2)+' USD';document.getElementById('bal').innerText=eq.toFixed(2)+' USD';document.getElementById('loopCount').innerText=loopCount;document.getElementById('loopProfit').innerText=(totalLoopProfit>=0?'+$':'-$')+Math.abs(totalLoopProfit).toFixed(2);document.getElementById('todayCount').innerText=todayCount;document.getElementById('priceShow').innerText=price.toFixed(2);if(posList.length>0){let prog=Math.min(100,Math.max(0,(price-posList[0].entry)/(posList[0].tp-posList[0].entry)*100));document.getElementById('prog').style.width=prog+'%';}else document.getElementById('prog').style.width='0%';}
-function renderClosed(){let html='';closedList.slice(-15).reverse().forEach(c=>{html+=`<div class="pos"><div class="posL"><div class="coinI" style="background:#1a1a2e;color:#5a5a7a">₿</div><div style="display:flex;flex-direction:column"><b style="font-size:13px">BTCUSD • WEALTH AUTO</b><span style="font-size:11px;color:#5a5a7a">Sold at ${c.exit.toFixed(2)}</span></div></div><div style="text-align:right"><div style="color:${c.pnl>=0?'#00ff88':'#ff5566'};font-weight:700">${c.pnl>=0?'+$':'-$'}${Math.abs(c.pnl).toFixed(2)}</div></div></div>`});document.getElementById('closedBox').innerHTML=html||'<div style="padding:20px;text-align:center;color:#5a5a7a">No wealth trades yet</div>';}
-async function getPrice(){try{let r=await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');let j=await r.json();if(j.price)price=parseFloat(j.price);document.getElementById('priceSrc').innerText='Live BTC Binance ✓';}catch(e){try{let r2=await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot');let j2=await r2.json();if(j2.data)price=parseFloat(j2.data.amount);}catch(e2){price=price*(1+(Math.random()-0.4)*0.001);document.getElementById('priceSrc').innerText='Simulated';}}
-if(cooldown>0)cooldown--;
-if(bal+totalPl<=9.00 && isRunning){toggleSystem();showToast('🛡️ SAFETY: Balance $9.00 - Bot paused to protect your wealth!');document.getElementById('debug').innerText='🛡️ SAFETY STOP: Balance $'+(bal+totalPl).toFixed(2)+' - Bot paused to protect you.';renderPos();return;}
-if(todayCount>=50 && isRunning){toggleSystem();showToast('✅ Daily 50 trades done - Wealth Bot rests today');renderPos();return;}
-if(isRunning && posList.length===0 && cooldown<=0 && todayCount<50){if(bal+totalPl>2){posList.push({entry:price,qty:0.0004,tp:price*1.005,sl:price*0.985});save();document.getElementById('debug').innerText='🤖 WEALTH AUTO BUY Loop #'+(loopCount+1)+' at $'+price.toFixed(2)+' → AUTO SELL at $'+(price*1.005).toFixed(2)+' (+$0.15) - Patience!';}}
-let newList=[];let didClose=false;posList.forEach(p=>{if(price>=p.tp||price<=p.sl){let pnl=(price-p.entry)*p.qty;bal+=pnl;totalLoopProfit+=pnl;loopCount++;todayCount++;didClose=true;closedList.push({entry:p.entry,exit:price,pnl:pnl});if(pnl>0)showToast('🤖 WEALTH SOLD! +$'+pnl.toFixed(2)+' Bal: $'+bal.toFixed(2)+' - Wealth grows!');else showToast('🤖 WEALTH SOLD -$'+Math.abs(pnl).toFixed(2)+' - Only 3 wins to recover');document.getElementById('debug').innerText='🤖 WEALTH SOLD Loop #'+loopCount+' Profit $'+pnl.toFixed(2)+' → Bal $'+bal.toFixed(2)+' - Wealth is patience';cooldown=1;}else newList.push(p);});posList=newList;if(didClose)save();renderPos();}
-let interval;function startInterval(){clearInterval(interval);interval=setInterval(getPrice,3000)}
-renderPos();getPrice();startInterval();setInterval(()=>{sec++;let m=Math.floor(sec/60).toString().padStart(2,'0');let s=(sec%60).toString().padStart(2,'0');document.getElementById('timer').innerText=m+':'+s},1000);
-</script></body></html>
+"use strict";
+const CONFIG={initialCash:10,maxEquityLoss:9,takeProfit:0.005,stopLoss:0.015,maxQty:0.0004,fee:0.001,maxDailyTrades:50,pollMs:5000};
+const STORAGE_KEY="slap_v81_paper_state";
+function todayKey(){return new Date().toLocaleDateString("en-CA");}
+function freshState(){return{cash:CONFIG.initialCash,realized:0,position:null,history:[],dailyCount:0,day:todayKey(),running:false,lastPrice:null,updated:Date.now()};}
+function loadState(){try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));if(!saved||typeof saved.cash!=="number")return freshState();saved.running=false;saved.history=Array.isArray(saved.history)?saved.history:[];saved.dailyCount=Number(saved.dailyCount)||0;saved.realized=Number(saved.realized)||0;saved.position=saved.position||null;if(saved.day!==todayKey()){saved.day=todayKey();saved.dailyCount=0;}return saved;}catch(e){return freshState();}}
+let state=loadState();let currentPrice=null;let pollTimer=null;let fetching=false;
+function save(){state.updated=Date.now();try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){setStatus("Could not save state in browser storage.");}}
+function money(n){return "$"+Number(n||0).toFixed(2);}
+function priceText(n){return n==null?"—":"$"+Number(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function setStatus(m){document.getElementById("status").textContent=m;}
+function equity(price){let v=state.cash;if(state.position&&price!=null){v+=state.position.qty*price;}return v;}
+function openProfit(price){if(!state.position||price==null)return 0;const p=state.position;const ef=p.qty*price*CONFIG.fee;return(price-p.entry)*p.qty-p.entryFee-ef;}
+function rolloverDay(){const t=todayKey();if(state.day!==t){state.day=t;state.dailyCount=0;save();}}
+function render(){const price=currentPrice??state.lastPrice;const eq=equity(price);const op=openProfit(price);document.getElementById("price").textContent=priceText(price);document.getElementById("equity").textContent=money(eq);document.getElementById("cash").textContent=money(state.cash);document.getElementById("realized").textContent=money(state.realized);document.getElementById("openpl").textContent=money(op);document.get
