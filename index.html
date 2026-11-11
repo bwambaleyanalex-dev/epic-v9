@@ -2,822 +2,181 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SLAP V8.2 FINAL WEALTH</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FINAL BTC BOT - V8 FINAL</title>
 <style>
-*{box-sizing:border-box;font-family:system-ui,sans-serif}
-body{margin:0;background:#080b12;color:#f5f7ff;padding:16px}
-.wrap{max-width:900px;margin:auto}
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-h1{font-size:23px;margin:0}
-.sub{font-size:12px;color:#8792a8;margin-top:4px}
-.pill{padding:7px 10px;border-radius:20px;background:#152b20;color:#69e6a0;border:1px solid #286443;font-size:11px}
-.warning{background:#251c0c;border:1px solid #72551c;color:#ffd77b;padding:12px;border-radius:12px;font-size:12px;margin-bottom:15px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.card{background:#111827;border:1px solid #253147;border-radius:15px;padding:14px}
-.pricecard{grid-column:1/-1;background:linear-gradient(135deg,#14243a,#111827)}
-.label{font-size:11px;color:#8491a8;text-transform:uppercase}
-.value{font-size:23px;font-weight:750;margin-top:6px}
-.price{font-size:31px;font-weight:800;margin-top:6px}
-.small{font-size:12px;color:#8c9ab0;margin-top:5px}
-.green{color:#51e39a}.red{color:#ff6577}.yellow{color:#ffd36d}
-.section{font-size:15px;margin:20px 0 10px}
-.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:13px}
-button{border:0;border-radius:11px;padding:12px 8px;font-size:13px;font-weight:700}
-.start{background:#19bd78;color:#04170e}
-.stop{background:#bd3448;color:white}
-.buy{background:#1d8c61;color:white}
-.sell{background:#a83248;color:white}
-.secondary{background:#25334a;color:#e5edff}
-.status{font-size:12px;color:#aab6ca;margin-top:12px;line-height:1.5}
-.tablewrap{overflow:auto}
-table{width:100%;border-collapse:collapse;font-size:12px;min-width:500px}
-th,td{text-align:left;padding:9px 7px;border-bottom:1px solid #253147}
-th{color:#8491a8}
-.empty{text-align:center;color:#8390a5;padding:20px}
-.footer{text-align:center;color:#68758a;font-size:11px;margin:20px 0}
-
-@media(min-width:650px){
-.grid{grid-template-columns:repeat(4,1fr)}
-.pricecard{grid-column:span 2}
-}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{background:#0a0e1a;color:#fff;padding:12px;padding-bottom:90px}
+.top{background:linear-gradient(135deg,#1a2a4a,#0f1a2e);border:1px solid #2a4a7a;border-radius:16px;padding:14px;text-align:center}
+.top small{color:#8ab4ff;font-size:12px;letter-spacing:.5px}
+.top h2{font-size:13px;margin:6px 0;color:#ffd166}
+.paused{display:inline-block;background:#ff2d55;color:#fff;padding:6px 18px;border-radius:20px;font-weight:800;font-size:13px;margin-top:6px}
+.running{display:inline-block;background:#00d68f;color:#000;padding:6px 18px;border-radius:20px;font-weight:800;font-size:13px;margin-top:6px}
+.card{background:#131a2a;border:1px solid #26314d;border-radius:16px;padding:14px;margin-top:12px}
+.row{display:flex;justify-content:space-between;align-items:center}
+.badge{background:#ff9f0a;color:#000;padding:5px 10px;border-radius:20px;font-weight:800;font-size:12px}
+.badge2{background:#2a3a5a;padding:5px 10px;border-radius:20px;font-size:12px}
+.badge3{background:#00d68f;color:#000;padding:5px 10px;border-radius:20px;font-size:12px;font-weight:800}
+.big{font-size:42px;font-weight:900;margin:10px 0}
+.mut{color:#8a9ab5;font-size:12px;line-height:1.5}
+.icons{display:flex;justify-content:space-around;margin-top:14px;text-align:center;font-size:12px;color:#8a9ab5}
+.circle{width:52px;height:52px;border-radius:50%;background:#ff9f0a;color:#000;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;margin:0 auto 4px}
+.circle2{width:52px;height:52px;border-radius:50%;background:#1e2a44;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 4px}
+.tabs{display:flex;gap:16px;align-items:center;margin-top:14px}
+.tabs b{font-size:15px}
+.start{margin-left:auto;background:#00d68f;color:#000;border:0;padding:10px 16px;border-radius:20px;font-weight:900}
+.open{margin-top:12px;background:#1a0f1f;border:1px solid #3a1a2a;border-radius:14px;padding:12px}
+.open b{color:#ff9f0a}
+.status{margin-top:12px;background:#131a2a;border-radius:14px;padding:12px}
+.status b{color:#ffd166}
+.btn{width:100%;background:#ff2d55;color:#fff;border:0;padding:14px;border-radius:12px;font-weight:900;font-size:15px;margin-top:12px}
+.btn.green{background:#00d68f;color:#000}
+.price{font-size:20px;font-weight:900;color:#00d68f}
+.small{font-size:12px;color:#8a9ab5}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px}
+th{color:#8a9ab5;text-align:left;padding:6px 0}
+td{padding:6px 0;border-top:1px solid #26314d}
+.win{color:#00d68f}.loss{color:#ff2d55}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#0f1626;border-top:1px solid #26314d;display:flex;justify-content:space-around;padding:10px 0;font-size:11px;color:#8a9ab5}
+.nav b{color:#ffd166}
 </style>
 </head>
-
 <body>
 
-<div class="wrap">
-
-<header>
-<div>
-<h1>⚡ SLAP V8.2</h1>
-<div class="sub">FINAL WEALTH · BTC AUTO PAPER TRADING</div>
-</div>
-<div class="pill">PAPER TEST</div>
-</header>
-
-<div class="warning">
-⚠️ SIMULATION ONLY — AUTO BUY/SELL IS PAPER ONLY. NO REAL BINANCE ORDERS.
-</div>
-
-<div class="grid">
-
-<div class="card pricecard">
-<div class="label">BTC / USDT MARKET PRICE</div>
-<div class="price" id="price">Loading...</div>
-<div class="small" id="feed">Connecting...</div>
+<div class="top">
+<small>Locked Strategy - Safety ON - Binance Ready</small>
+<h2 id="topStats">Trades: 0 | Profit: +$0.00 | Today: 0/50 | Safety: ON</h2>
+<span id="topBadge" class="paused">⏸ PAUSED</span><br>
+<small id="priceLine" style="color:#8ab4ff">Price: -- • Live</small>
 </div>
 
 <div class="card">
-<div class="label">Account Equity</div>
-<div class="value" id="equity">$10.00</div>
+<div class="row"><span class="badge">🔒 FINAL BTC</span><span class="badge2">V8 COMPLETE</span><span class="badge3">SAFETY ON</span></div>
+<div class="big" id="balance">$10.00 USD</div>
+<div class="mut">FINAL: BUY 0.0004 BTC → TP 0.1% → SELL → Repeat. Auto-pause if balance hits $9.00. Max 50 trades/day.</div>
+<div class="icons">
+<div><div class="circle">₿</div>Chart</div>
+<div><div class="circle2">↓</div>Deposit</div>
+<div><div class="circle2">↑</div>Withdraw</div>
+<div><div class="circle2">⚙️</div>Settings</div>
 </div>
+</div>
+
+<div class="tabs"><b>Open <span id="openCount">0</span></b><b>Closed <span id="closedCount">0</span></b><button class="start" onclick="toggleBot()" id="startBtn">▶ START BOT</button></div>
+
+<div class="open">
+<div class="row"><b>🔴 🧾 FINAL BOT <span id="botState">PAUSED</span></b><span id="openPL" style="font-weight:900">0.00 USD</span></div>
+<div id="openTrade" style="margin-top:8px;font-size:13px;line-height:1.6">No open position - Press START BOT</div>
+</div>
+
+<div class="status">
+<b>🧾 FINAL BOT STATUS</b>
+<div id="botStatus" style="font-size:13px;margin-top:6px;line-height:1.6">Bot paused. Tap START BOT to start Auto Loop.</div>
+<div class="small" style="margin-top:8px">TP 0.1% | SL 1.5% | Qty 0.0004 BTC | Safety: Pause at $9.00 | Max 50/day | Binance Price</div>
+</div>
+
+<button class="btn green" id="mainBtn" onclick="toggleBot()">⏸ PAUSED - Tap to START</button>
 
 <div class="card">
-<div class="label">Available Cash</div>
-<div class="value" id="cash">$10.00</div>
+<b>📜 Trade History</b>
+<table><thead><tr><th>#</th><th>Entry → Exit</th><th>Net P/L</th><th>Reason</th></tr></thead><tbody id="history"><tr><td colspan="4" style="text-align:center;color:#8a9ab5">No closed trades yet</td></tr></tbody></table>
 </div>
 
-<div class="card">
-<div class="label">Realized P/L</div>
-<div class="value" id="realized">$0.00</div>
-</div>
-
-<div class="card">
-<div class="label">Open P/L</div>
-<div class="value" id="openpl">$0.00</div>
-</div>
-
-<div class="card">
-<div class="label">Today's Trades</div>
-<div class="value" id="trades">0 / 50</div>
-</div>
-
-<div class="card">
-<div class="label">Win Rate</div>
-<div class="value" id="winrate">0%</div>
-</div>
-
-<div class="card">
-<div class="label">Bot Status</div>
-<div class="value yellow" id="botstatus">PAUSED</div>
-<div class="small" id="botdetail">Start when ready</div>
-</div>
-
-</div>
-
-<h3 class="section">⚙️ Trading Controls</h3>
-
-<div class="card">
-
-<div class="grid">
-
-<div>
-<div class="label">Take Profit</div>
-<div class="value green">+0.50%</div>
-</div>
-
-<div>
-<div class="label">Stop Loss</div>
-<div class="value red">−1.50%</div>
-</div>
-
-<div>
-<div class="label">Position Size</div>
-<div class="value">80% Cash</div>
-</div>
-
-<div>
-<div class="label">Estimated Fee</div>
-<div class="value">0.10%</div>
-</div>
-
-</div>
-
-<div class="actions">
-
-<button class="start" onclick="startBot()">
-▶ START AUTO BOT
-</button>
-
-<button class="stop" onclick="stopBot()">
-■ PAUSE BOT
-</button>
-
-<button class="buy" onclick="buy()">
-SIMULATE BUY
-</button>
-
-<button class="sell" onclick="sell('MANUAL')">
-SIMULATE SELL
-</button>
-
-</div>
-
-<div class="status" id="status">
-Bot is paused.
-</div>
-
-<div class="actions">
-<button class="secondary" onclick="getPrice()">
-↻ REFRESH PRICE
-</button>
-</div>
-
-</div>
-
-<h3 class="section">📊 Current Position</h3>
-
-<div class="card">
-
-<div class="grid">
-
-<div>
-<div class="label">Position</div>
-<div class="value" id="position">NONE</div>
-</div>
-
-<div>
-<div class="label">Entry Price</div>
-<div class="value" id="entry">—</div>
-</div>
-
-<div>
-<div class="label">Quantity</div>
-<div class="value" id="quantity">0 BTC</div>
-</div>
-
-<div>
-<div class="label">Target / Stop</div>
-<div class="value" id="levels" style="font-size:14px">—</div>
-</div>
-
-</div>
-
-</div>
-
-<h3 class="section">📜 Trade History</h3>
-
-<div class="card">
-
-<div class="tablewrap">
-
-<table>
-
-<thead>
-<tr>
-<th>Time</th>
-<th>Entry</th>
-<th>Exit</th>
-<th>Net P/L</th>
-<th>Reason</th>
-</tr>
-</thead>
-
-<tbody id="history">
-
-<tr>
-<td colspan="5" class="empty">
-No closed trades yet
-</td>
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-
-<div class="actions">
-
-<button class="secondary" onclick="exportCSV()">
-EXPORT CSV
-</button>
-
-<button class="secondary" onclick="resetAccount()">
-RESET ACCOUNT
-</button>
-
-</div>
-
-</div>
-
-<div class="footer">
-SLAP V8.2 · PAPER SIMULATION · AUTO BUY / AUTO SELL
-</div>
-
-</div>
+<div class="nav"><div><b>🏠<br>Accounts</b></div><div>₿<br>Trade</div><div>🧰<br>Tools</div></div>
 
 <script>
+let balance=10.00, price=0, running=false, open=null, trades=0, todayTrades=0, profit=0, loop=0;
+const QTY=0.0004, TP=0.001, SL=0.015, FEE=0.001, MAX=50, SAFETY=9.00;
 
-const CFG={
-startCash:10,
-allocation:0.80,
-tp:0.005,
-sl:0.015,
-fee:0.001,
-maxTrades:50
-};
-
-const KEY="slap_v82";
-
-let state=JSON.parse(localStorage.getItem(KEY)||"null")||{
-cash:10,
-realized:0,
-position:null,
-history:[],
-trades:0,
-running:false
-};
-
-let price=0;
-let busy=false;
-let cooldown=false;
-
-const $=id=>document.getElementById(id);
-
-function save(){
-localStorage.setItem(KEY,JSON.stringify(state));
+async function fetchPrice(){
+  const urls=[
+    'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT',
+    'https://api.coinbase.com/v2/prices/BTC-USD/spot',
+    'https://api.kraken.com/0/public/Ticker?pair=XBTUSD',
+    'https://www.bitstamp.net/api/v2/ticker/btcusd/'
+  ];
+  for(let u of urls){
+    try{
+      let r=await fetch(u); let j=await r.json();
+      let p=0;
+      if(u.includes('binance')) p=parseFloat(j.price);
+      if(u.includes('coinbase')) p=parseFloat(j.data.amount);
+      if(u.includes('kraken')) p=parseFloat(j.result.XXBTZUSD.c[0]);
+      if(u.includes('bitstamp')) p=parseFloat(j.last);
+      if(p>1000){ price=p; return; }
+    }catch(e){}
+  }
 }
-
-function money(n){
-return "$"+Number(n).toFixed(2);
-}
-
+function fmt(n){ return '$'+n.toFixed(2); }
 function render(){
-
-$("cash").textContent=money(state.cash);
-$("realized").textContent=money(state.realized);
-
-let open=0;
-let equity=state.cash;
-
-if(state.position && price){
-
-const marketValue=
-price*state.position.qty;
-
-const entryValue=
-state.position.entry*state.position.qty;
-
-const entryFee=
-state.position.entry*
-state.position.qty*
-CFG.fee;
-
-const exitFee=
-marketValue*CFG.fee;
-
-open=
-marketValue-
-entryValue-
-entryFee-
-exitFee;
-
-equity+=marketValue;
+  document.getElementById('balance').textContent=fmt(balance)+' USD';
+  document.getElementById('topStats').textContent=`Trades: ${trades} | Profit: ${profit>=0?'+':''}${fmt(profit)} | Today: ${todayTrades}/50 | Safety: ON`;
+  document.getElementById('priceLine').textContent=`Price: ${price?fmt(price):'--'} • Live • ${new Date().toLocaleTimeString()}`;
+  document.getElementById('openCount').textContent=open?1:0;
+  document.getElementById('closedCount').textContent=trades;
+  document.getElementById('topBadge').textContent=running?'● RUNNING':'⏸ PAUSED';
+  document.getElementById('topBadge').className=running?'running':'paused';
+  document.getElementById('botState').textContent=running?'RUNNING':'PAUSED';
+  document.getElementById('startBtn').textContent=running?'⏸ PAUSE':'▶ START BOT';
+  document.getElementById('mainBtn').textContent=running?'⏸ PAUSED - Tap to STOP':'⏸ PAUSED - Tap to START';
+  document.getElementById('mainBtn').className='btn '+(running?'':'green');
+  if(open){
+    let cur=open.qty*price;
+    let pl=cur-open.cost;
+    let prog=((price-open.entry)/open.entry*100).toFixed(3);
+    document.getElementById('openPL').textContent=(pl>=0?'+':'')+fmt(pl)+' USD';
+    document.getElementById('openPL').style.color=pl>=0?'#00d68f':'#ff2d55';
+    document.getElementById('openTrade').innerHTML=`BTCUSD • FINAL LOOP #${open.id}<br>Bought ${QTY} at ${fmt(open.entry)} → Sell at ${fmt(open.tp)}<br>Progress: ${prog}% • Current: ${fmt(price)}`;
+    document.getElementById('botStatus').innerHTML=`FINAL AUTO BUY Loop #${open.id} at ${fmt(open.entry)} → AUTO SELL at ${fmt(open.tp)}<br>TP 0.1% | SL 1.5% | Qty 0.0004 BTC | Safety: Pause at $9.00 | Max 50/day`;
+  } else {
+    document.getElementById('openPL').textContent='0.00 USD';
+    document.getElementById('openPL').style.color='#fff';
+    document.getElementById('openTrade').innerHTML=running?'Waiting for next AUTO BUY...':'No open position - Press START BOT';
+    document.getElementById('botStatus').innerHTML=running?`Bot RUNNING - Auto Loop Active. Waiting to BUY 0.0004 BTC...`:`Bot paused. Tap START BOT to start Auto Loop.`;
+  }
 }
-
-$("openpl").textContent=money(open);
-$("equity").textContent=money(equity);
-
-$("trades").textContent=
-state.trades+" / "+CFG.maxTrades;
-
-let wins=
-state.history.filter(x=>x.pnl>0).length;
-
-$("winrate").textContent=
-state.history.length
-?Math.round(
-wins/state.history.length*100
-)+"%"
-:"0%";
-
-$("botstatus").textContent=
-state.running?"RUNNING":"PAUSED";
-
-$("botstatus").className=
-"value "+(state.running?"green":"yellow");
-
-$("botdetail").textContent=
-state.running
-?"AUTO BUY / TP / SL ACTIVE"
-:"Start when ready";
-
-if(state.position){
-
-$("position").textContent="LONG";
-
-$("entry").textContent=
-money(state.position.entry);
-
-$("quantity").textContent=
-state.position.qty.toFixed(8)+" BTC";
-
-$("levels").textContent=
-"TP "+money(
-state.position.entry*(1+CFG.tp)
-)+
-" / SL "+
-money(
-state.position.entry*(1-CFG.sl)
-);
-
-}else{
-
-$("position").textContent="NONE";
-$("entry").textContent="—";
-$("quantity").textContent="0 BTC";
-$("levels").textContent="—";
-
+function toggleBot(){
+  if(running){ running=false; render(); return; }
+  if(balance<=SAFETY){ alert('Safety: Balance at $9.00 - Bot paused for protection'); return; }
+  if(todayTrades>=MAX){ alert('Max 50 trades/day reached'); return; }
+  running=true; render();
 }
-
-if(!state.history.length){
-
-$("history").innerHTML=
-'<tr><td colspan="5" class="empty">'+
-'No closed trades yet'+
-'</td></tr>';
-
-}else{
-
-$("history").innerHTML=
-state.history
-.slice(-20)
-.reverse()
-.map(x=>
-"<tr>"+
-"<td>"+x.time+"</td>"+
-"<td>"+money(x.entry)+"</td>"+
-"<td>"+money(x.exit)+"</td>"+
-"<td class='"+(x.pnl>=0?"green":"red")+"'>"+
-money(x.pnl)+
-"</td>"+
-"<td>"+x.reason+"</td>"+
-"</tr>"
-)
-.join("");
-
+function checkTrade(){
+  if(!running) return;
+  if(balance<=SAFETY){ running=false; document.getElementById('botStatus').innerHTML='🛡️ SAFETY TRIGGERED - Balance hit $9.00 - Bot auto-paused'; render(); return; }
+  if(!open){
+    if(todayTrades>=MAX){ running=false; render(); return; }
+    let cost=QTY*price; let fee=cost*FEE;
+    if(balance < cost+fee) { running=false; return; }
+    balance-= (cost+fee);
+    loop++;
+    open={id:loop, entry:price, qty:QTY, cost:cost, tp:price*(1+TP), sl:price*(1-SL)};
+    render();
+  } else {
+    if(price>=open.tp || price<=open.sl){
+      let exit=price; let gross=open.qty*exit; let fee=gross*FEE;
+      let net=(gross-open.cost)-fee - (open.cost*FEE);
+      // net = sell - buy - both fees, buy fee already deducted, so adjust:
+      net = (gross - fee) - open.cost;
+      balance+= (gross-fee);
+      profit+=net; trades++; todayTrades++;
+      let reason=price>=open.tp?'TP 0.1%':'SL 1.5%';
+      let row=document.createElement('tr');
+      row.innerHTML=`<td>#${trades}</td><td>${fmt(open.entry)} → ${fmt(exit)}</td><td class="${net>=0?'win':'loss'}">${net>=0?'+':''}${fmt(net)}</td><td>${reason}</td>`;
+      let hb=document.getElementById('history');
+      if(trades===1) hb.innerHTML='';
+      hb.prepend(row);
+      open=null; render();
+    }
+  }
 }
-
+async function tick(){
+  await fetchPrice();
+  if(price>0) checkTrade();
+  render();
 }
-
-async function source(url,reader){
-
-try{
-
-let r=await fetch(
-url,
-{cache:"no-store"}
-);
-
-let j=await r.json();
-
-let p=reader(j);
-
-if(p>1000)return p;
-
-}catch(e){}
-
-return 0;
-
-}
-
-async function getPrice(){
-
-if(busy)return;
-
-busy=true;
-
-$("feed").textContent=
-"Updating...";
-
-let p=0;
-
-p=await source(
-"https://api.coinbase.com/v2/prices/BTC-USD/spot",
-j=>Number(j.data.amount)
-);
-
-if(!p){
-
-p=await source(
-"https://api.kraken.com/0/public/Ticker?pair=XBTUSD",
-j=>Number(j.result.XXBTZUSD.c[0])
-);
-
-}
-
-if(!p){
-
-p=await source(
-"https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
-j=>Number(j.price)
-);
-
-}
-
-if(!p){
-
-p=await source(
-"https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
-j=>Number(j.bitcoin.usd)
-);
-
-}
-
-busy=false;
-
-if(p){
-
-price=p;
-
-$("price").textContent=
-money(price);
-
-$("feed").textContent=
-"Live · "+
-new Date().toLocaleTimeString();
-
-if(state.running){
-
-if(state.position){
-
-checkExit();
-
-}else{
-
-autoBuy();
-
-}
-
-}
-
-render();
-
-}else{
-
-$("feed").textContent=
-"Price unavailable — retrying...";
-
-}
-
-}
-
-function buy(){
-
-if(!price){
-
-$("status").textContent=
-"Wait for live BTC price.";
-
-return;
-
-}
-
-if(state.position){
-
-$("status").textContent=
-"Position already open.";
-
-return;
-
-}
-
-if(state.trades>=CFG.maxTrades){
-
-$("status").textContent=
-"Daily paper trade limit reached.";
-
-return;
-
-}
-
-let usableCash=
-state.cash*CFG.allocation;
-
-let feeRate=
-CFG.fee;
-
-let qty=
-usableCash/
-(price*(1+feeRate));
-
-let cost=
-price*qty;
-
-let fee=
-cost*feeRate;
-
-if(cost+fee>state.cash){
-
-$("status").textContent=
-"Not enough paper cash.";
-
-return;
-
-}
-
-state.cash-=
-cost+fee;
-
-state.position={
-entry:price,
-qty:qty,
-entryFee:fee
-};
-
-$("status").textContent=
-"AUTO BUY · "+
-qty.toFixed(8)+
-" BTC @ "+
-money(price);
-
-save();
-render();
-
-}
-
-function autoBuy(){
-
-if(!state.running)return;
-
-if(state.position)return;
-
-if(cooldown)return;
-
-if(state.trades>=CFG.maxTrades){
-
-state.running=false;
-
-$("status").textContent=
-"50-trade paper limit reached.";
-
-save();
-render();
-
-return;
-
-}
-
-buy();
-
-}
-
-function sell(reason="MANUAL"){
-
-if(!state.position||!price)return;
-
-let entry=
-state.position.entry;
-
-let qty=
-state.position.qty;
-
-let gross=
-(price-entry)*qty;
-
-let exitFee=
-price*qty*CFG.fee;
-
-let entryFee=
-state.position.entryFee||(
-entry*qty*CFG.fee
-);
-
-let pnl=
-gross-entryFee-exitFee;
-
-state.cash+=
-price*qty-exitFee;
-
-state.realized+=pnl;
-
-state.history.push({
-
-time:new Date().toLocaleTimeString(),
-
-entry:entry,
-
-exit:price,
-
-pnl:pnl,
-
-reason:reason
-
-});
-
-state.trades++;
-
-state.position=null;
-
-cooldown=true;
-
-setTimeout(()=>{
-cooldown=false;
-},5000);
-
-$("status").textContent=
-"SELL · "+
-reason+
-" · "+
-money(pnl);
-
-save();
-render();
-
-}
-
-function checkExit(){
-
-if(
-!state.running||
-!state.position||
-!price
-)return;
-
-let entry=
-state.position.entry;
-
-let target=
-entry*(1+CFG.tp);
-
-let stop=
-entry*(1-CFG.sl);
-
-if(price>=target){
-
-sell("TAKE PROFIT");
-
-}
-
-else if(price<=stop){
-
-sell("STOP LOSS");
-
-}
-
-}
-
-function startBot(){
-
-if(state.trades>=CFG.maxTrades){
-
-$("status").textContent=
-"Trade limit reached. Reset account to test again.";
-
-return;
-
-}
-
-state.running=true;
-
-$("status").textContent=
-"AUTO BOT STARTED · looking for paper BUY";
-
-save();
-render();
-
-getPrice();
-
-}
-
-function stopBot(){
-
-state.running=false;
-
-$("status").textContent=
-"Bot paused.";
-
-save();
-render();
-
-}
-
-function exportCSV(){
-
-let rows=[
-["Time","Entry","Exit","Net P/L","Reason"]
-];
-
-state.history.forEach(x=>{
-
-rows.push([
-x.time,
-x.entry,
-x.exit,
-x.pnl,
-x.reason
-]);
-
-});
-
-let csv=
-rows
-.map(r=>r.join(","))
-.join("\n");
-
-let a=
-document.createElement("a");
-
-a.href=
-URL.createObjectURL(
-new Blob(
-[csv],
-{type:"text/csv"}
-)
-);
-
-a.download=
-"slap_v82_trades.csv";
-
-a.click();
-
-}
-
-function resetAccount(){
-
-if(!confirm(
-"Reset paper account to $10?"
-))return;
-
-state={
-cash:10,
-realized:0,
-position:null,
-history:[],
-trades:0,
-running:false
-};
-
-price=0;
-cooldown=false;
-
-save();
-render();
-
-$("status").textContent=
-"Paper account reset.";
-
-}
-
-render();
-
-getPrice();
-
-setInterval(
-getPrice,
-5000
-);
-
+tick();
+setInterval(tick, 3000);
 </script>
-
 </body>
 </html>
-
-Now the test behavior is:
-
-"START AUTO BOT" → automatic paper BUY → monitor BTC → +0.50% = automatic SELL → −1.50% = automatic STOP SELL → wait 5 seconds → automatic BUY again.
-
-Still zero real-money orders.
