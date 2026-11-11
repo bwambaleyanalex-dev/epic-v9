@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FINAL BTC BOT - V8 FINAL</title>
+<title>FINAL BTC BOT - V8 FINAL CORRECTED</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
 body{background:#0a0e1a;color:#fff;padding:12px;padding-bottom:90px}
@@ -72,7 +72,7 @@ td{padding:6px 0;border-top:1px solid #26314d}
 <div class="status">
 <b>🧾 FINAL BOT STATUS</b>
 <div id="botStatus" style="font-size:13px;margin-top:6px;line-height:1.6">Bot paused. Tap START BOT to start Auto Loop.</div>
-<div class="small" style="margin-top:8px">TP 0.1% | SL 1.5% | Qty 0.0004 BTC | Safety: Pause at $9.00 | Max 50/day | Binance Price</div>
+<div class="small" style="margin-top:8px">TP 0.1% | SL 1.5% | Qty 0.0004 BTC | Safety: Pause at $9.00 | Max 50/day | Multi Price Feed</div>
 </div>
 
 <button class="btn green" id="mainBtn" onclick="toggleBot()">⏸ PAUSED - Tap to START</button>
@@ -86,7 +86,7 @@ td{padding:6px 0;border-top:1px solid #26314d}
 
 <script>
 let balance=10.00, price=0, running=false, open=null, trades=0, todayTrades=0, profit=0, loop=0;
-const QTY=0.0004, TP=0.001, SL=0.015, FEE=0.001, MAX=50, SAFETY=9.00;
+const QTY=0.0004, TP=0.001, SL=0.015, MAX=50, SAFETY=9.00;
 
 async function fetchPrice(){
   const urls=[
@@ -118,11 +118,10 @@ function render(){
   document.getElementById('topBadge').className=running?'running':'paused';
   document.getElementById('botState').textContent=running?'RUNNING':'PAUSED';
   document.getElementById('startBtn').textContent=running?'⏸ PAUSE':'▶ START BOT';
-  document.getElementById('mainBtn').textContent=running?'⏸ PAUSED - Tap to STOP':'⏸ PAUSED - Tap to START';
+  document.getElementById('mainBtn').textContent=running?'● RUNNING - Tap to STOP':'⏸ PAUSED - Tap to START';
   document.getElementById('mainBtn').className='btn '+(running?'':'green');
   if(open){
-    let cur=open.qty*price;
-    let pl=cur-open.cost;
+    let pl=(price-open.entry)*QTY;
     let prog=((price-open.entry)/open.entry*100).toFixed(3);
     document.getElementById('openPL').textContent=(pl>=0?'+':'')+fmt(pl)+' USD';
     document.getElementById('openPL').style.color=pl>=0?'#00d68f':'#ff2d55';
@@ -146,19 +145,16 @@ function checkTrade(){
   if(balance<=SAFETY){ running=false; document.getElementById('botStatus').innerHTML='🛡️ SAFETY TRIGGERED - Balance hit $9.00 - Bot auto-paused'; render(); return; }
   if(!open){
     if(todayTrades>=MAX){ running=false; render(); return; }
-    let cost=QTY*price; let fee=cost*FEE;
-    if(balance < cost+fee) { running=false; return; }
-    balance-= (cost+fee);
+    // CORRECTED: No balance check here. Old bot traded 0.0004 BTC on paper regardless of $10 balance.
+    // Balance is only used for P/L tracking and $9 safety.
     loop++;
-    open={id:loop, entry:price, qty:QTY, cost:cost, tp:price*(1+TP), sl:price*(1-SL)};
+    open={id:loop, entry:price, qty:QTY, tp:price*(1+TP), sl:price*(1-SL)};
     render();
   } else {
     if(price>=open.tp || price<=open.sl){
-      let exit=price; let gross=open.qty*exit; let fee=gross*FEE;
-      let net=(gross-open.cost)-fee - (open.cost*FEE);
-      // net = sell - buy - both fees, buy fee already deducted, so adjust:
-      net = (gross - fee) - open.cost;
-      balance+= (gross-fee);
+      let exit=price;
+      let net=(exit-open.entry)*QTY;
+      balance+=net;
       profit+=net; trades++; todayTrades++;
       let reason=price>=open.tp?'TP 0.1%':'SL 1.5%';
       let row=document.createElement('tr');
