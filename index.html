@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>V9 SMART - $3 DAY TARGET</title>
+<title>V10 AUTO-RESUME - $3 DAY TARGET</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
 body{background:#0a0e1a;color:#fff;padding:12px;padding-bottom:90px}
@@ -40,16 +40,16 @@ td{padding:6px 0;border-top:1px solid #26314d}
 <body>
 
 <div class="top">
-<small>V9 SMART - Daily Target $3.00 - Long + Short</small>
+<small>V10 AUTO-RESUME - Daily Target $3.00 - Long + Short</small>
 <h2 id="topStats">Trades: 0 | Profit: +$0.00 | Today: 0/50 | Target: $0.00 / $3.00</h2>
 <span id="topBadge" class="paused">⏸ PAUSED</span><br>
 <small id="priceLine" style="color:#8ab4ff">Price: Loading...</small>
 </div>
 
 <div class="card">
-<div class="row"><span class="badge">🧠 V9 SMART</span><span class="badge2">TARGET $3/DAY</span><span class="badge3">SAFETY ON</span></div>
+<div class="row"><span class="badge">🧠 V10 SMART</span><span class="badge2">TARGET $3/DAY</span><span class="badge3">AUTO-SAVE ON</span></div>
 <div class="big" id="balance">$10.00 USD</div>
-<div class="mut">SMART: Price UP = LONG only. Price DOWN = SHORT only. Sideways = WAIT. Stops at +$3.00 target or -$2.00 daily stop.</div>
+<div class="mut">SMART: Price UP = LONG only. Price DOWN = SHORT only. Sideways = WAIT. Auto-saves balance. Auto-resumes after call / network loss.</div>
 <div class="progress"><div id="targetBar"></div></div>
 <div class="small" style="margin-top:6px" id="targetText">Target Progress: 0% - $0.00 / $3.00</div>
 </div>
@@ -57,18 +57,19 @@ td{padding:6px 0;border-top:1px solid #26314d}
 <div class="tabs"><b>Open <span id="openCount">0</span></b><b>Closed <span id="closedCount">0</span></b><button class="start" onclick="toggleBot()" id="startBtn">▶ START BOT</button></div>
 
 <div class="open">
-<div class="row"><b>V9 SMART <span id="botState">PAUSED</span></b><span id="openPL" style="font-weight:900">0.00 USD</span></div>
+<div class="row"><b>V10 SMART <span id="botState">PAUSED</span></b><span id="openPL" style="font-weight:900">0.00 USD</span></div>
 <div id="openTrade" style="margin-top:8px;font-size:13px;line-height:1.6">No open position - Press START BOT</div>
 <div id="signalLine" style="margin-top:6px;font-size:12px;color:#8a9ab5">Signal: -- Waiting for price...</div>
 </div>
 
 <div class="status">
-<b>V9 SMART STATUS</b>
+<b>V10 SMART STATUS</b>
 <div id="botStatus" style="font-size:13px;margin-top:6px;line-height:1.6">Bot paused. Tap START BOT.</div>
 <div class="small" style="margin-top:8px">Qty 0.001 BTC | TP 0.15% | SL 0.45% | Target +$3.00 | Daily Stop -$2.00 | Safety $7.00 | Max 50/day</div>
 </div>
 
 <button class="btn green" id="mainBtn" onclick="toggleBot()">⏸ PAUSED - Tap to START</button>
+<button class="btn" style="background:#26314d" onclick="resetDay()">↺ RESET DAY - Keep Balance, Clear Today's Profit</button>
 
 <div class="card">
 <b>Trade History</b>
@@ -81,24 +82,61 @@ td{padding:6px 0;border-top:1px solid #26314d}
 let balance=10.00, price=73728, running=false, open=null, trades=0, todayTrades=0, profit=0, loop=0;
 let priceHistory=[73728];
 const QTY=0.001, TP=0.0015, SL=0.0045, MAX=50, SAFETY=7.00, DAILY_TARGET=3.00, DAILY_STOP=-2.00;
+const TODAY = new Date().toDateString();
+
+// --- SAVE / LOAD - THIS FIXES THE CALL PROBLEM ---
+function saveState(){
+  try{
+    localStorage.setItem('v10_bot', JSON.stringify({balance, profit, trades, todayTrades, loop, open, running, date: TODAY, savedAt: Date.now()}));
+  }catch(e){}
+}
+function loadState(){
+  try{
+    let s = JSON.parse(localStorage.getItem('v10_bot') || 'null');
+    if(!s) return false;
+    // New day? Keep balance, reset daily profit/trades
+    if(s.date !== TODAY){
+      balance = s.balance;
+      profit = 0; todayTrades = 0; trades = 0; loop = s.loop || 0; open = null;
+      document.getElementById('debug').textContent = 'New day - Balance carried over: $' + balance.toFixed(2) + ' | Daily profit reset';
+      saveState(); return true;
+    }
+    balance = s.balance; profit = s.profit || 0; trades = s.trades || 0; todayTrades = s.todayTrades || 0; loop = s.loop || 0; open = s.open || null;
+    // If it was running before call / refresh, auto-resume it
+    if(s.running && profit < DAILY_TARGET && profit > DAILY_STOP && balance > SAFETY){
+      running = true;
+      document.getElementById('debug').textContent = '✅ AUTO-RESUMED after call / refresh - Balance restored: $' + balance.toFixed(2);
+    } else if(s.running){
+      document.getElementById('debug').textContent = 'Restored balance: $' + balance.toFixed(2) + ' - Bot stayed paused (target/stop hit)';
+    } else {
+      document.getElementById('debug').textContent = 'Restored balance: $' + balance.toFixed(2) + ' - Tap START to continue';
+    }
+    return true;
+  }catch(e){ return false; }
+}
+function resetDay(){
+  if(!confirm('Reset today? Balance $'+balance.toFixed(2)+' will be KEPT. Only today profit/trades cleared.')) return;
+  profit=0; todayTrades=0; trades=0; open=null; running=false;
+  document.getElementById('history').innerHTML='<tr><td colspan="5" style="text-align:center;color:#8a9ab5">No closed trades yet</td></tr>';
+  saveState(); render();
+}
 
 async function fetchPrice(){
   try{
     let r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
     let j = await r.json();
-    if(j.bitcoin && j.bitcoin.usd > 1000){ price = j.bitcoin.usd; document.getElementById('debug').textContent='Price source: CoinGecko OK'; return; }
+    if(j.bitcoin && j.bitcoin.usd > 1000){ price = j.bitcoin.usd; return; }
   }catch(e){}
   try{
     let r = await fetch('https://api.coinpaprika.com/v1/tickers/btc-bitcoin');
     let j = await r.json();
-    if(j.quotes && j.quotes.USD && j.quotes.USD.price > 1000){ price = j.quotes.USD.price; document.getElementById('debug').textContent='Price source: CoinPaprika OK'; return; }
+    if(j.quotes && j.quotes.USD && j.quotes.USD.price > 1000){ price = j.quotes.USD.price; return; }
   }catch(e){}
   try{
     let r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'));
     let j = await r.json();
-    if(j.price > 1000){ price = parseFloat(j.price); document.getElementById('debug').textContent='Price source: Binance OK'; return; }
+    if(j.price > 1000){ price = parseFloat(j.price); return; }
   }catch(e){}
-  document.getElementById('debug').textContent='Price source: Backup - using last price, will retry';
 }
 function fmt(n){ return '$'+n.toFixed(2); }
 function getSignal(){
@@ -131,37 +169,38 @@ function render(){
     let prog = open.dir==='LONG' ? ((price-open.entry)/open.entry*100).toFixed(3) : ((open.entry-price)/open.entry*100).toFixed(3);
     document.getElementById('openPL').textContent=(pl>=0?'+':'')+fmt(pl)+' USD';
     document.getElementById('openPL').style.color=pl>=0?'#00d68f':'#ff2d55';
-    document.getElementById('openTrade').innerHTML=open.dir+' • V9 #'+open.id+'<br>'+(open.dir==='LONG'?'Bought':'Sold')+' '+QTY+' at '+fmt(open.entry)+' → Close at '+fmt(open.tp)+'<br>Progress: '+prog+'% • Current: '+fmt(price);
-    document.getElementById('botStatus').innerHTML='V9 SMART '+open.dir+' #'+open.id+' at '+fmt(open.entry)+' → Target '+fmt(open.tp)+'<br>TP 0.15% | SL 0.45% | Qty 0.001 BTC | Daily: '+fmt(profit)+' / $3.00';
+    document.getElementById('openTrade').innerHTML=open.dir+' • V10 #'+open.id+'<br>'+(open.dir==='LONG'?'Bought':'Sold')+' '+QTY+' at '+fmt(open.entry)+' → Close at '+fmt(open.tp)+'<br>Progress: '+prog+'% • Current: '+fmt(price);
+    document.getElementById('botStatus').innerHTML='V10 SMART '+open.dir+' #'+open.id+' at '+fmt(open.entry)+' → Target '+fmt(open.tp)+'<br>TP 0.15% | SL 0.45% | Qty 0.001 BTC | Daily: '+fmt(profit)+' / $3.00';
   } else {
     document.getElementById('openPL').textContent='0.00 USD';
     document.getElementById('openPL').style.color='#fff';
     document.getElementById('openTrade').innerHTML=running?('Waiting for SMART signal... Current: '+sig):'No open position - Press START BOT';
     document.getElementById('botStatus').innerHTML=running?('Bot RUNNING - Smart Mode. Signal: '+sig+'. Daily Profit: '+fmt(profit)+' / $3.00 Target.'):('Bot paused. Tap START BOT.');
   }
+  saveState();
 }
 function toggleBot(){
-  if(running){ running=false; render(); return; }
+  if(running){ running=false; saveState(); render(); return; }
   if(balance<=SAFETY){ alert('Safety: Balance at $7.00 - Bot paused'); return; }
   if(profit>=DAILY_TARGET){ alert('Daily Target $3.00 already hit!'); return; }
   if(profit<=DAILY_STOP){ alert('Daily Stop -$2.00 hit.'); return; }
   if(todayTrades>=MAX){ alert('Max 50 trades/day reached'); return; }
-  running=true; render();
+  running=true; saveState(); render();
 }
 function checkTrade(){
   if(!running) return;
-  if(profit>=DAILY_TARGET){ running=false; document.getElementById('botStatus').innerHTML='🎉 DAILY TARGET HIT! +$3.00 locked. Bot stopped for today.'; render(); return; }
-  if(profit<=DAILY_STOP){ running=false; document.getElementById('botStatus').innerHTML='🛡️ DAILY STOP HIT -$2.00. Bot stopped to protect you.'; render(); return; }
-  if(balance<=SAFETY){ running=false; document.getElementById('botStatus').innerHTML='🛡️ SAFETY - Balance $7.00 - Bot paused'; render(); return; }
+  if(profit>=DAILY_TARGET){ running=false; saveState(); document.getElementById('botStatus').innerHTML='🎉 DAILY TARGET HIT! +$3.00 locked. Bot stopped for today.'; render(); return; }
+  if(profit<=DAILY_STOP){ running=false; saveState(); document.getElementById('botStatus').innerHTML='🛡️ DAILY STOP HIT -$2.00. Bot stopped to protect you.'; render(); return; }
+  if(balance<=SAFETY){ running=false; saveState(); document.getElementById('botStatus').innerHTML='🛡️ SAFETY - Balance $7.00 - Bot paused'; render(); return; }
   if(!open){
-    if(todayTrades>=MAX){ running=false; render(); return; }
+    if(todayTrades>=MAX){ running=false; saveState(); render(); return; }
     let sig = getSignal();
     if(sig==='WAIT') return;
     loop++;
     let tp = sig==='LONG' ? price*(1+TP) : price*(1-TP);
     let sl = sig==='LONG' ? price*(1-SL) : price*(1+SL);
     open={id:loop, dir:sig, entry:price, qty:QTY, tp:tp, sl:sl};
-    render();
+    saveState(); render();
   } else {
     let hitTP = open.dir==='LONG' ? price>=open.tp : price<=open.tp;
     let hitSL = open.dir==='LONG' ? price<=open.sl : price>=open.sl;
@@ -176,8 +215,8 @@ function checkTrade(){
       let hb=document.getElementById('history');
       if(trades===1) hb.innerHTML='';
       hb.prepend(row);
-      open=null; render();
-      if(profit>=DAILY_TARGET){ running=false; document.getElementById('botStatus').innerHTML='🎉 DAILY TARGET HIT! +$3.00 locked. Bot stopped for today.'; render(); }
+      open=null; saveState(); render();
+      if(profit>=DAILY_TARGET){ running=false; saveState(); document.getElementById('botStatus').innerHTML='🎉 DAILY TARGET HIT! +$3.00 locked. Bot stopped for today.'; render(); }
     }
   }
 }
@@ -190,9 +229,17 @@ async function tick(){
   }
   render();
 }
-document.getElementById('debug').textContent='Bot loaded OK - Starting...';
+// Auto-resume when you come back from a call
+document.addEventListener('visibilitychange', function(){
+  if(document.hidden){ saveState(); }
+  else { tick(); }
+});
+window.addEventListener('beforeunload', saveState);
+window.addEventListener('pagehide', saveState);
+
+loadState();
 tick();
 setInterval(tick, 3000);
 </script>
 </body>
-  </html>
+</html>
