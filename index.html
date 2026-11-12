@@ -3,229 +3,97 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOL BUY ONLY V7 - $3 DAY TARGET</title>
+<title>SOL YOU CONTROL V6.7 FAST TP</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
 body{background:#0a0e1a;color:#fff;padding:12px;padding-bottom:90px}
-.top{background:linear-gradient(135deg,#1a2a4a,#0f1a2e);border:1px solid #2a4a7a;border-radius:16px;padding:14px;text-align:center}
-.top small{color:#8ab4ff;font-size:12px}
-.top h2{font-size:13px;margin:6px 0;color:#ffd166}
-.paused{display:inline-block;background:#ff2d55;color:#fff;padding:6px 18px;border-radius:20px;font-weight:800;font-size:13px;margin-top:6px}
-.running{display:inline-block;background:#00d68f;color:#000;padding:6px 18px;border-radius:20px;font-weight:800;font-size:13px;margin-top:6px}
-.card{background:#131a2a;border:1px solid #26314d;border-radius:16px;padding:14px;margin-top:12px}
+.top{background:#1a0f3a;border:1px solid #a259ff;border-radius:14px;padding:12px;text-align:center}
+.top b{font-size:13px}
+.top small{font-size:11px;color:#d0b0ff}
+.solbar{background:#a259ff;color:#fff;border-radius:20px;padding:8px 12px;margin:12px 0;text-align:center;font-weight:900;font-size:13px}
+.big{font-size:42px;font-weight:900;text-align:center}
+.sub{font-size:11px;color:#8a9ab5;text-align:center;margin-top:4px}
+.icons{display:flex;justify-content:space-around;margin:16px 0;text-align:center;font-size:11px}
+.icons div{width:50px;height:50px;background:#1a2a4a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 4px}
+.tabs{display:flex;gap:16px;align-items:center;margin:14px 0;font-size:14px}
+.tabs .stop{margin-left:auto;background:#ff2d55;color:#fff;border:0;padding:6px 14px;border-radius:12px;font-weight:900}
+.openCard{background:#1a0f1f;border:1px solid #3a1a2a;border-radius:14px;padding:12px}
 .row{display:flex;justify-content:space-between;align-items:center}
-.badge{background:#a259ff;color:#fff;padding:5px 10px;border-radius:20px;font-weight:800;font-size:12px}
-.badge2{background:#2a3a5a;padding:5px 10px;border-radius:20px;font-size:12px}
-.badge3{background:#00d68f;color:#000;padding:5px 10px;border-radius:20px;font-size:12px;font-weight:800}
-.big{font-size:42px;font-weight:900;margin:10px 0}
-.mut{color:#8a9ab5;font-size:12px;line-height:1.5}
-.tabs{display:flex;gap:16px;align-items:center;margin-top:14px}
-.tabs b{font-size:15px}
-.start{margin-left:auto;background:#00d68f;color:#000;border:0;padding:10px 16px;border-radius:20px;font-weight:900}
-.open{margin-top:12px;background:#1a0f1f;border:1px solid #3a1a2a;border-radius:14px;padding:12px}
-.open b{color:#ff9f0a}
-.status{margin-top:12px;background:#131a2a;border-radius:14px;padding:12px}
-.status b{color:#ffd166}
-.btn{width:100%;background:#ff2d55;color:#fff;border:0;padding:14px;border-radius:12px;font-weight:900;font-size:15px;margin-top:12px}
-.btn.green{background:#00d68f;color:#000}
-.small{font-size:12px;color:#8a9ab5}
+.btns{display:flex;gap:10px;margin-top:12px}
+.btnBuy{flex:1;background:#00d68f;color:#000;border:0;padding:16px;border-radius:12px;font-weight:900;font-size:15px}
+.btnSell{flex:1;background:#ff2d55;color:#fff;border:0;padding:16px;border-radius:12px;font-weight:900;font-size:15px}
+.btns small{display:block;font-weight:400;font-size:11px;margin-top:2px}
+.status{background:#131a2a;border-radius:14px;padding:12px;margin-top:12px;font-size:13px;line-height:1.6}
+.btnFull{width:100%;background:#ff2d55;color:#fff;border:0;padding:14px;border-radius:12px;font-weight:900;margin-top:12px}
+.btnFull.green{background:#00d68f;color:#000}
 table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px}
 th{color:#8a9ab5;text-align:left;padding:6px 0}
 td{padding:6px 0;border-top:1px solid #26314d}
 .win{color:#00d68f}.loss{color:#ff2d55}
+.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#00d68f;color:#000;padding:12px 20px;border-radius:20px;font-weight:900;z-index:99;display:none;text-align:center}
 .progress{height:10px;background:#1e2a44;border-radius:10px;margin-top:8px;overflow:hidden}
 .progress div{height:100%;background:#00d68f;width:0%}
 </style>
 </head>
 <body>
+<div id="toast" class="toast"></div>
 
 <div class="top">
-<small>◎ SOL BUY ONLY - V7 TREND - Daily Target $3.00</small>
-<h2 id="topStats">Trades: 0 | Profit: +$0.00 | Today: 0/20 | Target: $0.00 / $3.00</h2>
-<span id="topBadge" class="paused">⏸ PAUSED</span><br>
-<small id="priceLine" style="color:#8ab4ff">SOL Price: Loading...</small>
+<b>✅ AUTO LOOP + MANUAL CONTROL</b><br>
+<small>You can BUY / CLOSE anytime - Auto also runs<br><span id="topInfo">Trades Done: 0 | Profit Added: +$0.00</span></small>
 </div>
 
-<div class="card">
-<div class="row"><span class="badge">◎ SOL</span><span class="badge2">BUY ONLY</span><span class="badge3">AUTO-SAVE ON</span></div>
+<div class="solbar">◎ SOL - YOU CONTROL &nbsp; V6.7 &nbsp; FAST TP</div>
 <div class="big" id="balance">$10.00 USD</div>
-<div class="mut">BUY ONLY: Buy SOL when it goes UP. Sell when +2% profit. NEVER Short. Waits when SOL goes down. Stops at +$3.00 target or -$2.00 daily stop.</div>
+<div class="sub">TP now 0.1% = $0.18 move - closes fast! Old 2% = too slow!</div>
+<div class="sub" id="priceLine" style="color:#a259ff;font-size:13px;margin-top:6px">SOL: Loading...</div>
 <div class="progress"><div id="targetBar"></div></div>
-<div class="small" style="margin-top:6px" id="targetText">Target Progress: 0% - $0.00 / $3.00</div>
+<div class="sub" id="targetText">Daily: $0.00 / $3.00</div>
+
+<div class="icons">
+<div><div>₮</div>Trade</div>
+<div><div>↓</div>Deposit</div>
+<div><div>↑</div>Withdraw</div>
+<div><div>⇄</div>Transfer</div>
 </div>
 
-<div class="tabs"><b>Open <span id="openCount">0</span></b><b>Closed <span id="closedCount">0</span></b><button class="start" onclick="toggleBot()" id="startBtn">▶ START BOT</button></div>
+<div class="tabs"><b style="color:#a259ff">Open <span id="openCount">0</span></b><b>Pending</b><b>Closed <span id="closedCount">0</span></b><button class="stop" onclick="toggleBot()" id="stopBtn">⏸ STOP</button></div>
 
-<div class="open">
-<div class="row"><b>SOL BUY ONLY <span id="botState">PAUSED</span></b><span id="openPL" style="font-weight:900">0.00 USD</span></div>
-<div id="openTrade" style="margin-top:8px;font-size:13px;line-height:1.6">No open position - Press START BOT</div>
-<div id="signalLine" style="margin-top:6px;font-size:12px;color:#8a9ab5">Signal: -- Waiting for price...</div>
-<div id="emaLine" style="margin-top:4px;font-size:12px;color:#8a9ab5">EMA50: --</div>
+<div class="openCard">
+<div class="row"><span style="color:#00d68f;font-weight:900">● <span id="runText">RUNNING - YOU CONTROL</span></span><span id="openPL" style="font-weight:900">+0.00 USD</span></div>
+<div id="openTrade" style="margin-top:8px;font-size:13px;line-height:1.6">No open trade - Tap 🟢 BUY SOL to start!</div>
+</div>
+
+<div class="btns">
+<button class="btnBuy" onclick="manualBuy()">🟢 BUY SOL<small>Tap to Open Trade</small></button>
+<button class="btnSell" onclick="manualClose()">🔴 CLOSE / SELL<small>Tap to Take Profit NOW</small></button>
 </div>
 
 <div class="status">
-<b>SOL BUY ONLY STATUS</b>
-<div id="botStatus" style="font-size:13px;margin-top:6px;line-height:1.6">Bot paused. Tap START BOT.</div>
-<div class="small" style="margin-top:8px">Coin: SOL | Qty 0.15 SOL | BUY ONLY - NO SHORT | TP 2.0% Sell | SL 1.0% Protect | Target +$3.00 | Daily Stop -$2.00 | Safety $7.00 | Max 20/day | Cooldown 5 min</div>
+<b>SOL V6.7 STATUS</b>
+<div id="botStatus">Auto Loop ON. Will BUY, wait for +0.1% TP, CLOSE, then BUY again.</div>
+<div class="small" style="font-size:11px;color:#8a9ab5;margin-top:6px">Qty 0.15 SOL | TP 0.1% = $0.18 | No SL - waits, you control CLOSE | Target +$3.00 | Daily Stop -$2.00 | Auto-save ON</div>
 </div>
 
-<button class="btn green" id="mainBtn" onclick="toggleBot()">⏸ PAUSED - Tap to START</button>
-<button class="btn" style="background:#26314d" onclick="resetDay()">↺ RESET DAY - Keep Balance, Clear Today's Profit</button>
+<button class="btnFull green" id="mainBtn" onclick="toggleBot()">● RUNNING - Tap to STOP</button>
+<button class="btnFull" style="background:#26314d" onclick="resetDay()">↺ RESET DAY - Keep Balance</button>
 
-<div class="card">
+<div style="background:#131a2a;border-radius:14px;padding:12px;margin-top:12px">
 <b>Trade History</b>
-<table><thead><tr><th>#</th><th>Type</th><th>Buy → Sell</th><th>Net P/L</th><th>Reason</th></tr></thead><tbody id="history"><tr><td colspan="5" style="text-align:center;color:#8a9ab5">No closed trades yet</td></tr></tbody></table>
+<table><thead><tr><th>#</th><th>Buy → Sell</th><th>P/L</th><th>Reason</th></tr></thead><tbody id="history"><tr><td colspan="4" style="text-align:center;color:#8a9ab5">No closed trades yet</td></tr></tbody></table>
 </div>
 
 <div id="debug" style="font-size:11px;color:#ff9f0a;margin-top:10px;text-align:center">Loading...</div>
 
 <script>
-let balance=10.00, price=180, running=false, open=null, trades=0, todayTrades=0, profit=0, loop=0, lastTradeTime=0;
+let balance=10.00, price=180, running=true, open=null, trades=0, profit=0, loop=0, lastClose=0;
 let priceHistory=[];
-const QTY=0.15, TP=0.02, SL=0.01, MAX=20, SAFETY=7.00, DAILY_TARGET=3.00, DAILY_STOP=-2.00, COOLDOWN=300000;
-const TODAY = new Date().toDateString();
+const QTY=0.15, TP=0.001, DAILY_TARGET=3.00, DAILY_STOP=-2.00, SAFETY=7.00;
+const TODAY=new Date().toDateString();
 
-function saveState(){
-  try{ localStorage.setItem('sol_buy_only_v7', JSON.stringify({balance, profit, trades, todayTrades, loop, open, running, lastTradeTime, date: TODAY})); }catch(e){}
-}
+function saveState(){ try{ localStorage.setItem('sol_v67_fast', JSON.stringify({balance, profit, trades, loop, open, running, date: TODAY})); }catch(e){} }
 function loadState(){
   try{
-    let s = JSON.parse(localStorage.getItem('sol_buy_only_v7') || 'null');
+    let s=JSON.parse(localStorage.getItem('sol_v67_fast')||'null');
     if(!s) return;
-    if(s.date !== TODAY){ balance=s.balance; profit=0; todayTrades=0; trades=0; loop=s.loop||0; open=null; document.getElementById('debug').textContent='New day - Balance carried: $'+balance.toFixed(2); saveState(); return; }
-    balance=s.balance; profit=s.profit||0; trades=s.trades||0; todayTrades=s.todayTrades||0; loop=s.loop||0; open=s.open||null; lastTradeTime=s.lastTradeTime||0;
-    if(s.running && profit < DAILY_TARGET && profit > DAILY_STOP && balance > SAFETY){ running=true; document.getElementById('debug').textContent='✅ AUTO-RESUMED - Balance restored: $'+balance.toFixed(2); }
-    else { document.getElementById('debug').textContent='Restored balance: $'+balance.toFixed(2)+' - Tap START'; }
-  }catch(e){}
-}
-function resetDay(){
-  if(!confirm('Reset today? Balance $'+balance.toFixed(2)+' KEPT. Only today profit cleared.')) return;
-  profit=0; todayTrades=0; trades=0; open=null; running=false;
-  document.getElementById('history').innerHTML='<tr><td colspan="5" style="text-align:center;color:#8a9ab5">No closed trades yet</td></tr>';
-  saveState(); render();
-}
-async function fetchPrice(){
-  try{
-    let r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
-    let j = await r.json();
-    if(j.solana && j.solana.usd > 1){ price=j.solana.usd; return; }
-  }catch(e){}
-  try{
-    let r = await fetch('https://api.coinpaprika.com/v1/tickers/sol-solana');
-    let j = await r.json();
-    if(j.quotes && j.quotes.USD && j.quotes.USD.price > 1){ price=j.quotes.USD.price; return; }
-  }catch(e){}
-  try{
-    let r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://api.binance.com/api/v3/ticker/price?symbol=SOLUSDT'));
-    let j = await r.json();
-    if(j.price > 1){ price=parseFloat(j.price); return; }
-  }catch(e){}
-}
-function fmt(n){ return '$'+n.toFixed(2); }
-function ema50(){
-  if(priceHistory.length < 10) return null;
-  let k = 2/(50+1); let e = priceHistory[0];
-  for(let i=1;i<priceHistory.length;i++){ e = priceHistory[i]*k + e*(1-k); }
-  return e;
-}
-// BUY ONLY - V7
-function getSignal(){
-  let e = ema50();
-  if(!e) return 'WAIT';
-  if(price > e*1.0003) return 'BUY';
-  return 'WAIT';
-}
-function render(){
-  document.getElementById('balance').textContent=fmt(balance)+' USD';
-  document.getElementById('topStats').textContent='Trades: '+trades+' | Profit: '+(profit>=0?'+':'')+fmt(profit)+' | Today: '+todayTrades+'/20 | Target: '+fmt(Math.max(0,profit))+' / $3.00';
-  document.getElementById('priceLine').textContent='SOL Price: '+fmt(price)+' • Live • '+new Date().toLocaleTimeString();
-  document.getElementById('openCount').textContent=open?1:0;
-  document.getElementById('closedCount').textContent=trades;
-  document.getElementById('topBadge').textContent=running?'● RUNNING':'⏸ PAUSED';
-  document.getElementById('topBadge').className=running?'running':'paused';
-  document.getElementById('botState').textContent=running?'RUNNING':'PAUSED';
-  document.getElementById('startBtn').textContent=running?'⏸ PAUSE':'▶ START BOT';
-  document.getElementById('mainBtn').textContent=running?'● RUNNING - Tap to STOP':'⏸ PAUSED - Tap to START';
-  document.getElementById('mainBtn').className='btn '+(running?'':'green');
-  let pct = Math.min(100, Math.max(0, profit / DAILY_TARGET * 100));
-  document.getElementById('targetBar').style.width = pct + '%';
-  document.getElementById('targetText').textContent='Target Progress: '+pct.toFixed(0)+'% - '+fmt(Math.max(0,profit))+' / $3.00';
-  let sig = getSignal(); let e = ema50();
-  document.getElementById('signalLine').textContent='Signal: '+sig+(sig==='BUY'?' 🟢 BUY - SOL going UP':' 🟡 WAIT - SOL going DOWN, NOT buying, NEVER shorting');
-  document.getElementById('emaLine').textContent='EMA50: '+(e?fmt(e):'--')+' | Price vs EMA: '+(e?(((price-e)/e*100).toFixed(3)+'%'):'--');
-  if(open){
-    let pl = (price-open.entry)*QTY;
-    let prog = ((price-open.entry)/open.entry*100).toFixed(2);
-    document.getElementById('openPL').textContent=(pl>=0?'+':'')+fmt(pl)+' USD';
-    document.getElementById('openPL').style.color=pl>=0?'#00d68f':'#ff2d55';
-    document.getElementById('openTrade').innerHTML='🟢 BUY • SOL #'+open.id+'<br>Bought '+QTY+' SOL at '+fmt(open.entry)+' → Sell at '+fmt(open.tp)+' (TP 2%)<br>Progress: '+prog+'% • Current: '+fmt(price);
-    document.getElementById('botStatus').innerHTML='SOL BUY #'+open.id+' at '+fmt(open.entry)+' → Sell '+fmt(open.tp)+'<br>BUY ONLY | TP 2% Sell | SL 1% Protect | Daily: '+fmt(profit)+' / $3.00';
-  } else {
-    document.getElementById('openPL').textContent='0.00 USD';
-    document.getElementById('openPL').style.color='#fff';
-    let cool = Date.now() - lastTradeTime < COOLDOWN ? 'Cooldown: '+Math.ceil((COOLDOWN-(Date.now()-lastTradeTime))/1000)+'s left - ' : '';
-    document.getElementById('openTrade').innerHTML=running?(cool+'Waiting to BUY... Current: '+sig):'No open position - Press START BOT';
-    document.getElementById('botStatus').innerHTML=running?('Bot RUNNING - BUY ONLY Mode. Signal: '+sig+'. Daily Profit: '+fmt(profit)+' / $3.00 Target.'):('Bot paused. Tap START BOT.');
-  }
-  saveState();
-}
-function toggleBot(){
-  if(running){ running=false; saveState(); render(); return; }
-  if(balance<=SAFETY){ alert('Safety: Balance at $7.00 - Bot paused'); return; }
-  if(profit>=DAILY_TARGET){ alert('Daily Target $3.00 already hit!'); return; }
-  if(profit<=DAILY_STOP){ alert('Daily Stop -$2.00 hit.'); return; }
-  if(todayTrades>=MAX){ alert('Max 20 trades/day reached'); return; }
-  running=true; saveState(); render();
-}
-function checkTrade(){
-  if(!running) return;
-  if(profit>=DAILY_TARGET){ running=false; saveState(); document.getElementById('botStatus').innerHTML='🎉 DAILY TARGET HIT! +$3.00 locked. Bot stopped for today.'; render(); return; }
-  if(profit<=DAILY_STOP){ running=false; saveState(); document.getElementById('botStatus').innerHTML='🛡️ DAILY STOP HIT -$2.00. Bot stopped to protect you.'; render(); return; }
-  if(balance<=SAFETY){ running=false; saveState(); document.getElementById('botStatus').innerHTML='🛡️ SAFETY - Balance $7.00 - Bot paused'; render(); return; }
-  if(!open){
-    if(todayTrades>=MAX){ running=false; saveState(); render(); return; }
-    if(Date.now() - lastTradeTime < COOLDOWN) return;
-    let sig = getSignal();
-    if(sig!=='BUY') return;
-    loop++;
-    let tp = price*(1+TP);
-    let sl = price*(1-SL);
-    open={id:loop, dir:'BUY', entry:price, qty:QTY, tp:tp, sl:sl};
-    saveState(); render();
-  } else {
-    let hitTP = price>=open.tp;
-    let hitSL = price<=open.sl;
-    if(hitTP || hitSL){
-      let exit=price;
-      let net = (exit-open.entry)*QTY;
-      balance+=net;
-      profit+=net; trades++; todayTrades++; lastTradeTime=Date.now();
-      let reason=hitTP?'SELL - TP 2% Profit':'SELL - SL 1% Protect';
-      let row=document.createElement('tr');
-      row.innerHTML='<td>#'+trades+'</td><td>🟢 BUY → SELL</td><td>'+fmt(open.entry)+' → '+fmt(exit)+'</td><td class="'+(net>=0?'win':'loss')+'">'+(net>=0?'+':'')+fmt(net)+'</td><td>'+reason+'</td>';
-      let hb=document.getElementById('history');
-      if(trades===1) hb.innerHTML='';
-      hb.prepend(row);
-      open=null; saveState(); render();
-      if(profit>=DAILY_TARGET){ running=false; saveState(); document.getElementById('botStatus').innerHTML='🎉 DAILY TARGET HIT! +$3.00 locked. Bot stopped for today.'; render(); }
-    }
-  }
-}
-async function tick(){
-  await fetchPrice();
-  if(price>0){
-    priceHistory.push(price);
-    if(priceHistory.length>100) priceHistory.shift();
-    checkTrade();
-  }
-  render();
-}
-document.addEventListener('visibilitychange', function(){ if(document.hidden){ saveState(); } else { tick(); } });
-window.addEventListener('beforeunload', saveState);
-window.addEventListener('pagehide', saveState);
-loadState();
-tick();
-setInterval(tick, 3000);
-</script>
-</body>
-</html>
+    if(s.date!==TODAY){ balance=s.balance; profit=0; trades=0
