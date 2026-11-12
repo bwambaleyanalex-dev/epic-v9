@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOL V7.2 AUTO SAVE</title>
+<title>SOL V7.3 PROTECTED</title>
 <style>
 body{background:#0a0e1a;color:#fff;font-family:Arial;padding:12px;margin:0;overflow-x:hidden}
 .top{background:#1a0f3a;border:1px solid #a259ff;border-radius:14px;padding:12px;text-align:center}
@@ -24,27 +24,24 @@ th{color:#8a9ab5;text-align:left}td{padding:6px 0;border-top:1px solid #333;word
 </style>
 </head>
 <body>
-<div class="top"><b>✅ SOL V7.2 - AUTO SAVE - YOU CONTROL</b><br><small id="topInfo">Trades Done: 0 | Profit: +$0.00</small></div>
-<div class="solbar">◎ SOL - BUY ONLY - FAST TP 0.1% - V7.2</div>
-<div class="big" id="balance">$10.00 USD</div>
+<div class="top"><b>✅ SOL V7.3 - PROTECTED - YOU CONTROL</b><br><small id="topInfo">Trades Done: 0 | Profit: +$0.00</small></div>
+<div class="solbar">◎ SOL - BUY ONLY - TP 0.1% / SL -0.3% - V7.3</div>
+<div class="big" id="balance">$10.16 USD</div>
 <div class="priceLine" id="priceLine">SOL: $182.20 • Live</div>
 <div class="targetLine" id="targetText">Daily: $0.00 / $3.00</div>
 <div class="card"><div style="display:flex;justify-content:space-between"><span id="runText">● RUNNING</span><span id="openPL">+0.00 USD</span></div><div id="openTrade" style="margin-top:8px;font-size:13px">No open trade - Tap BUY SOL!</div></div>
 <div class="btns"><button class="btnBuy" onclick="manualBuy()">🟢 BUY SOL</button><button class="btnSell" onclick="manualClose()">🔴 CLOSE / SELL</button></div>
-<div class="card"><b id="botStatus">Auto Loop ON. BUY, wait +0.1% TP, CLOSE, BUY again.</b><br><small style="color:#8a9ab5">Qty 0.15 SOL | TP 0.1% = $0.18 | Target +$3.00 | Daily Stop -$2.00 | Auto-save ON</small></div>
+<div class="card"><b id="botStatus">Auto Loop ON. BUY, TP +0.1%, SL -0.3%, CLOSE, BUY again.</b><br><small style="color:#8a9ab5">Qty 0.15 SOL | TP +$0.03 | SL -$0.08 max | Fee $0.01/trade | Target +$3.00 | Daily Stop -$2.00 | Auto-save ON</small></div>
 <button class="btnFull green" id="mainBtn" onclick="toggleBot()">● RUNNING - Tap to STOP</button>
 <button class="btnFull gray" onclick="resetDay()">↺ RESET DAY - Keep Balance</button>
-<div class="card"><b>Trade History</b><table><thead><tr><th>#</th><th>Buy → Sell</th><th>P/L</th><th>Reason</th></tr></thead><tbody id="history"><tr><td colspan="4" style="text-align:center;color:#8a9ab5">No trades yet</td></tr></tbody></table></div>
-<div id="debug" style="text-align:center;color:#00d68f;font-size:11px;margin-top:10px">V7.2 AUTO SAVE - Close Chrome, balance stays!</div>
+<div class="card"><b>Trade History</b><table><thead><tr><th>#</th><th>Buy → Sell</th><th>Net P/L</th><th>Reason</th></tr></thead><tbody id="history"><tr><td colspan="4" style="text-align:center;color:#8a9ab5">No trades yet</td></tr></tbody></table></div>
+<div id="debug" style="text-align:center;color:#00d68f;font-size:11px;margin-top:10px">V7.3 Protected - SL -0.3% + Fee $0.01 - Balance starts $10.16</div>
 <script>
-var balance=10.00, price=182.20, running=true, open=null, trades=0, profit=0, loop=0;
-var QTY=0.15, TP=0.001;
+var balance=10.16, price=182.20, running=true, open=null, trades=0, profit=0;
+var QTY=0.15, TP=0.001, SL=0.003, FEE=0.01;
 var TODAY=new Date().toDateString();
-var KEY='sol_v72_autosave';
-
+var KEY='sol_v73_protected';
 function fmt(n){ return '$'+n.toFixed(2); }
-
-// --- AUTO SAVE / LOAD ---
 function saveState(){
   try{
     var hist=document.getElementById('history').innerHTML;
@@ -53,25 +50,22 @@ function saveState(){
 }
 function loadState(){
   try{
+    // Try V7.2 save first, so you don't lose balance if you had it
+    var old=JSON.parse(localStorage.getItem('sol_v72_autosave')||'null');
     var s=JSON.parse(localStorage.getItem(KEY)||'null');
-    if(!s) return;
-    // New day? Keep balance, reset daily profit
-    if(s.date!==TODAY){
-      balance=s.balance||10.00;
+    var use = s || old;
+    if(!use) return;
+    if(use.date!==TODAY){
+      balance=use.balance||10.16;
       profit=0; trades=0; open=null;
       document.getElementById('debug').textContent='New day - Balance carried: '+fmt(balance);
-      saveState();
-      return;
+      saveState(); return;
     }
-    balance=s.balance||10.00; profit=s.profit||0; trades=s.trades||0; open=s.open||null; running=s.running!==false;
-    if(s.hist && trades>0){
-      document.getElementById('history').innerHTML=s.hist;
-    }
-    if(open) document.getElementById('debug').textContent='✅ RESTORED - Balance '+fmt(balance)+' - LOOP #'+open.id+' still open';
-    else document.getElementById('debug').textContent='✅ RESTORED - Balance '+fmt(balance)+' - '+trades+' trades today';
+    balance=use.balance||10.16; profit=use.profit||0; trades=use.trades||0; open=use.open||null; running=use.running!==false;
+    if(use.hist && trades>0) document.getElementById('history').innerHTML=use.hist;
+    document.getElementById('debug').textContent='✅ RESTORED - Balance '+fmt(balance)+' - '+trades+' trades today';
   }catch(e){}
 }
-
 function setPrice(newPrice){
   if(!newPrice || isNaN(newPrice)) return;
   if(newPrice < 100 || newPrice > 300) return;
@@ -90,13 +84,13 @@ function render(){
       var pl=(price-open.entry)*QTY;
       document.getElementById('openPL').textContent=(pl>=0?'+':'')+fmt(pl);
       document.getElementById('openPL').style.color=pl>=0?'#00d68f':'#ff2d55';
-      document.getElementById('openTrade').innerHTML='SOL LOOP #'+open.id+'<br>Buy at '+fmt(open.entry)+' → TP '+fmt(open.tp)+'<br>Current '+fmt(price)+' • Need '+fmt(Math.max(0,open.tp-price));
-      document.getElementById('botStatus').textContent='LOOP #'+open.id+' OPEN - Waiting for +0.1% to CLOSE';
+      document.getElementById('openTrade').innerHTML='SOL LOOP #'+open.id+'<br>Buy at '+fmt(open.entry)+' → TP '+fmt(open.tp)+' | SL '+fmt(open.sl)+'<br>Current '+fmt(price)+' • TP in '+fmt(Math.max(0,open.tp-price))+' | SL in '+fmt(Math.max(0,price-open.sl));
+      document.getElementById('botStatus').textContent='LOOP #'+open.id+' OPEN - TP +0.1% or SL -0.3% - Waiting...';
     }else{
       document.getElementById('openPL').textContent='+0.00 USD';
       document.getElementById('openPL').style.color='#fff';
       document.getElementById('openTrade').textContent=running?'No trade - Auto will BUY in 2 sec... Tap BUY SOL!':'Paused - Tap BUY SOL';
-      document.getElementById('botStatus').textContent=running?'Auto Loop ON - Ready for next LOOP':'Paused';
+      document.getElementById('botStatus').textContent=running?'Auto Loop ON - Protected - Ready for next LOOP':'Paused';
     }
   }catch(e){}
   saveState();
@@ -104,19 +98,19 @@ function render(){
 function toggleBot(){ running=!running; render(); }
 function openBuy(){
   if(open) return;
-  loop = trades + 1;
-  open={id:loop, entry:price, tp: price*(1+TP)};
+  var id = trades + 1;
+  open={id:id, entry:price, tp: price*(1+TP), sl: price*(1-SL)};
   render();
 }
 function manualBuy(){
   if(open){ alert('Already have LOOP #'+open.id); return; }
-  running=true;
-  openBuy();
+  running=true; openBuy();
 }
 function closeTrade(reason){
   if(!open) return;
   var exit=price;
-  var net=(exit-open.entry)*QTY;
+  var gross=(exit-open.entry)*QTY;
+  var net=gross - FEE;
   balance+=net; profit+=net; trades++;
   var hb=document.getElementById('history');
   if(trades===1) hb.innerHTML='';
@@ -126,6 +120,7 @@ function closeTrade(reason){
   open=null;
   render();
   if(profit>=3){ running=false; alert('Target $3 HIT!'); render(); }
+  if(profit<=-2){ running=false; alert('Daily Stop -$2 HIT - Stopped for today'); render(); }
 }
 function manualClose(){
   if(!open){ alert('No open trade'); return; }
@@ -142,7 +137,10 @@ function tick(){
   setPrice(price + wiggle);
   if(running){
     if(!open){ openBuy(); }
-    else { if(price >= open.tp){ closeTrade('AUTO TP 0.1%'); } }
+    else {
+      if(price >= open.tp){ closeTrade('AUTO TP 0.1%'); }
+      else if(price <= open.sl){ closeTrade('AUTO SL -0.3%'); }
+    }
   }
   render();
   try{
@@ -152,12 +150,9 @@ function tick(){
     .catch(()=>{});
   }catch(e){}
 }
-// Save when you leave Chrome
 window.addEventListener('beforeunload', saveState);
 window.addEventListener('pagehide', saveState);
 document.addEventListener('visibilitychange', function(){ if(document.hidden) saveState(); });
-
-// START
 loadState();
 render();
 setInterval(tick, 2000);
