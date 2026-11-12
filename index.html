@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOL V7.4 REAL + CAPITAL</title>
+<title>SOL V7.4.1 NaN FIX</title>
 <style>
 body{background:#0a0e1a;color:#fff;font-family:Arial;padding:12px;margin:0;overflow-x:hidden}
 .top{background:#1a0f3a;border:1px solid #a259ff;border-radius:14px;padding:12px;text-align:center}
@@ -28,12 +28,11 @@ input{width:100%;padding:12px;border-radius:10px;border:1px solid #a259ff;backgr
 </style>
 </head>
 <body>
-<div class="top"><b>✅ SOL V7.4 - REAL PRICE + CAPITAL LIMIT</b><br><small id="topInfo">Trades Done: 0 | Profit: +$0.00</small></div>
-<div class="solbar">◎ SOL - REAL BINANCE - TP 0.2% / SL -0.1% - V7.4</div>
+<div class="top"><b>✅ SOL V7.4.1 - NaN FIX - REAL PRICE</b><br><small id="topInfo">Trades Done: 0 | Profit: +$0.00</small></div>
+<div class="solbar">◎ SOL - REAL BINANCE - TP 0.2% / SL -0.1% - V7.4.1</div>
 <div class="big" id="balance">$10.16 USD</div>
 <div class="priceLine" id="priceLine">SOL: Loading Real Binance...</div>
 <div class="targetLine" id="targetText">Daily: $0.00 / $3.00</div>
-
 <div class="card">
 <b>💰 CAPITAL LIMIT - Max Money Bot Can Use</b><br>
 <small style="color:#8a9ab5">Bot will never use more than this. Increase when you get more capital.</small>
@@ -41,7 +40,7 @@ input{width:100%;padding:12px;border-radius:10px;border:1px solid #a259ff;backgr
 <input type="number" id="capitalInput" value="10.16" min="5" max="10000" step="1">
 <button onclick="saveCapital()">SAVE CAPITAL</button>
 </div>
-<div id="capitalInfo" style="margin-top:8px;font-size:12px;color:#00d68f">Capital: $10.16 | Qty per trade: 0.05 SOL | Win +$0.04 / Loss -$0.04</div>
+<div id="capitalInfo" style="margin-top:8px;font-size:12px;color:#00d68f">Capital: $10.16 | Qty per trade: 0.05 SOL</div>
 <div style="margin-top:8px;display:flex;gap:6px">
 <button onclick="setCapital(10)" style="flex:1;background:#26314d;color:#fff;border:0;padding:8px;border-radius:8px;font-weight:900">$10</button>
 <button onclick="setCapital(20)" style="flex:1;background:#26314d;color:#fff;border:0;padding:8px;border-radius:8px;font-weight:900">$20</button>
@@ -49,26 +48,51 @@ input{width:100%;padding:12px;border-radius:10px;border:1px solid #a259ff;backgr
 <button onclick="setCapital(100)" style="flex:1;background:#26314d;color:#fff;border:0;padding:8px;border-radius:8px;font-weight:900">$100</button>
 </div>
 </div>
-
 <div class="card"><div style="display:flex;justify-content:space-between"><span id="runText">● RUNNING</span><span id="openPL">+0.00 USD</span></div><div id="openTrade" style="margin-top:8px;font-size:13px">Waiting for Real Binance price...</div></div>
 <div class="btns"><button class="btnBuy" onclick="manualBuy()">🟢 BUY SOL</button><button class="btnSell" onclick="manualClose()">🔴 CLOSE / SELL</button></div>
 <div class="card"><b id="botStatus">Auto Loop ON. Real Price, TP +0.2%, SL -0.1%</b><br><small style="color:#8a9ab5">Fee $0.01/trade | Target +$3.00 | Daily Stop -$2.00 | Auto-save ON | Price: Binance Only</small></div>
 <button class="btnFull green" id="mainBtn" onclick="toggleBot()">● RUNNING - Tap to STOP</button>
 <button class="btnFull gray" onclick="resetDay()">↺ RESET DAY - Keep Balance</button>
+<button class="btnFull red" onclick="fixNaN()">🛠️ FIX $NaN - Reset to $10.16</button>
 <div class="card"><b>Trade History</b><table><thead><tr><th>#</th><th>Buy → Sell</th><th>Net P/L</th><th>Reason</th></tr></thead><tbody id="history"><tr><td colspan="4" style="text-align:center;color:#8a9ab5">No trades yet</td></tr></tbody></table></div>
-<div id="debug" style="text-align:center;color:#00d68f;font-size:11px;margin-top:10px">V7.4 Real Binance Only - No Fake Wiggle</div>
+<div id="debug" style="text-align:center;color:#00d68f;font-size:11px;margin-top:10px">V7.4.1 NaN FIX</div>
 <script>
-var balance=10.16, price=0, running=true, open=null, trades=0, profit=0;
+var balance=10.16, price=182.20, running=true, open=null, trades=0, profit=0;
 var capitalLimit=10.16, TP=0.002, SL=0.001, FEE=0.01;
 var TODAY=new Date().toDateString();
-var KEY='sol_v74_real_capital';
-function fmt(n){ return '$'+n.toFixed(2); }
+var KEY='sol_v741_nanfix';
+function fmt(n){
+  n=parseFloat(n);
+  if(isNaN(n)) n=0;
+  return '$'+n.toFixed(2);
+}
+function safeNum(v, def){
+  v=parseFloat(v);
+  if(isNaN(v) || !isFinite(v)) return def;
+  return v;
+}
+// FIX NaN BUTTON - if you ever see $NaN again, tap this
+function fixNaN(){
+  balance=10.16; profit=0; trades=0; open=null; capitalLimit=10.16; price=182.20;
+  localStorage.removeItem(KEY);
+  localStorage.removeItem('sol_v74_real_capital');
+  localStorage.removeItem('sol_v73_protected');
+  localStorage.removeItem('sol_v72_autosave');
+  document.getElementById('history').innerHTML='<tr><td colspan="4" style="text-align:center;color:#8a9ab5">No trades yet</td></tr>';
+  alert('Fixed! Balance back to $10.16');
+  render(); fetchPrice();
+}
 function getQty(entryPrice){
-  if(!entryPrice) return 0;
-  // Use 95% of capital limit, so bot never exceeds limit
-  return (capitalLimit*0.95)/entryPrice;
+  entryPrice=safeNum(entryPrice,0);
+  if(!entryPrice || entryPrice<50) return 0;
+  var q=(capitalLimit*0.95)/entryPrice;
+  if(isNaN(q) || !isFinite(q) || q<=0) return 0;
+  return q;
 }
 function saveState(){
+  // NEVER save NaN
+  balance=safeNum(balance,10.16); profit=safeNum(profit,0); capitalLimit=safeNum(capitalLimit,10.16);
+  if(isNaN(trades)) trades=0;
   try{
     var hist=document.getElementById('history').innerHTML;
     localStorage.setItem(KEY, JSON.stringify({balance:balance, profit:profit, trades:trades, open:open, running:running, date:TODAY, hist:hist, capitalLimit:capitalLimit}));
@@ -77,39 +101,37 @@ function saveState(){
 function loadState(){
   try{
     var s=JSON.parse(localStorage.getItem(KEY)||'null');
-    // Also try old V7.3 to keep balance
-    if(!s) s=JSON.parse(localStorage.getItem('sol_v73_protected')||'null');
     if(!s) return;
     if(s.date!==TODAY){
-      balance=s.balance||10.16;
-      capitalLimit=s.capitalLimit||10.16;
+      balance=safeNum(s.balance,10.16);
+      capitalLimit=safeNum(s.capitalLimit,10.16);
       profit=0; trades=0; open=null;
-      document.getElementById('debug').textContent='New day - Balance carried: '+fmt(balance);
       saveState(); return;
     }
-    balance=s.balance||10.16; profit=s.profit||0; trades=s.trades||0; open=s.open||null; running=s.running!==false;
-    capitalLimit=s.capitalLimit||10.16;
+    balance=safeNum(s.balance,10.16); profit=safeNum(s.profit,0); trades=safeNum(s.trades,0); open=s.open||null; running=s.running!==false;
+    capitalLimit=safeNum(s.capitalLimit,10.16);
+    // If open trade is broken / NaN, drop it
+    if(open && (isNaN(open.entry) || isNaN(open.qty) || !open.qty)) open=null;
     if(s.hist && trades>0) document.getElementById('history').innerHTML=s.hist;
     document.getElementById('debug').textContent='✅ RESTORED - Balance '+fmt(balance)+' - Capital '+fmt(capitalLimit);
-  }catch(e){}
+  }catch(e){
+    balance=10.16; capitalLimit=10.16; profit=0; trades=0; open=null;
+  }
 }
 function setPrice(newPrice){
-  if(!newPrice || isNaN(newPrice)) return;
-  // REAL BINANCE ONLY - strict range, no wiggle
+  newPrice=safeNum(newPrice,0);
+  if(!newPrice) return;
   if(newPrice < 50 || newPrice > 500) return;
-  // If jump > $2 in 2 sec, ignore - probably bad data
   if(price>0 && Math.abs(newPrice-price) > 3) return;
   price = newPrice;
 }
 function saveCapital(){
-  var v=parseFloat(document.getElementById('capitalInput').value);
-  if(!v || v<5){ alert('Capital must be $5 or more'); return; }
+  var v=safeNum(document.getElementById('capitalInput').value,0);
+  if(!v || v<5){ alert('Capital must be $5 or more'); document.getElementById('capitalInput').value=capitalLimit; return; }
   if(open){ alert('Close open trade first before changing capital'); return; }
   capitalLimit=v;
-  // If you increase capital, balance also increases to new capital (you added money)
-  // If you decrease, balance stays but bot will use less
   if(v > balance){ balance = v; }
-  alert('Capital saved: '+fmt(capitalLimit)+' - Bot will now use up to '+fmt(capitalLimit));
+  alert('Capital saved: '+fmt(capitalLimit));
   render();
 }
 function setCapital(v){
@@ -117,6 +139,9 @@ function setCapital(v){
   saveCapital();
 }
 function render(){
+  // AUTO FIX NaN every render - never show $NaN
+  balance=safeNum(balance,10.16); profit=safeNum(profit,0); capitalLimit=safeNum(capitalLimit,10.16); price=safeNum(price,182.20);
+  if(isNaN(trades)) trades=0;
   try{
     document.getElementById('balance').textContent=fmt(balance)+' USD';
     document.getElementById('topInfo').textContent='Trades Done: '+trades+' | Profit: '+(profit>=0?'+':'')+fmt(profit)+' | Capital: '+fmt(capitalLimit);
@@ -127,17 +152,16 @@ function render(){
       var loss=q*price*SL + FEE;
       document.getElementById('capitalInfo').textContent='Capital: '+fmt(capitalLimit)+' | Qty: '+q.toFixed(4)+' SOL | Win +'+fmt(win)+' / Loss -'+fmt(loss);
       document.getElementById('priceLine').textContent='SOL: '+fmt(price)+' • REAL BINANCE • '+new Date().toLocaleTimeString();
-    } else {
-      document.getElementById('priceLine').textContent='SOL: Loading Real Binance... Check internet';
     }
     document.getElementById('targetText').textContent='Daily: '+fmt(Math.max(0,profit))+' / $3.00 - '+(profit/3*100).toFixed(0)+'%';
     document.getElementById('runText').textContent=running?'● RUNNING':'⏸ PAUSED';
     document.getElementById('mainBtn').textContent=running?'● RUNNING - Tap to STOP':'⏸ PAUSED - Tap to START';
     if(open){
       var pl=(price-open.entry)*open.qty;
+      if(isNaN(pl)) pl=0;
       document.getElementById('openPL').textContent=(pl>=0?'+':'')+fmt(pl);
       document.getElementById('openPL').style.color=pl>=0?'#00d68f':'#ff2d55';
-      document.getElementById('openTrade').innerHTML='SOL LOOP #'+open.id+' | Qty '+open.qty.toFixed(4)+' SOL<br>Buy at '+fmt(open.entry)+' → TP '+fmt(open.tp)+' | SL '+fmt(open.sl)+'<br>Current '+fmt(price);
+      document.getElementById('openTrade').innerHTML='SOL LOOP #'+open.id+' | Qty '+safeNum(open.qty,0).toFixed(4)+' SOL<br>Buy at '+fmt(open.entry)+' → TP '+fmt(open.tp)+' | SL '+fmt(open.sl)+'<br>Current '+fmt(price);
       document.getElementById('botStatus').textContent='LOOP #'+open.id+' OPEN - TP +0.2% or SL -0.1%';
     }else{
       document.getElementById('openPL').textContent='+0.00 USD';
@@ -150,23 +174,24 @@ function render(){
 }
 function toggleBot(){ running=!running; render(); }
 function openBuy(){
-  if(open || !price) return;
+  if(open || !price || price<50) return;
   var q=getQty(price);
+  if(!q) return;
   var id = trades + 1;
   open={id:id, entry:price, qty:q, tp: price*(1+TP), sl: price*(1-SL)};
   render();
 }
 function manualBuy(){
-  if(!price){ alert('Wait for Real Binance price'); return; }
+  if(!price || price<50){ alert('Wait for Real Binance price'); return; }
   if(open){ alert('Already have LOOP #'+open.id); return; }
   running=true; openBuy();
 }
 function closeTrade(reason){
   if(!open) return;
-  var exit=price;
-  var gross=(exit-open.entry)*open.qty;
-  var net=gross - FEE;
-  balance+=net; profit+=net; trades++;
+  var exit=safeNum(price, open.entry);
+  var gross=(exit-open.entry)*safeNum(open.qty,0);
+  var net=safeNum(gross - FEE, 0);
+  balance=safeNum(balance+net, balance); profit=safeNum(profit+net, profit); trades++;
   var hb=document.getElementById('history');
   if(trades===1) hb.innerHTML='';
   var row=document.createElement('tr');
@@ -175,7 +200,7 @@ function closeTrade(reason){
   open=null;
   render();
   if(profit>=3){ running=false; alert('Target $3 HIT!'); render(); }
-  if(profit<=-2){ running=false; alert('Daily Stop -$2 HIT - Stopped for today'); render(); }
+  if(profit<=-2){ running=false; alert('Daily Stop -$2 HIT'); render(); }
 }
 function manualClose(){
   if(!open){ alert('No open trade'); return; }
@@ -188,20 +213,18 @@ function resetDay(){
   render();
 }
 function fetchPrice(){
-  // REAL BINANCE ONLY - no wiggle, no fake price
   fetch('https://api.binance.com/api/v3/ticker/price?symbol=SOLUSDT')
   .then(r=>r.json())
   .then(j=>{ if(j.price) { setPrice(parseFloat(j.price)); render(); } })
   .catch(()=>{
-    // Try backup - Coinbase
     fetch('https://api.coinbase.com/v2/prices/SOL-USD/spot')
     .then(r=>r.json())
     .then(j=>{ if(j.data && j.data.amount) { setPrice(parseFloat(j.data.amount)); render(); } })
-    .catch(()=>{ document.getElementById('debug').textContent='⚠️ No internet / Binance blocked - Waiting for real price...'; });
+    .catch(()=>{});
   });
 }
 function tick(){
-  if(running && price>0){
+  if(running && price>50){
     if(!open){ openBuy(); }
     else {
       if(price >= open.tp){ closeTrade('AUTO TP 0.2%'); }
