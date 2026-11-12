@@ -3,133 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOL BOT V7.0 FIXED CAPITAL</title>
+<title>SOL BOT V7.0 LITE - CLICK FIX</title>
 <style>
-*{box-sizing:border-box}
-body{background:#0b0e14;color:#fff;font-family:Arial;padding:14px;margin:0}
-.top{text-align:center}
-.top b{color:#a259ff;font-size:18px}
-.top small{color:#8a9ab5;display:block;margin-top:2px}
-.card{background:#121626;border-radius:14px;padding:14px;margin-top:14px}
-.row{display:flex;justify-content:space-between;font-size:14px}
-.red{color:#ff2d55;font-weight:900}
-.green{color:#00d68f;font-weight:900}
-.loop{margin-top:10px;font-size:14px;line-height:1.6;color:#cbd5e1}
-.btns{display:flex;gap:10px;margin-top:12px}
-.btnBuy{flex:1;background:#00d68f;color:#000;border:0;padding:18px;border-radius:14px;font-weight:900;font-size:16px}
-.btnSell{flex:1;background:#ff2d55;color:#fff;border:0;padding:18px;border-radius:14px;font-weight:900;font-size:16px}
-.mainBtn{width:100%;background:#00d68f;color:#000;border:0;padding:15px;border-radius:14px;font-weight:900;margin-top:12px;font-size:15px}
-.mainBtn.paused{background:#ff2d55;color:#fff}
-.smallBtns{display:flex;gap:8px;margin-top:10px}
-.smallBtns button{flex:1;background:#1e2438;color:#8a9ab5;border:0;padding:10px;border-radius:10px;font-size:12px}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th{color:#8a9ab5;text-align:left}td{padding:7px 0;border-top:1px solid #222a44}
-.footer{text-align:center;color:#e6a817;font-size:12px;margin:14px 0}
-.capRow{display:flex;gap:8px;margin-top:8px}
-.capRow input{flex:1;background:#0b0e14;border:2px solid #a259ff;color:#fff;border-radius:10px;padding:14px;text-align:center;font-size:18px;font-weight:900;outline:none}
-.capRow input:focus{border-color:#00d68f}
-.capRow button{background:#00d68f;color:#000;border:0;border-radius:10px;padding:14px 20px;font-weight:900;font-size:15px}
-.progress{height:10px;background:#222a44;border-radius:10px;margin-top:8px;overflow:hidden}
-.progress div{height:100%;background:#00d68f;width:5%}
+body{background:#0b0e14;color:#fff;font-family:Arial;padding:16px;margin:0}
+h2{text-align:center;color:#a259ff;margin:0}
+.box{background:#121626;border-radius:14px;padding:16px;margin-top:14px;text-align:center}
+.big{font-size:36px;font-weight:900}
+button{width:100%;border:0;border-radius:14px;padding:20px;margin-top:12px;font-size:18px;font-weight:900}
+.buy{background:#00d68f;color:#000}
+.sell{background:#ff2d55;color:#fff}
+.save{background:#a259ff;color:#fff}
+input{width:100%;background:#0b0e14;border:2px solid #00d68f;color:#fff;border-radius:12px;padding:18px;text-align:center;font-size:22px;font-weight:900;box-sizing:border-box}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+th{color:#8a9ab5;text-align:left}td{padding:8px 0;border-top:1px solid #222a44}
 </style>
 </head>
 <body>
-<div class="top"><b id="priceTop">SOL: $182.20 • Live</b><small id="dailyTop">Daily $0.16 / $3.00 - 5%</small><div class="progress"><div id="progBar"></div></div><small id="leftText" style="color:#00d68f;margin-top:4px">95 trades left to $3</small></div>
-
-<div class="card">
-<div class="row"><span>● RUNNING</span><span class="red" id="openPL">$-0.02</span></div>
-<div class="loop" id="openTrade">SOL LOOP #0<br>Buy at $182.36 → TP $182.54<br>Current $182.20 • Need $0.34</div>
+<h2>SOL BOT V7.0 LITE</h2>
+<div class="box">
+<div id="price">SOL: $182.20 • Live</div>
+<div class="big" id="daily">Daily $0.16 / $3.00</div>
+<div id="status">● RUNNING</div>
+<div id="open" style="margin-top:10px;color:#cbd5e1">No open trade - Tap BUY</div>
 </div>
 
-<div class="btns">
-<button class="btnBuy" onclick="manualBuy()">🟢 BUY SOL</button>
-<button class="btnSell" onclick="manualClose()">🔴 CLOSE / SELL</button>
+<div class="box">
+<div style="margin-bottom:8px;font-weight:900">💰 YOUR CAPITAL - TAP BOX, TYPE, TAP SAVE</div>
+<input type="number" id="capitalInput" value="27.30">
+<button class="save" onclick="saveCapital()">SAVE CAPITAL ✅</button>
+<div id="capInfo" style="color:#00d68f;margin-top:8px">Capital $27.30 • Qty 0.15 SOL</div>
 </div>
 
-<div class="card" id="loopInfo">LOOP #0 OPEN - Waiting for +0.1% to CLOSE<br>Qty 0.15 SOL | TP 0.1% = $0.18 | Target +$3.00 | Daily Stop -$2.00</div>
+<button class="buy" onclick="doBuy()">🟢 BUY SOL - TEST CLICK</button>
+<button class="sell" onclick="doSell()">🔴 SELL / CLOSE</button>
+<button style="background:#1e2438;color:#fff" onclick="testClick()">🧪 TEST - TAP ME IF NOTHING WORKS</button>
 
-<button class="mainBtn" id="mainBtn" onclick="toggleBot()">● RUNNING - Tap to STOP</button>
-
-<div class="smallBtns">
-<button onclick="resetDay()">↺ RESET DAY - Keep Balance</button>
-<button onclick="fixNaN()">🛠️ Fix Error</button>
-<button onclick="fetchPrice(true)">↻ Refresh Price</button>
-</div>
-
-<div class="card" style="border:2px solid #a259ff">
-<label style="font-size:13px;color:#fff;font-weight:900">💰 Capital Limit - TYPE YOUR OWN HERE</label>
-<div class="capRow"><input type="number" id="capitalInput" value="27.30" placeholder="Type e.g. 10"><button onclick="saveCapital()">SAVE ✅</button></div>
-<div style="font-size:12px;color:#00d68f;margin-top:6px" id="capitalInfo">Capital $27.30 • Qty 0.15 SOL • Win ~$0.03 per trade</div>
-<div style="font-size:11px;color:#8a9ab5;margin-top:4px">Tip: Type number, then tap SAVE. It will NOT erase while you type now.</div>
-</div>
-
-<div class="card"><b>Trade History</b>
-<table><thead><tr><th>#</th><th>Buy → Sell</th><th>P/L</th><th>Reason</th></tr></thead>
-<tbody id="history"><tr><td colspan="4" style="text-align:center;color:#8a9ab5">No trades yet</td></tr></tbody></table>
-</div>
-
-<div class="footer">V7.0 Price Lock - Crazy prices ignored - Capital FIXED</div>
-
-<script>
-var balance=27.30, price=182.20, running=true, open=null, trades=0, profit=0.16;
-var capitalLimit=27.30, TP=0.001, FEE=0.002;
-var TODAY=new Date().toDateString();
-var KEY='sol_v70_fixed_cap';
-var lastFetch=Date.now(), lastPriceChange=Date.now(), priceSource='Binance';
-function fmt(n){ n=parseFloat(n); if(isNaN(n)) n=0; return '$'+n.toFixed(2); }
-function safeNum(v,d){ v=parseFloat(v); if(isNaN(v)||!isFinite(v)) return d; return v; }
-function fixNaN(){ localStorage.removeItem(KEY); balance=27.30; profit=0; trades=0; open=null; capitalLimit=27.30; document.getElementById('history').innerHTML='<tr><td colspan="4" style="text-align:center;color:#8a9ab5">No trades yet</td></tr>'; document.getElementById('capitalInput').value=27.30; alert('Fixed!'); render(); fetchPrice(true); }
-function getQty(p){ if(!p||p<50) return 0; return (capitalLimit*0.95)/p; }
-function saveCapital(){
-  var raw=document.getElementById('capitalInput').value;
-  var v=safeNum(raw,0);
-  if(!v||v<1){ alert('Type a number first, e.g. 10'); return; }
-  capitalLimit=v;
-  // FIX: allow change even if trade open - applies to NEXT trade
-  // Also update balance if you increase capital
-  if(v>balance) balance=v;
-  document.getElementById('capitalInfo').textContent='✅ SAVED! Capital '+fmt(capitalLimit)+' • Next Qty '+(capitalLimit*0.95/price).toFixed(4)+' SOL';
-  alert('✅ SAVED! Capital now '+fmt(capitalLimit));
-  render();
-}
-function saveState(){ try{ localStorage.setItem(KEY, JSON.stringify({balance:balance,profit:profit,trades:trades,open:open,running:running,date:TODAY,hist:document.getElementById('history').innerHTML,capitalLimit:capitalLimit})); }catch(e){} }
-function loadState(){ try{ var s=JSON.parse(localStorage.getItem(KEY)||'null'); if(!s) return; if(s.date!==TODAY){ balance=safeNum(s.balance,27.30); capitalLimit=safeNum(s.capitalLimit,27.30); profit=0; trades=0; open=null; return; } balance=safeNum(s.balance,27.30); profit=safeNum(s.profit,0); trades=safeNum(s.trades,0); open=s.open||null; running=s.running!==false; capitalLimit=safeNum(s.capitalLimit,27.30); if(open&&(isNaN(open.entry)||isNaN(open.qty))) open=null; if(s.hist&&trades>0) document.getElementById('history').innerHTML=s.hist; }catch(e){} }
-function setPrice(n, src){ n=safeNum(n,0); if(!n) return; if(n<50||n>500) return; if(price>0 && Math.abs(n-price) > 5) return; if(n!==price) lastPriceChange=Date.now(); price=n; if(src) priceSource=src; lastFetch=Date.now(); }
-function render(){
-  balance=safeNum(balance,27.30); profit=safeNum(profit,0); capitalLimit=safeNum(capitalLimit,27.30); price=safeNum(price,182.20);
-  var now=new Date(); var t=now.toLocaleTimeString('en-GB');
-  document.getElementById('priceTop').textContent='SOL: '+fmt(price)+' • Live • '+t;
-  var pct=Math.max(0,Math.min(100, profit/3*100));
-  document.getElementById('dailyTop').textContent='Daily '+fmt(Math.max(0,profit))+' / $3.00 - '+Math.floor(pct)+'%';
-  document.getElementById('progBar').style.width=pct+'%';
-  var left=Math.max(0, Math.ceil((3-profit)/0.03));
-  document.getElementById('leftText').textContent=left+' trades left to $3 • '+trades+' trades done';
-  // FIX: DO NOT overwrite capital input while user is typing
-  var capInput=document.getElementById('capitalInput');
-  if(document.activeElement!==capInput){
-    capInput.value=capitalLimit;
-  }
-  var q=getQty(price);
-  // Only update info if not just saved - keep saved message for 3 sec
-  if(document.activeElement!==capInput){
-    // keep it simple, show current
-  }
-  var mb=document.getElementById('mainBtn'); mb.textContent=running?'● RUNNING - Tap to STOP':'⏸ PAUSED - Tap to START'; mb.className='mainBtn'+(running?'':' paused');
-  if(open){
-    var pl=(price-open.entry)*open.qty; if(isNaN(pl)) pl=0;
-    document.getElementById('openPL').textContent=(pl>=0?'+':'')+fmt(pl);
-    document.getElementById('openPL').className=pl>=0?'green':'red';
-    var need=open.tp-price;
-    document.getElementById('openTrade').innerHTML='SOL LOOP #'+open.id+'<br>Buy at '+fmt(open.entry)+' → TP '+fmt(open.tp)+'<br>Current '+fmt(price)+' • Need '+fmt(need);
-    document.getElementById('loopInfo').innerHTML='LOOP #'+open.id+' OPEN - Waiting for +0.1% to CLOSE<br>Qty '+open.qty.toFixed(2)+' SOL | TP 0.1% = '+fmt(open.qty*open.entry*TP)+' | Target +$3.00 | Daily Stop -$2.00';
-  }else{
-    document.getElementById('openPL').textContent='+$0.00'; document.getElementById('openPL').className='green';
-    document.getElementById('openTrade').textContent=running?'No open trade - Auto will BUY soon':'Paused';
-    document.getElementById('loopInfo').innerHTML='No LOOP open - Waiting for next BUY<br>Qty '+q.toFixed(2)+' SOL | TP 0.1% = '+fmt(q*price*TP)+' | Target +$3.00 | Daily Stop -$2.00';
-  }
-  saveState();
-}
-function toggleBot(){ running=!running; render(); }
-function openBuy(){ if(open||!price||price<50) return; var q=getQty(price); if(!q) return; open={id:trades,entry:price,qty:q,tp:price*(1+TP)}; render(); }
-function manualBuy(){ if(open){ alert('Already open'); return; } running=true; openBuy(); }
-function closeTrade(reason){ if(!open) return; var exit=safeNum(price,open.entry); var net=safeNum((exit-open.entry)*safeNum(open.qty,0)-FEE,0); balance=safeNum(balance+net,balance); profit=safeNum(profit+net,profit); trades++; var hb=document.getElementById('history'); if(trades===1) hb.innerHTML=''; var row=document.createElement('tr'); row.innerHTML='<td>#'+trades+'</td><td>'+fmt(open.entry)+' → '+fmt(exit)+'</td><td style="color:'+(net>=0?'#00d68f':'#ff2d55')+'">'+(net>=0?'+':'')+fmt(net)+'</td><td>'+reason+'</td>'; hb.prepend(row); open=null; render();
+<div class="box"><b>History</b><table><thead><tr><th>#</th><th>Buy → Sell</th><th>P/L</th></tr></thead><tbody id="history"><tr><td colspan="3" style="color:#8a9ab5">No trades yet</td></tr></
