@@ -3,11 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOL BOT V8.1 PRO</title>
+<title>CRYPTO BOT V9.0 PRO</title>
 <style>
 *{box-sizing:border-box}
 body{background:#0b0e14;color:#fff;font-family:system-ui,-apple-system,Arial,sans-serif;padding:14px;margin:0;max-width:480px;margin-inline:auto}
 .top{text-align:center}
+.coinBar{display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:6px}
+.coinSelect{background:#121626;color:#a259ff;border:1px solid #a259ff;border-radius:10px;padding:6px 10px;font-weight:900;font-size:15px;cursor:pointer;outline:none}
 .top b{color:#a259ff;font-size:18px;display:block}
 .top small{color:#8a9ab5;display:block;margin-top:3px;font-size:12px}
 .badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;margin-top:5px;background:#1e2438;color:#00d68f}
@@ -41,6 +43,17 @@ td{padding:7px 0;border-top:1px solid #222a44}
 <body>
 
 <div class="top">
+  <div class="coinBar">
+    <select id="coinSelect" class="coinSelect" onchange="changeCoin()">
+      <option value="SOL">SOL (Solana)</option>
+      <option value="SUI">SUI (Sui)</option>
+      <option value="DOGE">DOGE (Dogecoin)</option>
+      <option value="XRP">XRP (Ripple)</option>
+      <option value="PEPE">PEPE (Pepe)</option>
+      <option value="BTC">BTC (Bitcoin)</option>
+      <option value="ETH">ETH (Ethereum)</option>
+    </select>
+  </div>
   <b id="priceTop">SOL: $81.61 • Starting...</b>
   <span class="badge wait" id="sourceBadge">Fetching live price...</span>
   <small id="dailyTop">Daily $0.00 / $3.00 (0%)</small>
@@ -57,7 +70,7 @@ td{padding:7px 0;border-top:1px solid #222a44}
 </div>
 
 <div class="btns">
-  <button class="btnBuy" onclick="manualBuy()">🟢 BUY SOL</button>
+  <button class="btnBuy" id="buyBtnText" onclick="manualBuy()">🟢 BUY SOL</button>
   <button class="btnSell" onclick="manualClose()">🔴 CLOSE / SELL</button>
 </div>
 
@@ -105,7 +118,7 @@ td{padding:7px 0;border-top:1px solid #222a44}
     <span style="font-size:12px;color:#8a9ab5" id="winRate">Win Rate: 0%</span>
   </div>
   <table>
-    <thead><tr><th>#</th><th>Buy → Sell</th><th>Net P/L</th><th>Exit</th></tr></thead>
+    <thead><tr><th>#</th><th>Coin / Entry → Exit</th><th>Net P/L</th><th>Exit</th></tr></thead>
     <tbody id="history">
       <tr><td colspan="4" style="text-align:center;color:#8a9ab5">No trades yet</td></tr>
     </tbody>
@@ -116,11 +129,22 @@ td{padding:7px 0;border-top:1px solid #222a44}
   </div>
 </div>
 
-<div class="footer">V8.1 PRO • Parallel Multi-Exchange Feed & SL/TP Protection</div>
+<div class="footer">V9.0 PRO • Multi-Coin Parallel Feed & SL/TP Protection</div>
 
 <script>
+var COINS = {
+  SOL:  { sym: 'SOL',  cg: 'solana',   kraken: 'SOLUSD',  fallback: 81.61,      dec: 2, qtyDec: 4 },
+  SUI:  { sym: 'SUI',  cg: 'sui',      kraken: 'SUIUSD',  fallback: 1.85,       dec: 4, qtyDec: 2 },
+  DOGE: { sym: 'DOGE', cg: 'dogecoin', kraken: 'XDGUSD',  fallback: 0.1650,     dec: 4, qtyDec: 1 },
+  XRP:  { sym: 'XRP',  cg: 'ripple',   kraken: 'XRPUSD',  fallback: 2.3500,     dec: 4, qtyDec: 2 },
+  PEPE: { sym: 'PEPE', cg: 'pepe',     kraken: 'PEPEUSD', fallback: 0.00000850, dec: 8, qtyDec: 0 },
+  BTC:  { sym: 'BTC',  cg: 'bitcoin',  kraken: 'XBTUSD',  fallback: 88500.00,   dec: 2, qtyDec: 6 },
+  ETH:  { sym: 'ETH',  cg: 'ethereum', kraken: 'ETHUSD',  fallback: 2150.00,    dec: 2, qtyDec: 5 }
+};
+
+var currentCoin = 'SOL';
 var balance = 27.30;
-var price = 81.61;
+var price = COINS[currentCoin].fallback;
 var hasLivePrice = false;
 var running = true;
 var open = null;
@@ -136,14 +160,21 @@ var DAILY_TARGET = 3.00;
 var DAILY_STOP = -2.00;
 
 var TODAY = new Date().toDateString();
-var KEY = 'sol_v81_pro';
+var KEY = 'crypto_v90_pro';
 var lastFetch = 0;
 var priceSource = 'Fetching live price...';
 
-function fmt(n) {
+function fmtUSD(n) {
   n = parseFloat(n);
   if (isNaN(n) || !isFinite(n)) n = 0;
   return '$' + n.toFixed(2);
+}
+
+function fmtCoinPrice(n, coinCode) {
+  var cfg = COINS[coinCode || currentCoin] || COINS.SOL;
+  n = parseFloat(n);
+  if (isNaN(n) || !isFinite(n)) n = cfg.fallback;
+  return '$' + n.toFixed(cfg.dec);
 }
 
 function safeNum(v, d) {
@@ -156,6 +187,22 @@ function getQty(p) {
   if (!p || p <= 0) return 0;
   var usable = Math.min(capitalLimit, balance) * 0.95;
   return usable / p;
+}
+
+function changeCoin() {
+  var sel = document.getElementById('coinSelect').value;
+  if (open) {
+    alert('Close your active ' + open.coin + ' trade before switching coins!');
+    document.getElementById('coinSelect').value = currentCoin;
+    return;
+  }
+  currentCoin = sel;
+  price = COINS[currentCoin].fallback;
+  hasLivePrice = false;
+  lastFetch = 0;
+  priceSource = 'Fetching ' + currentCoin + ' price...';
+  render();
+  fetchPrice(true);
 }
 
 function saveSettings() {
@@ -186,6 +233,7 @@ function saveSettings() {
 function saveState() {
   try {
     localStorage.setItem(KEY, JSON.stringify({
+      currentCoin: currentCoin,
       balance: balance,
       profit: profit,
       trades: trades,
@@ -206,6 +254,11 @@ function loadState() {
   try {
     var s = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (!s) return;
+    if (s.currentCoin && COINS[s.currentCoin]) {
+      currentCoin = s.currentCoin;
+      document.getElementById('coinSelect').value = currentCoin;
+      price = COINS[currentCoin].fallback;
+    }
     capitalLimit = safeNum(s.capitalLimit, 27.30);
     TP_PCT = safeNum(s.TP_PCT, 0.35);
     SL_PCT = safeNum(s.SL_PCT, 0.50);
@@ -216,274 +269,4 @@ function loadState() {
     document.getElementById('slInput').value = SL_PCT;
     document.getElementById('feeInput').value = FEE_PCT;
 
-    if (s.date !== TODAY) {
-      balance = safeNum(s.balance, capitalLimit);
-      profit = 0;
-      trades = 0;
-      wins = 0;
-      open = null;
-      return;
-    }
-    balance = safeNum(s.balance, capitalLimit);
-    profit = safeNum(s.profit, 0);
-    trades = safeNum(s.trades, 0);
-    wins = safeNum(s.wins, 0);
-    open = s.open || null;
-    running = s.running !== false;
-    if (open && (isNaN(open.entry) || isNaN(open.qty))) open = null;
-    if (s.hist && trades > 0) document.getElementById('history').innerHTML = s.hist;
-  } catch (e) {}
-}
-
-function setPrice(n, src) {
-  n = safeNum(n, 0);
-  if (n < 5 || n > 2000) return;
-  if (hasLivePrice && Math.abs(n - price) / price > 0.15) return;
-
-  price = n;
-  hasLivePrice = true;
-  priceSource = src;
-  lastFetch = Date.now();
-}
-
-function render() {
-  var now = new Date();
-  var t = now.toLocaleTimeString('en-GB');
-  document.getElementById('priceTop').textContent = 'SOL: ' + fmt(price) + ' • ' + t;
-
-  var badge = document.getElementById('sourceBadge');
-  badge.textContent = priceSource;
-  if (priceSource.indexOf('SIM') !== -1) badge.className = 'badge sim';
-  else if (priceSource.indexOf('Fetching') !== -1) badge.className = 'badge wait';
-  else badge.className = 'badge';
-
-  var pct = Math.max(0, Math.min(100, (profit / DAILY_TARGET) * 100));
-  document.getElementById('dailyTop').textContent = 'Daily ' + (profit >= 0 ? '+' : '') + fmt(profit) + ' / ' + fmt(DAILY_TARGET) + ' (' + Math.floor(pct) + '%)';
-  document.getElementById('progBar').style.width = pct + '%';
-
-  var q = getQty(price);
-  var posValue = q * price;
-  var estWin = posValue * ((TP_PCT - FEE_PCT) / 100);
-  var estLoss = posValue * ((SL_PCT + FEE_PCT) / 100);
-
-  var leftTrades = estWin > 0 ? Math.max(0, Math.ceil((DAILY_TARGET - profit) / estWin)) : 0;
-  document.getElementById('leftText').textContent = '~' + leftTrades + ' wins left to ' + fmt(DAILY_TARGET) + ' • ' + trades + ' trades done';
-
-  document.getElementById('capitalInfo').textContent =
-    'Size: ' + q.toFixed(4) + ' SOL (' + fmt(posValue) + ') • Est Win: +' + fmt(estWin) + ' | Max Loss: -' + fmt(estLoss);
-
-  var mb = document.getElementById('mainBtn');
-  mb.textContent = running ? '● RUNNING - Tap to STOP' : '⏸ PAUSED - Tap to START';
-  mb.className = 'mainBtn' + (running ? '' : ' paused');
-
-  var statusLbl = document.getElementById('statusLabel');
-  statusLbl.textContent = running ? '● RUNNING' : '⏸ PAUSED';
-  statusLbl.style.color = running ? '#00d68f' : '#ff2d55';
-
-  if (open) {
-    var grossPL = (price - open.entry) * open.qty;
-    var estFee = (open.entry * open.qty) * (FEE_PCT / 100);
-    var netPL = grossPL - estFee;
-
-    document.getElementById('openPL').textContent = (netPL >= 0 ? '+' : '') + fmt(netPL);
-    document.getElementById('openPL').className = netPL >= 0 ? 'green' : 'red';
-
-    var need = open.tp - price;
-    document.getElementById('openTrade').innerHTML =
-      '<b>SOL LOOP #' + (open.id + 1) + '</b> (' + open.qty.toFixed(4) + ' SOL)<br>' +
-      'Entry: ' + fmt(open.entry) + ' → TP: <span class="green">' + fmt(open.tp) + '</span> | SL: <span class="red">' + fmt(open.sl) + '</span><br>' +
-      'Current: ' + fmt(price) + ' • To TP: ' + (need >= 0 ? '+' : '') + fmt(need);
-
-    document.getElementById('loopInfo').innerHTML =
-      'ACTIVE TRADE • Waiting for +' + TP_PCT + '% TP or -' + SL_PCT + '% SL<br>' +
-      'Daily Target: +' + fmt(DAILY_TARGET) + ' | Daily Stop: ' + fmt(DAILY_STOP);
-  } else {
-    document.getElementById('openPL').textContent = '+$0.00';
-    document.getElementById('openPL').className = 'green';
-    document.getElementById('openTrade').textContent = running
-      ? (hasLivePrice ? 'No open trade - Auto-entering on next tick...' : 'Waiting for initial price feed...')
-      : 'Bot is paused. Tap START or BUY SOL.';
-
-    document.getElementById('loopInfo').innerHTML =
-      'READY • Next Size: ' + q.toFixed(4) + ' SOL | TP: +' + TP_PCT + '% | SL: -' + SL_PCT + '%<br>' +
-      'Daily Target: +' + fmt(DAILY_TARGET) + ' | Daily Stop: ' + fmt(DAILY_STOP);
-  }
-
-  var wr = trades > 0 ? Math.round((wins / trades) * 100) : 0;
-  document.getElementById('winRate').textContent = 'Win Rate: ' + wr + '%';
-  document.getElementById('balDisplay').textContent = 'Balance: ' + fmt(balance);
-  document.getElementById('winsDisplay').textContent = 'Wins: ' + wins + ' | Losses: ' + (trades - wins);
-
-  saveState();
-}
-
-function toggleBot() {
-  running = !running;
-  render();
-}
-
-function openBuy() {
-  if (open || !price || price <= 0) return;
-  var q = getQty(price);
-  if (q <= 0) return;
-  open = {
-    id: trades,
-    entry: price,
-    qty: q,
-    tp: price * (1 + TP_PCT / 100),
-    sl: price * (1 - SL_PCT / 100)
-  };
-  render();
-}
-
-function manualBuy() {
-  if (open) { alert('A trade is already open.'); return; }
-  running = true;
-  openBuy();
-}
-
-function closeTrade(reason) {
-  if (!open) return;
-  var exit = safeNum(price, open.entry);
-  var gross = (exit - open.entry) * open.qty;
-  var fee = (open.entry * open.qty) * (FEE_PCT / 100);
-  var net = gross - fee;
-
-  balance = safeNum(balance + net, balance);
-  profit = safeNum(profit + net, profit);
-  trades++;
-  if (net > 0) wins++;
-
-  var hb = document.getElementById('history');
-  if (trades === 1) hb.innerHTML = '';
-  var row = document.createElement('tr');
-  row.innerHTML =
-    '<td>#' + trades + '</td>' +
-    '<td>' + fmt(open.entry) + ' → ' + fmt(exit) + '</td>' +
-    '<td style="font-weight:700;color:' + (net >= 0 ? '#00d68f' : '#ff2d55') + '">' + (net >= 0 ? '+' : '') + fmt(net) + '</td>' +
-    '<td>' + reason + '</td>';
-  hb.prepend(row);
-  open = null;
-  render();
-
-  if (profit >= DAILY_TARGET) {
-    running = false;
-    render();
-    alert('Daily Target of ' + fmt(DAILY_TARGET) + ' HIT! Bot paused.');
-  } else if (profit <= DAILY_STOP) {
-    running = false;
-    render();
-    alert('Daily Stop Loss of ' + fmt(DAILY_STOP) + ' triggered! Bot paused.');
-  }
-}
-
-function manualClose() {
-  if (!open) { alert('No open trade to close.'); return; }
-  closeTrade('MANUAL');
-}
-
-function resetDay() {
-  if (!confirm('Reset daily P/L and trade log while keeping ' + fmt(balance) + ' balance?')) return;
-  profit = 0;
-  trades = 0;
-  wins = 0;
-  open = null;
-  running = false;
-  document.getElementById('history').innerHTML = '<tr><td colspan="4" style="text-align:center;color:#8a9ab5">No trades yet</td></tr>';
-  render();
-}
-
-function hardReset() {
-  if (!confirm('Reset everything back to default ($27.30)?')) return;
-  localStorage.removeItem(KEY);
-  location.reload();
-}
-
-function querySource(url, parser, name) {
-  return new Promise(function(resolve, reject) {
-    var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-    var timer = setTimeout(function() {
-      if (ctrl) ctrl.abort();
-      reject(new Error('timeout'));
-    }, 3000);
-
-    fetch(url, ctrl ? { signal: ctrl.signal, cache: 'no-store' } : { cache: 'no-store' })
-      .then(function(r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
-      })
-      .then(function(j) {
-        clearTimeout(timer);
-        var p = parser(j);
-        if (p > 5 && p < 2000) resolve({ price: p, source: name });
-        else reject(new Error('invalid price'));
-      })
-      .catch(function(e) {
-        clearTimeout(timer);
-        reject(e);
-      });
-  });
-}
-
-function fetchPrice(manual) {
-  var sources = [
-    querySource('https://api.coinbase.com/v2/prices/SOL-USD/spot', function(j) { return parseFloat(j.data.amount); }, 'Coinbase Live'),
-    querySource('https://api.binance.com/api/v3/ticker/price?symbol=SOLUSDT', function(j) { return parseFloat(j.price); }, 'Binance Live'),
-    querySource('https://api.kraken.com/0/public/Ticker?pair=SOLUSD', function(j) { return parseFloat(j.result.SOLUSD.c[0]); }, 'Kraken Live'),
-    querySource('https://min-api.cryptocompare.com/data/price?fsym=SOL&tsyms=USD', function(j) { return parseFloat(j.USD); }, 'CryptoCompare Live'),
-    querySource('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd', function(j) { return parseFloat(j.solana.usd); }, 'CoinGecko Live')
-  ];
-
-  // Race all 5 APIs in parallel — fastest valid response wins immediately
-  var settled = false;
-  var failedCount = 0;
-  sources.forEach(function(p) {
-    p.then(function(res) {
-      if (!settled) {
-        settled = true;
-        setPrice(res.price, res.source);
-        render();
-      }
-    }).catch(function() {
-      failedCount++;
-      if (failedCount === sources.length && !settled && !hasLivePrice) {
-        hasLivePrice = true;
-        priceSource = 'SIM MODE (APIs Offline)';
-        render();
-      }
-    });
-  });
-}
-
-function tick() {
-  if (Date.now() - lastFetch > 6000) {
-    var volatility = price * 0.0018;
-    var move = (Math.random() - 0.48) * volatility;
-    price = safeNum(price + move, 81.61);
-    hasLivePrice = true;
-    priceSource = 'SIM MODE (APIs Offline)';
-  }
-
-  if (running && hasLivePrice && price > 0) {
-    if (!open) {
-      openBuy();
-    } else if (price >= open.tp) {
-      closeTrade('TP HIT');
-    } else if (price <= open.sl) {
-      closeTrade('SL HIT');
-    }
-  }
-  render();
-}
-
-window.addEventListener('beforeunload', saveState);
-window.addEventListener('pagehide', saveState);
-
-loadState();
-render();
-fetchPrice(true);
-setInterval(fetchPrice, 4000);
-setInterval(tick, 2000);
-</script>
-</body>
-</html>
+    
