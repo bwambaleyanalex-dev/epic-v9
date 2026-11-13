@@ -1,65 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>V7.1 UNSTUCK</title>
-<style>
-body{background:#0f1115;color:#fff;font-family:Arial;padding:16px}
-.card{background:#1a1d27;border-radius:16px;padding:16px;margin-bottom:12px;text-align:center}
-.big{font-size:32px;font-weight:900}
-button{width:100%;padding:18px;border:0;border-radius:14px;font-size:17px;font-weight:900;margin-top:10px}
-.buy{background:#00d68f;color:#000}
-.sell{background:#ff2d55;color:#fff}
-.unstuck{background:#ffcc00;color:#000}
-input{width:100%;padding:14px;border-radius:12px;border:2px solid #00d68f;background:#0f1115;color:#fff;text-align:center;font-size:20px;font-weight:900;box-sizing:border-box}
-small{color:#8a9ab5}
-</style>
-</head>
-<body>
-<div class="card">
-<div>SOL BOT V7.1 - UNSTUCK</div>
-<div class="big" id="price">SOL: $182.20</div>
-<div id="daily">Daily $0.16 / $3.00</div>
-<div id="open" style="margin-top:10px">No open trade</div>
-</div>
-
-<div class="card">
-<small>YOUR CAPITAL</small>
-<input id="cap" type="number" value="27.30">
-<button style="background:#a259ff;color:#fff" onclick="saveCap()">SAVE CAPITAL ✅</button>
-<div id="capInfo" style="color:#00d68f;margin-top:6px">Capital $27.30</div>
-<small>Type price from Binance if price is stuck:</small>
-<input id="manualPrice" type="number" placeholder="Type real SOL price e.g. 185.50" style="margin-top:8px;border-color:#ffcc00">
-<button style="background:#222;color:#fff" onclick="setManualPrice()">SET REAL PRICE ➜ UNSTICK</button>
-</div>
-
-<button class="buy" onclick="doBuy()">🟢 BUY SOL</button>
-<button class="sell" onclick="doSell()">🔴 CLOSE / SELL</button>
-<button class="unstuck" onclick="unstick()">⚡ FORCE UNSTICK - CLOSE + RESTART</button>
-
-<div class="card"><b>History</b><div id="hist" style="font-size:13px;margin-top:8px;color:#8a9ab5">No trades yet</div></div>
-
-<script>
-var price=182.20, capital=27.30, profit=0.16, trades=0, open=null;
-function fmt(n){return '$'+Number(n).toFixed(2)}
-function saveCap(){ var v=parseFloat(document.getElementById('cap').value); if(!v||v<1){alert('Type capital first');return;} capital=v; document.getElementById('capInfo').textContent='✅ SAVED Capital '+fmt(capital); alert('Saved '+fmt(capital)); }
-function setManualPrice(){ var v=parseFloat(document.getElementById('manualPrice').value); if(!v||v<50){alert('Type real SOL price from Binance, e.g. 185');return;} price=v; update(); alert('Price set to '+fmt(price)+' - Now tap UNSTICK'); }
-function update(){ document.getElementById('price').textContent='SOL: '+fmt(price); document.getElementById('daily').textContent='Daily '+fmt(Math.max(0,profit))+' / $3.00 • '+trades+' trades'; if(open){ var pl=(price-open.entry)*open.qty; document.getElementById('open').innerHTML='OPEN: Buy '+fmt(open.entry)+' → TP '+fmt(open.tp)+'<br>Now '+fmt(price)+' • P/L '+(pl>=0?'+':'')+fmt(pl); } else { document.getElementById('open').textContent='No open trade - Ready to BUY'; } }
-function doBuy(){ if(open){alert('Already open');return;} var q=(capital*0.95)/price; open={entry:price,qty:q,tp:price*1.001}; update(); }
-function doSell(){ if(!open){alert('No open trade');return;} var net=(price-open.entry)*open.qty-0.002; profit+=net; trades++; addHist(open.entry,price,net); open=null; update(); }
-function addHist(b,s,net){ var h=document.getElementById('hist'); if(trades===1) h.innerHTML=''; h.innerHTML='<div>#'+trades+' '+fmt(b)+' → '+fmt(s)+' = '+(net>=0?'+':'')+fmt(net)+'</div>'+h.innerHTML; }
-function unstick(){ // The main fix - closes stuck trade and starts fresh
-  if(open){ var net=(price-open.entry)*open.qty-0.002; profit+=net; trades++; addHist(open.entry,price,net); }
-  open=null;
-  // Start fresh at current price
-  var q=(capital*0.95)/price; open={entry:price,qty:q,tp:price*1.001};
-  update();
-  alert('✅ UNSTUCK! Old stuck trade closed, new trade started at '+fmt(price));
+// FIX FOR V9 SMART - Price -- fix, works on GitHub Pages
+async function fetchPrice(){
+  const urls = [
+    'https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd',
+    'https://api.allorigins.win/raw?url='+encodeURIComponent('https://api.binance.com/api/v3/ticker/price?symbol=SOLUSDT'),
+    'https://api.coinbase.com/v2/prices/SOL-USD/spot'
+  ];
+  for(let u of urls){
+    try{
+      const r = await fetch(u);
+      const j = await r.json();
+      let p = 0;
+      if(j.solana) p = j.solana.usd;
+      else if(j.price) p = parseFloat(j.price);
+      else if(j.data) p = parseFloat(j.data.amount);
+      if(p > 50 && p < 500){
+        price = p;
+        document.getElementById('priceText').textContent = 'Price: $' + p.toFixed(2) + ' • Live';
+        return;
+      }
+    }catch(e){}
+  }
 }
-// Slow price move, never blocks clicks
-setInterval(function(){ price += (Math.random()-0.47)*0.25; if(price<150)price=150; if(price>250)price=250; if(open && price>=open.tp){ var net=(price-open.entry)*open.qty-0.002; profit+=net; trades++; addHist(open.entry,price,net); open=null; } update(); },2500);
-update();
-</script>
-</body>
-</html>
+setInterval(fetchPrice, 4000);
+fetchPrice();
