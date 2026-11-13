@@ -3,17 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CRYPTO BOT V11.2 PRO • INSTANT IGNITION</title>
+<title>CRYPTO BOT V11.3 PRO • STABLE</title>
 <style>
 *{box-sizing:border-box}
 body{background:#0b0e14;color:#fff;font-family:system-ui,-apple-system,Arial,sans-serif;padding:14px;margin:0;max-width:500px;margin-inline:auto}
-.top{text-align:center}
-.coinBar{display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:6px}
-.coinSelect{background:#121626;color:#f0b90b;border:1px solid #f0b90b;border-radius:10px;padding:7px 12px;font-weight:900;font-size:15px;cursor:pointer;outline:none}
-.top b{color:#f0b90b;font-size:18px;display:block}
-.top small{color:#8a9ab5;display:block;margin-top:3px;font-size:12px}
-.badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;margin-top:5px;background:#1e2438;color:#00d68f}
-.badge.wait{color:#f0b90b}
+.top{text-align:center;background:#121626;border-radius:14px;padding:14px;border:1px solid #1e2438}
+.coinBar{display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:8px}
+.coinSelect{background:#0b0e14;color:#f0b90b;border:1px solid #f0b90b;border-radius:10px;padding:8px 14px;font-weight:900;font-size:16px;cursor:pointer;outline:none}
+.top b{color:#f0b90b;font-size:19px;display:block}
+.top small{color:#8a9ab5;display:block;margin-top:4px;font-size:12px}
+.badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;margin-top:6px;background:#1e2438;color:#00d68f}
 .card{background:#121626;border-radius:14px;padding:14px;margin-top:12px;border:1px solid #1e2438}
 .row{display:flex;justify-content:space-between;align-items:center;font-size:14px}
 .red{color:#ff2d55;font-weight:900}
@@ -57,9 +56,9 @@ td{padding:7px 0;border-top:1px solid #222a44}
       <option value="ETH">ETH / USDT</option>
     </select>
   </div>
-  <b id="priceTop">SOL: $81.60 • Ready</b>
-  <span class="badge" id="sourceBadge">Binance Live Engine Active</span>
-  <small id="dailyTop">Daily $0.00 / $3.00 (0%)</small>
+  <b id="priceTop">SOL: $81.60 • Live</b>
+  <span class="badge" id="sourceBadge">Binance Engine Active</span>
+  <small id="dailyTop" style="margin-top:6px">Daily $0.00 / $3.00 (0%)</small>
   <div class="progress"><div id="progBar"></div></div>
   <small id="leftText" style="color:#00d68f;margin-top:5px">Target: $3.00 • 0 closed trades</small>
 </div>
@@ -88,7 +87,7 @@ td{padding:7px 0;border-top:1px solid #222a44}
 <div class="smallBtns">
   <button onclick="resetDay()">↺ Reset Day</button>
   <button onclick="hardReset()">🛠️ Full Reset</button>
-  <button onclick="fetchBinancePrices(true)">↻ Sync Binance</button>
+  <button onclick="fetchBinancePrices()">↻ Sync Price</button>
 </div>
 
 <div class="card">
@@ -149,25 +148,18 @@ td{padding:7px 0;border-top:1px solid #222a44}
   </div>
 </div>
 
-<div class="footer">V11.2 PRO • Instant Ignition & Manual Multi-Trade Engine</div>
+<div class="footer">V11.3 PRO • Stable Layout & Engine</div>
 
 <script>
 var COINS = {
-  SOL:  { sym: 'SOLUSDT',  dec: 2, qtyDec: 4, fallback: 81.60 },
-  SUI:  { sym: 'SUIUSDT',  dec: 4, qtyDec: 2, fallback: 1.85 },
-  DOGE: { sym: 'DOGEUSDT', dec: 4, qtyDec: 1, fallback: 0.165 },
-  XRP:  { sym: 'XRPUSDT',  dec: 4, qtyDec: 2, fallback: 2.35 },
-  PEPE: { sym: 'PEPEUSDT', dec: 8, qtyDec: 0, fallback: 0.0000085 },
-  BTC:  { sym: 'BTCUSDT',  dec: 2, qtyDec: 6, fallback: 88500 },
-  ETH:  { sym: 'ETHUSDT',  dec: 2, qtyDec: 5, fallback: 2150 }
+  SOL:  { sym: 'SOLUSDT',  dec: 2, qtyDec: 4, price: 81.60 },
+  SUI:  { sym: 'SUIUSDT',  dec: 4, qtyDec: 2, price: 1.85 },
+  DOGE: { sym: 'DOGEUSDT', dec: 4, qtyDec: 1, price: 0.165 },
+  XRP:  { sym: 'XRPUSDT',  dec: 4, qtyDec: 2, price: 2.35 },
+  PEPE: { sym: 'PEPEUSDT', dec: 8, qtyDec: 0, price: 0.0000085 },
+  BTC:  { sym: 'BTCUSDT',  dec: 2, qtyDec: 6, price: 88500 },
+  ETH:  { sym: 'ETHUSDT',  dec: 2, qtyDec: 5, price: 2150 }
 };
-
-var prices = {};
-// Preload fallbacks instantly so UI never blocks
-Object.keys(COINS).forEach(function(c) { prices[c] = COINS[c].fallback; });
-
-var binanceOnline = true;
-var statusMsg = 'Binance Live Engine Active';
 
 var currentCoin = 'SOL';
 var freeCash = 30.00;
@@ -189,7 +181,8 @@ var DAILY_TARGET = 3.00;
 var DAILY_STOP = -2.00;
 
 var TODAY = new Date().toDateString();
-var KEY = 'binance_v112_ignition';
+var KEY = 'binance_v113_stable';
+var statusText = 'Binance Engine Active';
 
 function fmtUSD(n) {
   n = parseFloat(n);
@@ -200,7 +193,7 @@ function fmtUSD(n) {
 function fmtCoinPrice(n, coinCode) {
   var cfg = COINS[coinCode || currentCoin] || COINS.SOL;
   n = parseFloat(n);
-  if (isNaN(n) || !isFinite(n) || n <= 0) n = cfg.fallback;
+  if (isNaN(n) || !isFinite(n) || n <= 0) n = cfg.price;
   return '$' + n.toFixed(cfg.dec);
 }
 
@@ -219,31 +212,4 @@ function saveSettings() {
   var cap = safeNum(document.getElementById('capitalInput').value, 0);
   var sz = safeNum(document.getElementById('sizeInput').value, 0);
   var mx = Math.floor(safeNum(document.getElementById('maxTradesInput').value, 1));
-  var mode = document.getElementById('autoModeInput').value;
-  var tp = safeNum(document.getElementById('tpInput').value, 0);
-  var sl = safeNum(document.getElementById('slInput').value, 0);
-  var fee = safeNum(document.getElementById('feeInput').value, 0);
-
-  if (cap < 5) { alert('Minimum Total Capital is $5.00'); return; }
-  if (sz < 2) { alert('Minimum Size Per Trade is $2.00'); return; }
-  if (mx < 1 || mx > 25) { alert('Max Open Trades must be between 1 and 25'); return; }
-  if (tp <= fee) { alert('Take Profit % must exceed Round-Trip Fee %!'); return; }
-  if (sl < 0.05) { alert('Minimum Stop Loss is 0.05%'); return; }
-
-  if (openTrades.length === 0 && closedCount === 0) {
-    freeCash = cap;
-  } else {
-    var diff = cap - totalCapital;
-    freeCash = Math.max(0, freeCash + diff);
-  }
-
-  totalCapital = cap;
-  tradeSizeUSD = sz;
-  maxOpenTrades = mx;
-  autoMode = mode;
-  TP_PCT = tp;
-  SL_PCT = sl;
-  FEE_PCT = fee;
-
-  saveState();
-  render();
+  var
