@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CRYPTO BOT V10.0 PRO • BINANCE MULTI-TRADE</title>
+<title>CRYPTO BOT V11.0 PRO • BINANCE PROXY</title>
 <style>
 *{box-sizing:border-box}
 body{background:#0b0e14;color:#fff;font-family:system-ui,-apple-system,Arial,sans-serif;padding:14px;margin:0;max-width:500px;margin-inline:auto}
@@ -58,8 +58,8 @@ td{padding:7px 0;border-top:1px solid #222a44}
       <option value="ETH">ETH / USDT</option>
     </select>
   </div>
-  <b id="priceTop">SOL: Connecting to Binance...</b>
-  <span class="badge wait" id="sourceBadge">Connecting to Binance API...</span>
+  <b id="priceTop">SOL: Connecting...</b>
+  <span class="badge wait" id="sourceBadge">Connecting via Binance Proxy...</span>
   <small id="dailyTop">Daily $0.00 / $3.00 (0%)</small>
   <div class="progress"><div id="progBar"></div></div>
   <small id="leftText" style="color:#00d68f;margin-top:5px">Target: $3.00 • 0 closed trades</small>
@@ -81,7 +81,7 @@ td{padding:7px 0;border-top:1px solid #222a44}
 </div>
 
 <div class="card" id="loopInfo" style="font-size:12px;color:#cbd5e1;line-height:1.5">
-  Initializing Binance multi-trade engine...
+  Initializing multi-trade engine...
 </div>
 
 <button class="mainBtn" id="mainBtn" onclick="toggleBot()">● RUNNING - Tap to STOP</button>
@@ -105,7 +105,7 @@ td{padding:7px 0;border-top:1px solid #222a44}
     </div>
     <div class="field">
       <label>Max Open Trades</label>
-      <input type="number" id="maxTradesInput" min="1" max="20" step="1" value="3">
+      <input type="number" id="maxTradesInput" min="1" max="25" step="1" value="3">
     </div>
     <div class="field">
       <label>Auto-Entry Mode</label>
@@ -150,34 +150,33 @@ td{padding:7px 0;border-top:1px solid #222a44}
   </div>
 </div>
 
-<div class="footer">V10.0 PRO • Strict Binance API & Multi-Position Portfolio Engine</div>
+<div class="footer">V11.0 PRO • Binance Proxy & Multi-Position Engine</div>
 
 <script>
 var COINS = {
-  SOL:  { sym: 'SOLUSDT',  dec: 2, qtyDec: 4 },
-  SUI:  { sym: 'SUIUSDT',  dec: 4, qtyDec: 2 },
-  DOGE: { sym: 'DOGEUSDT', dec: 4, qtyDec: 1 },
-  XRP:  { sym: 'XRPUSDT',  dec: 4, qtyDec: 2 },
-  PEPE: { sym: 'PEPEUSDT', dec: 8, qtyDec: 0 },
-  BTC:  { sym: 'BTCUSDT',  dec: 2, qtyDec: 6 },
-  ETH:  { sym: 'ETHUSDT',  dec: 2, qtyDec: 5 }
+  SOL:  { sym: 'SOLUSDT',  dec: 2, qtyDec: 4, fallback: 81.60 },
+  SUI:  { sym: 'SUIUSDT',  dec: 4, qtyDec: 2, fallback: 1.85 },
+  DOGE: { sym: 'DOGEUSDT', dec: 4, qtyDec: 1, fallback: 0.165 },
+  XRP:  { sym: 'XRPUSDT',  dec: 4, qtyDec: 2, fallback: 2.35 },
+  PEPE: { sym: 'PEPEUSDT', dec: 8, qtyDec: 0, fallback: 0.0000085 },
+  BTC:  { sym: 'BTCUSDT',  dec: 2, qtyDec: 6, fallback: 88500 },
+  ETH:  { sym: 'ETHUSDT',  dec: 2, qtyDec: 5, fallback: 2150 }
 };
 
-var prices = {}; // Live Binance prices map: { SOL: 81.61, ... }
+var prices = {};
 var binanceOnline = false;
 var lastBinanceSync = 0;
-var statusMsg = 'Connecting to Binance API...';
+var statusMsg = 'Connecting via Binance Proxy...';
 
 var currentCoin = 'SOL';
 var freeCash = 30.00;
 var running = true;
-var openTrades = []; // Array of active trade objects
+var openTrades = [];
 var nextTradeNum = 1;
 var closedCount = 0;
 var wins = 0;
 var profit = 0;
 
-// Settings
 var totalCapital = 30.00;
 var tradeSizeUSD = 10.00;
 var maxOpenTrades = 3;
@@ -189,7 +188,7 @@ var DAILY_TARGET = 3.00;
 var DAILY_STOP = -2.00;
 
 var TODAY = new Date().toDateString();
-var KEY = 'binance_v100_multi';
+var KEY = 'binance_v110_proxy';
 
 function fmtUSD(n) {
   n = parseFloat(n);
@@ -200,7 +199,7 @@ function fmtUSD(n) {
 function fmtCoinPrice(n, coinCode) {
   var cfg = COINS[coinCode || currentCoin] || COINS.SOL;
   n = parseFloat(n);
-  if (isNaN(n) || !isFinite(n) || n <= 0) return '—';
+  if (isNaN(n) || !isFinite(n) || n <= 0) n = cfg.fallback;
   return '$' + n.toFixed(cfg.dec);
 }
 
@@ -226,4 +225,371 @@ function saveSettings() {
 
   if (cap < 5) { alert('Minimum Total Capital is $5.00'); return; }
   if (sz < 2) { alert('Minimum Size Per Trade is $2.00'); return; }
-  if (mx < 1 || mx >
+  if (mx < 1 || mx > 25) { alert('Max Open Trades must be between 1 and 25'); return; }
+  if (tp <= fee) { alert('Take Profit % must exceed Round-Trip Fee %!'); return; }
+  if (sl < 0.05) { alert('Minimum Stop Loss is 0.05%'); return; }
+
+  if (openTrades.length === 0 && closedCount === 0) {
+    freeCash = cap;
+  } else {
+    var diff = cap - totalCapital;
+    freeCash = Math.max(0, freeCash + diff);
+  }
+
+  totalCapital = cap;
+  tradeSizeUSD = sz;
+  maxOpenTrades = mx;
+  autoMode = mode;
+  TP_PCT = tp;
+  SL_PCT = sl;
+  FEE_PCT = fee;
+
+  saveState();
+  render();
+  alert('Settings saved!');
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify({
+      currentCoin: currentCoin,
+      freeCash: freeCash,
+      profit: profit,
+      closedCount: closedCount,
+      wins: wins,
+      nextTradeNum: nextTradeNum,
+      openTrades: openTrades,
+      running: running,
+      date: TODAY,
+      hist: document.getElementById('history').innerHTML,
+      totalCapital: totalCapital,
+      tradeSizeUSD: tradeSizeUSD,
+      maxOpenTrades: maxOpenTrades,
+      autoMode: autoMode,
+      TP_PCT: TP_PCT,
+      SL_PCT: SL_PCT,
+      FEE_PCT: FEE_PCT
+    }));
+  } catch (e) {}
+}
+
+function loadState() {
+  try {
+    var s = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (!s) return;
+    if (s.currentCoin && COINS[s.currentCoin]) {
+      currentCoin = s.currentCoin;
+      document.getElementById('coinSelect').value = currentCoin;
+    }
+    totalCapital = safeNum(s.totalCapital, 30.00);
+    tradeSizeUSD = safeNum(s.tradeSizeUSD, 10.00);
+    maxOpenTrades = safeNum(s.maxOpenTrades, 3);
+    autoMode = s.autoMode || 'auto';
+    TP_PCT = safeNum(s.TP_PCT, 0.35);
+    SL_PCT = safeNum(s.SL_PCT, 0.50);
+    FEE_PCT = safeNum(s.FEE_PCT, 0.10);
+
+    document.getElementById('capitalInput').value = totalCapital;
+    document.getElementById('sizeInput').value = tradeSizeUSD;
+    document.getElementById('maxTradesInput').value = maxOpenTrades;
+    document.getElementById('autoModeInput').value = autoMode;
+    document.getElementById('tpInput').value = TP_PCT;
+    document.getElementById('slInput').value = SL_PCT;
+    document.getElementById('feeInput').value = FEE_PCT;
+
+    openTrades = Array.isArray(s.openTrades) ? s.openTrades : [];
+    nextTradeNum = safeNum(s.nextTradeNum, openTrades.length + 1);
+    running = s.running !== false;
+
+    if (s.date !== TODAY) {
+      freeCash = safeNum(s.freeCash, totalCapital);
+      profit = 0;
+      closedCount = 0;
+      wins = 0;
+      return;
+    }
+    freeCash = safeNum(s.freeCash, totalCapital);
+    profit = safeNum(s.profit, 0);
+    closedCount = safeNum(s.closedCount, 0);
+    wins = safeNum(s.wins, 0);
+    if (s.hist && closedCount > 0) document.getElementById('history').innerHTML = s.hist;
+  } catch (e) {}
+}
+
+function openNewTrade(coinCode, isManual) {
+  var p = prices[coinCode] || COINS[coinCode].fallback;
+  if (openTrades.length >= maxOpenTrades) {
+    if (isManual) alert('Max open trades limit (' + maxOpenTrades + ') reached!');
+    return false;
+  }
+  var cost = Math.min(tradeSizeUSD, freeCash);
+  if (cost < 2) {
+    if (isManual) alert('Insufficient Free Cash (' + fmtUSD(freeCash) + ').');
+    return false;
+  }
+
+  var qty = cost / p;
+  freeCash -= cost;
+
+  openTrades.push({
+    id: nextTradeNum++,
+    coin: coinCode,
+    entry: p,
+    cost: cost,
+    qty: qty,
+    tp: p * (1 + TP_PCT / 100),
+    sl: p * (1 - SL_PCT / 100)
+  });
+
+  render();
+  return true;
+}
+
+function manualBuy() {
+  running = true;
+  openNewTrade(currentCoin, true);
+}
+
+function closeSingleTrade(tradeId, reason) {
+  var idx = openTrades.findIndex(function(t) { return t.id === tradeId; });
+  if (idx === -1) return;
+
+  var tr = openTrades[idx];
+  var exitPrice = prices[tr.coin] || tr.entry;
+  var gross = (exitPrice - tr.entry) * tr.qty;
+  var fee = tr.cost * (FEE_PCT / 100);
+  var net = gross - fee;
+
+  freeCash += (tr.cost + net);
+  profit += net;
+  closedCount++;
+  if (net > 0) wins++;
+
+  var hb = document.getElementById('history');
+  if (closedCount === 1) hb.innerHTML = '';
+  var row = document.createElement('tr');
+  row.innerHTML =
+    '<td>#' + tr.id + '</td>' +
+    '<td><b>' + tr.coin + '</b> ' + fmtCoinPrice(tr.entry, tr.coin) + ' → ' + fmtCoinPrice(exitPrice, tr.coin) + '</td>' +
+    '<td style="font-weight:700;color:' + (net >= 0 ? '#00d68f' : '#ff2d55') + '">' + (net >= 0 ? '+' : '') + fmtUSD(net) + '</td>' +
+    '<td>' + reason + '</td>';
+  hb.prepend(row);
+
+  openTrades.splice(idx, 1);
+  render();
+
+  if (profit >= DAILY_TARGET) {
+    running = false;
+    render();
+    alert('Daily Target of ' + fmtUSD(DAILY_TARGET) + ' HIT! Bot paused.');
+  } else if (profit <= DAILY_STOP) {
+    running = false;
+    render();
+    alert('Daily Stop Loss of ' + fmtUSD(DAILY_STOP) + ' triggered! Bot paused.');
+  }
+}
+
+function closeAllTrades(reason) {
+  if (openTrades.length === 0) {
+    alert('No open trades to close.');
+    return;
+  }
+  var ids = openTrades.map(function(t) { return t.id; });
+  ids.forEach(function(id) { closeSingleTrade(id, reason); });
+}
+
+function render() {
+  var now = new Date();
+  var t = now.toLocaleTimeString('en-GB');
+  var curP = prices[currentCoin] || COINS[currentCoin].fallback;
+
+  document.getElementById('priceTop').textContent =
+    currentCoin + ': ' + fmtCoinPrice(curP, currentCoin) + ' • ' + t;
+  document.getElementById('buyBtnText').textContent = '🟢 ADD ' + currentCoin + ' TRADE';
+
+  var sellBtn = document.querySelector('.btnSell');
+  sellBtn.textContent = '🔴 CLOSE ALL (' + openTrades.length + ')';
+
+  var badge = document.getElementById('sourceBadge');
+  badge.textContent = statusMsg;
+  badge.className = binanceOnline ? 'badge' : 'badge wait';
+
+  var pct = Math.max(0, Math.min(100, (profit / DAILY_TARGET) * 100));
+  document.getElementById('dailyTop').textContent =
+    'Daily ' + (profit >= 0 ? '+' : '') + fmtUSD(profit) + ' / ' + fmtUSD(DAILY_TARGET) + ' (' + Math.floor(pct) + '%)';
+  document.getElementById('progBar').style.width = pct + '%';
+
+  var estWin = tradeSizeUSD * ((TP_PCT - FEE_PCT) / 100);
+  var estLoss = tradeSizeUSD * ((SL_PCT + FEE_PCT) / 100);
+  var leftTrades = estWin > 0 ? Math.max(0, Math.ceil((DAILY_TARGET - profit) / estWin)) : 0;
+  document.getElementById('leftText').textContent =
+    '~' + leftTrades + ' wins left to ' + fmtUSD(DAILY_TARGET) + ' • ' + closedCount + ' closed';
+
+  var allocated = openTrades.reduce(function(sum, tr) { return sum + tr.cost; }, 0);
+  document.getElementById('capitalInfo').textContent =
+    'Free: ' + fmtUSD(freeCash) + ' | In Trades: ' + fmtUSD(allocated) + ' • Win: +' + fmtUSD(estWin) + ' | SL: -' + fmtUSD(estLoss);
+
+  var mb = document.getElementById('mainBtn');
+  mb.textContent = running ? '● RUNNING - Tap to STOP' : '⏸ PAUSED - Tap to START';
+  mb.className = 'mainBtn' + (running ? '' : ' paused');
+
+  var statusLbl = document.getElementById('statusLabel');
+  statusLbl.textContent = (running ? '● RUNNING' : '⏸ PAUSED') + ' (' + openTrades.length + '/' + maxOpenTrades + ' Open)';
+  statusLbl.style.color = running ? '#00d68f' : '#ff2d55';
+
+  var listEl = document.getElementById('openTradesList');
+  var totalUnrealized = 0;
+
+  if (openTrades.length === 0) {
+    listEl.innerHTML = '<div style="font-size:13px;color:#8a9ab5">' +
+      (running && autoMode === 'auto' ? 'Auto-opening ' + currentCoin + ' trade on next tick...' : 'No active trades. Tap ADD ' + currentCoin + ' TRADE.') +
+      '</div>';
+    document.getElementById('openPL').textContent = 'Open P/L: +$0.00';
+    document.getElementById('openPL').className = 'green';
+  } else {
+    var html = '';
+    openTrades.forEach(function(tr) {
+      var liveP = prices[tr.coin] || COINS[tr.coin].fallback;
+      var gross = (liveP - tr.entry) * tr.qty;
+      var fee = tr.cost * (FEE_PCT / 100);
+      var net = gross - fee;
+      totalUnrealized += net;
+
+      html +=
+        '<div class="tradeItem">' +
+          '<div class="tradeTop">' +
+            '<span>#' + tr.id + ' • <span class="gold">' + tr.coin + '</span> (' + fmtUSD(tr.cost) + ')</span>' +
+            '<span class="' + (net >= 0 ? 'green' : 'red') + '">' + (net >= 0 ? '+' : '') + fmtUSD(net) + '</span>' +
+          '</div>' +
+          '<div class="tradeSub">' +
+            'Entry: ' + fmtCoinPrice(tr.entry, tr.coin) + ' • Live: <b>' + fmtCoinPrice(liveP, tr.coin) + '</b><br>' +
+            'TP: <span class="green">' + fmtCoinPrice(tr.tp, tr.coin) + '</span> | SL: <span class="red">' + fmtCoinPrice(tr.sl, tr.coin) + '</span>' +
+          '</div>' +
+          '<button class="miniClose" onclick="closeSingleTrade(' + tr.id + ', \'MANUAL\')">CLOSE #' + tr.id + '</button>' +
+        '</div>';
+    });
+    listEl.innerHTML = html;
+
+    document.getElementById('openPL').textContent = 'Open P/L: ' + (totalUnrealized >= 0 ? '+' : '') + fmtUSD(totalUnrealized);
+    document.getElementById('openPL').className = totalUnrealized >= 0 ? 'green' : 'red';
+  }
+
+  document.getElementById('loopInfo').innerHTML =
+    'MODE: <b>' + (autoMode === 'auto' ? 'AUTO-STACK (' + maxOpenTrades + ' Max)' : 'MANUAL ONLY') + '</b> • Size: ' + fmtUSD(tradeSizeUSD) + '/trade<br>' +
+    'TP: +' + TP_PCT + '% | SL: -' + SL_PCT + '% | Binance Fee: ' + FEE_PCT + '%';
+
+  var wr = closedCount > 0 ? Math.round((wins / closedCount) * 100) : 0;
+  document.getElementById('winRate').textContent = 'Win Rate: ' + wr + '%';
+  document.getElementById('balDisplay').textContent = 'Free Cash: ' + fmtUSD(freeCash);
+  document.getElementById('winsDisplay').textContent = 'Wins: ' + wins + ' | Losses: ' + (closedCount - wins);
+
+  saveState();
+}
+
+function toggleBot() {
+  running = !running;
+  render();
+}
+
+function resetDay() {
+  if (!confirm('Reset daily P/L and closed history?')) return;
+  profit = 0;
+  closedCount = 0;
+  wins = 0;
+  document.getElementById('history').innerHTML = '<tr><td colspan="4" style="text-align:center;color:#8a9ab5">No closed trades yet</td></tr>';
+  render();
+}
+
+function hardReset() {
+  if (!confirm('Close all trades and reset everything back to $30.00?')) return;
+  localStorage.removeItem(KEY);
+  location.reload();
+}
+
+// Fetch Binance via public CORS proxy to guarantee mobile network connectivity
+function fetchBinancePrices(manual) {
+  var directUrl = 'https://api.binance.com/api/v3/ticker/price';
+  var proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(directUrl);
+
+  fetch(proxyUrl, { cache: 'no-store' })
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function(arr) {
+      if (!Array.isArray(arr)) return;
+      arr.forEach(function(item) {
+        var p = parseFloat(item.price);
+        if (p > 0) {
+          Object.keys(COINS).forEach(function(code) {
+            if (COINS[code].sym === item.symbol) {
+              prices[code] = p;
+            }
+          });
+        }
+      });
+      binanceOnline = true;
+      lastBinanceSync = Date.now();
+      statusMsg = 'Binance Connected (Proxy Live)';
+      render();
+    })
+    .catch(function(err) {
+      // Fallback to direct binance.vision mirror if proxy fails
+      fetch('https://data-api.binance.vision/api/v3/ticker/price', { cache: 'no-store' })
+        .then(function(r) { return r.json(); })
+        .then(function(arr) {
+          if (!Array.isArray(arr)) return;
+          arr.forEach(function(item) {
+            var p = parseFloat(item.price);
+            if (p > 0) {
+              Object.keys(COINS).forEach(function(code) {
+                if (COINS[code].sym === item.symbol) prices[code] = p;
+              });
+            }
+          });
+          binanceOnline = true;
+          lastBinanceSync = Date.now();
+          statusMsg = 'Binance Connected (Direct Vision)';
+          render();
+        })
+        .catch(function(e) {
+          binanceOnline = false;
+          statusMsg = 'Binance Connecting... (Using Fallback)';
+          render();
+        });
+    });
+}
+
+function tick() {
+  // If prices aren't loaded yet, default to fallbacks so user can trade immediately
+  Object.keys(COINS).forEach(function(c) {
+    if (!prices[c]) prices[c] = COINS[c].fallback;
+  });
+
+  if (running) {
+    var toClose = [];
+    openTrades.forEach(function(tr) {
+      var liveP = prices[tr.coin] || tr.entry;
+      if (liveP >= tr.tp) toClose.push({ id: tr.id, reason: 'TP HIT' });
+      else if (liveP <= tr.sl) toClose.push({ id: tr.id, reason: 'SL HIT' });
+    });
+    toClose.forEach(function(item) { closeSingleTrade(item.id, item.reason); });
+
+    if (autoMode === 'auto' && openTrades.length < maxOpenTrades && freeCash >= Math.min(tradeSizeUSD, 2)) {
+      openNewTrade(currentCoin, false);
+    }
+  }
+  render();
+}
+
+window.addEventListener('beforeunload', saveState);
+window.addEventListener('pagehide', saveState);
+
+loadState();
+render();
+fetchBinancePrices(true);
+setInterval(fetchBinancePrices, 4000);
+setInterval(tick, 1500);
+</script>
+</body>
+</html>
