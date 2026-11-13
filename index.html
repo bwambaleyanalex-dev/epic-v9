@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOL BOT V8.0 PRO</title>
+<title>SOL BOT V8.1 PRO</title>
 <style>
 *{box-sizing:border-box}
 body{background:#0b0e14;color:#fff;font-family:system-ui,-apple-system,Arial,sans-serif;padding:14px;margin:0;max-width:480px;margin-inline:auto}
 .top{text-align:center}
 .top b{color:#a259ff;font-size:18px;display:block}
 .top small{color:#8a9ab5;display:block;margin-top:3px;font-size:12px}
-.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;margin-top:4px;background:#1e2438;color:#00d68f}
+.badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;margin-top:5px;background:#1e2438;color:#00d68f}
 .badge.sim{color:#e6a817}
+.badge.wait{color:#8a9ab5}
 .card{background:#121626;border-radius:14px;padding:14px;margin-top:12px;border:1px solid #1e2438}
 .row{display:flex;justify-content:space-between;align-items:center;font-size:14px}
 .red{color:#ff2d55;font-weight:900}
@@ -40,8 +41,8 @@ td{padding:7px 0;border-top:1px solid #222a44}
 <body>
 
 <div class="top">
-  <b id="priceTop">SOL: $81.40 • Loading...</b>
-  <span class="badge" id="sourceBadge">Connecting...</span>
+  <b id="priceTop">SOL: $81.61 • Starting...</b>
+  <span class="badge wait" id="sourceBadge">Fetching live price...</span>
   <small id="dailyTop">Daily $0.00 / $3.00 (0%)</small>
   <div class="progress"><div id="progBar"></div></div>
   <small id="leftText" style="color:#00d68f;margin-top:5px">Target: $3.00 • 0 trades done</small>
@@ -115,11 +116,11 @@ td{padding:7px 0;border-top:1px solid #222a44}
   </div>
 </div>
 
-<div class="footer">V8.0 PRO • Dynamic Price Lock & SL/TP Protection</div>
+<div class="footer">V8.1 PRO • Parallel Multi-Exchange Feed & SL/TP Protection</div>
 
 <script>
 var balance = 27.30;
-var price = 81.40;
+var price = 81.61;
 var hasLivePrice = false;
 var running = true;
 var open = null;
@@ -127,18 +128,17 @@ var trades = 0;
 var wins = 0;
 var profit = 0;
 
-// Configurable Parameters
 var capitalLimit = 27.30;
-var TP_PCT = 0.35;   // 0.35% take profit
-var SL_PCT = 0.50;   // 0.50% stop loss
-var FEE_PCT = 0.10;  // 0.10% total round-trip fee
+var TP_PCT = 0.35;
+var SL_PCT = 0.50;
+var FEE_PCT = 0.10;
 var DAILY_TARGET = 3.00;
 var DAILY_STOP = -2.00;
 
 var TODAY = new Date().toDateString();
-var KEY = 'sol_v80_pro';
+var KEY = 'sol_v81_pro';
 var lastFetch = 0;
-var priceSource = 'Connecting';
+var priceSource = 'Fetching live price...';
 
 function fmt(n) {
   n = parseFloat(n);
@@ -238,7 +238,6 @@ function loadState() {
 function setPrice(n, src) {
   n = safeNum(n, 0);
   if (n < 5 || n > 2000) return;
-  // Accept first live price immediately; after that, ignore jumps > 15% (flash-crash/bad tick protection)
   if (hasLivePrice && Math.abs(n - price) / price > 0.15) return;
 
   price = n;
@@ -254,7 +253,9 @@ function render() {
 
   var badge = document.getElementById('sourceBadge');
   badge.textContent = priceSource;
-  badge.className = 'badge' + (priceSource.indexOf('SIM') !== -1 ? ' sim' : '');
+  if (priceSource.indexOf('SIM') !== -1) badge.className = 'badge sim';
+  else if (priceSource.indexOf('Fetching') !== -1) badge.className = 'badge wait';
+  else badge.className = 'badge';
 
   var pct = Math.max(0, Math.min(100, (profit / DAILY_TARGET) * 100));
   document.getElementById('dailyTop').textContent = 'Daily ' + (profit >= 0 ? '+' : '') + fmt(profit) + ' / ' + fmt(DAILY_TARGET) + ' (' + Math.floor(pct) + '%)';
@@ -300,7 +301,7 @@ function render() {
     document.getElementById('openPL').textContent = '+$0.00';
     document.getElementById('openPL').className = 'green';
     document.getElementById('openTrade').textContent = running
-      ? (hasLivePrice ? 'No open trade - Auto-entering on next tick...' : 'Waiting for initial live price feed...')
+      ? (hasLivePrice ? 'No open trade - Auto-entering on next tick...' : 'Waiting for initial price feed...')
       : 'Bot is paused. Tap START or BUY SOL.';
 
     document.getElementById('loopInfo').innerHTML =
@@ -372,4 +373,117 @@ function closeTrade(reason) {
   } else if (profit <= DAILY_STOP) {
     running = false;
     render();
-    alert('Daily Stop Loss of ' + fmt(DAILY_STOP) + '
+    alert('Daily Stop Loss of ' + fmt(DAILY_STOP) + ' triggered! Bot paused.');
+  }
+}
+
+function manualClose() {
+  if (!open) { alert('No open trade to close.'); return; }
+  closeTrade('MANUAL');
+}
+
+function resetDay() {
+  if (!confirm('Reset daily P/L and trade log while keeping ' + fmt(balance) + ' balance?')) return;
+  profit = 0;
+  trades = 0;
+  wins = 0;
+  open = null;
+  running = false;
+  document.getElementById('history').innerHTML = '<tr><td colspan="4" style="text-align:center;color:#8a9ab5">No trades yet</td></tr>';
+  render();
+}
+
+function hardReset() {
+  if (!confirm('Reset everything back to default ($27.30)?')) return;
+  localStorage.removeItem(KEY);
+  location.reload();
+}
+
+function querySource(url, parser, name) {
+  return new Promise(function(resolve, reject) {
+    var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var timer = setTimeout(function() {
+      if (ctrl) ctrl.abort();
+      reject(new Error('timeout'));
+    }, 3000);
+
+    fetch(url, ctrl ? { signal: ctrl.signal, cache: 'no-store' } : { cache: 'no-store' })
+      .then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function(j) {
+        clearTimeout(timer);
+        var p = parser(j);
+        if (p > 5 && p < 2000) resolve({ price: p, source: name });
+        else reject(new Error('invalid price'));
+      })
+      .catch(function(e) {
+        clearTimeout(timer);
+        reject(e);
+      });
+  });
+}
+
+function fetchPrice(manual) {
+  var sources = [
+    querySource('https://api.coinbase.com/v2/prices/SOL-USD/spot', function(j) { return parseFloat(j.data.amount); }, 'Coinbase Live'),
+    querySource('https://api.binance.com/api/v3/ticker/price?symbol=SOLUSDT', function(j) { return parseFloat(j.price); }, 'Binance Live'),
+    querySource('https://api.kraken.com/0/public/Ticker?pair=SOLUSD', function(j) { return parseFloat(j.result.SOLUSD.c[0]); }, 'Kraken Live'),
+    querySource('https://min-api.cryptocompare.com/data/price?fsym=SOL&tsyms=USD', function(j) { return parseFloat(j.USD); }, 'CryptoCompare Live'),
+    querySource('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd', function(j) { return parseFloat(j.solana.usd); }, 'CoinGecko Live')
+  ];
+
+  // Race all 5 APIs in parallel — fastest valid response wins immediately
+  var settled = false;
+  var failedCount = 0;
+  sources.forEach(function(p) {
+    p.then(function(res) {
+      if (!settled) {
+        settled = true;
+        setPrice(res.price, res.source);
+        render();
+      }
+    }).catch(function() {
+      failedCount++;
+      if (failedCount === sources.length && !settled && !hasLivePrice) {
+        hasLivePrice = true;
+        priceSource = 'SIM MODE (APIs Offline)';
+        render();
+      }
+    });
+  });
+}
+
+function tick() {
+  if (Date.now() - lastFetch > 6000) {
+    var volatility = price * 0.0018;
+    var move = (Math.random() - 0.48) * volatility;
+    price = safeNum(price + move, 81.61);
+    hasLivePrice = true;
+    priceSource = 'SIM MODE (APIs Offline)';
+  }
+
+  if (running && hasLivePrice && price > 0) {
+    if (!open) {
+      openBuy();
+    } else if (price >= open.tp) {
+      closeTrade('TP HIT');
+    } else if (price <= open.sl) {
+      closeTrade('SL HIT');
+    }
+  }
+  render();
+}
+
+window.addEventListener('beforeunload', saveState);
+window.addEventListener('pagehide', saveState);
+
+loadState();
+render();
+fetchPrice(true);
+setInterval(fetchPrice, 4000);
+setInterval(tick, 2000);
+</script>
+</body>
+</html>
