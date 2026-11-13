@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CRYPTO BOT V11.3 PRO • FIXED $10</title>
+<title>CRYPTO BOT V11.3 PRO • REAL $81.49</title>
 <style>
 *{box-sizing:border-box}
 body{background:#0b0e14;color:#fff;font-family:system-ui,-apple-system,Arial,sans-serif;padding:14px;margin:0;max-width:500px;margin-inline:auto}
@@ -43,85 +43,44 @@ td{padding:7px 0;border-top:1px solid #222a44}
 </style>
 </head>
 <body>
-
 <div class="top">
-  <div class="coinBar">
-    <select id="coinSelect" class="coinSelect" onchange="changeCoin()">
-      <option value="SOL">SOL / USDT</option>
-      <option value="SUI">SUI / USDT</option>
-      <option value="DOGE">DOGE / USDT</option>
-      <option value="XRP">XRP / USDT</option>
-      <option value="PEPE">PEPE / USDT</option>
-      <option value="BTC">BTC / USDT</option>
-      <option value="ETH">ETH / USDT</option>
-    </select>
-  </div>
-  <b id="priceTop">SOL: $182.00 • Live</b>
+  <div class="coinBar"><select id="coinSelect" class="coinSelect" onchange="changeCoin()"><option value="SOL">SOL / USDT</option><option value="SUI">SUI / USDT</option><option value="DOGE">DOGE / USDT</option><option value="XRP">XRP / USDT</option><option value="PEPE">PEPE / USDT</option><option value="BTC">BTC / USDT</option><option value="ETH">ETH / USDT</option></select></div>
+  <b id="priceTop">SOL: $81.49 • Live</b>
   <span class="badge" id="sourceBadge">Fetching live price...</span>
   <small id="dailyTop">Daily $0.00 / $3.00 (0%)</small>
   <div class="progress"><div id="progBar"></div></div>
   <small id="leftText" style="color:#00d68f;margin-top:5px">Target: $3.00 • 0 closed trades</small>
 </div>
-
-<div class="card">
-  <div class="row">
-    <span id="statusLabel" style="font-weight:700">● MONITORING (0 Open)</span>
-    <span class="green" id="openPL">Open P/L: +$0.00</span>
-  </div>
-  <div id="openTradesList" style="margin-top:8px">
-    <div style="font-size:13px;color:#8a9ab5">No active trades. Tap the green button to open a manual trade.</div>
-  </div>
-</div>
-
-<div class="btns">
-  <button class="btnBuy" id="buyBtnText" onclick="manualBuy()">🟢 ADD SOL TRADE</button>
-  <button class="btnSell" onclick="closeAllTrades('MANUAL ALL')">🔴 CLOSE ALL (0)</button>
-</div>
-
+<div class="card"><div class="row"><span id="statusLabel" style="font-weight:700">● MONITORING (0 Open)</span><span class="green" id="openPL">Open P/L: +$0.00</span></div><div id="openTradesList" style="margin-top:8px"><div style="font-size:13px;color:#8a9ab5">No active trades. Tap the green button to open a manual trade.</div></div></div>
+<div class="btns"><button class="btnBuy" id="buyBtnText" onclick="manualBuy()">🟢 ADD SOL TRADE</button><button class="btnSell" onclick="closeAllTrades('MANUAL ALL')">🔴 CLOSE ALL (0)</button></div>
 <div class="card" id="loopInfo" style="font-size:12px;color:#cbd5e1;line-height:1.5">Manual multi-trade engine active.</div>
-
 <button class="mainBtn" id="mainBtn" onclick="toggleBot()">● MONITORING - Tap to PAUSE</button>
-
-<div class="smallBtns">
-  <button onclick="resetDay()">↺ Reset Day</button>
-  <button onclick="hardReset()">🛠️ Full Reset</button>
-  <button onclick="fetchBinancePrices()">↻ Sync Price</button>
-</div>
-
-<div class="card">
-  <div style="font-size:13px;font-weight:700;color:#fff">⚙️ Multi-Trade & Risk Settings</div>
-  <div class="grid">
-    <div class="field">
-      <label>Total Capital ($ USD)</label>
-      <input type="number" id="capitalInput" step="0.1" value="10.00">
-    </div>
-    <div class="field">
-      <label>Size Per Trade ($ USD)</label>
-      <input type="number" id="sizeInput" step="0.5" value="9.50">
-    </div>
-    <div class="field">
-      <label>Max Open Trades</label>
-      <input type="number" id="maxTradesInput" min="1" max="25" step="1" value="1">
-    </div>
-    <div class="field">
-      <label>Auto-Entry Mode</label>
-      <select id="autoModeInput">
-        <option value="manual" selected>Manual Buy Only</option>
-        <option value="auto">Auto-Fill up to Max</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Take Profit (%)</label>
-      <input type="number" id="tpInput" step="0.05" value="0.35">
-    </div>
-    <div class="field">
-      <label>Stop Loss (%)</label>
-      <input type="number" id="slInput" step="0.05" value="0.50">
-    </div>
-    <div class="field" style="grid-column:span 2">
-      <label>Binance Round-Trip Fee (%)</label>
-      <input type="number" id="feeInput" step="0.01" value="0.10">
-    </div>
-  </div>
-  <button class="saveBtn" onclick="saveSettings()">SAVE SETTINGS</button>
-  <div style="font-size:12px;color:#00d
+<div class="smallBtns"><button onclick="resetDay()">↺ Reset Day</button><button onclick="hardReset()">🛠️ Full Reset</button><button onclick="fetchBinancePrices()">↻ Sync Price</button></div>
+<div class="card"><div style="font-size:13px;font-weight:700;color:#fff">⚙️ Multi-Trade & Risk Settings</div><div class="grid"><div class="field"><label>Total Capital ($ USD)</label><input type="number" id="capitalInput" step="0.1" value="10.00"></div><div class="field"><label>Size Per Trade ($ USD)</label><input type="number" id="sizeInput" step="0.5" value="9.50"></div><div class="field"><label>Max Open Trades</label><input type="number" id="maxTradesInput" min="1" max="25" step="1" value="1"></div><div class="field"><label>Auto-Entry Mode</label><select id="autoModeInput"><option value="manual" selected>Manual Buy Only</option><option value="auto">Auto-Fill up to Max</option></select></div><div class="field"><label>Take Profit (%)</label><input type="number" id="tpInput" step="0.05" value="0.35"></div><div class="field"><label>Stop Loss (%)</label><input type="number" id="slInput" step="0.05" value="0.50"></div><div class="field" style="grid-column:span 2"><label>Binance Round-Trip Fee (%)</label><input type="number" id="feeInput" step="0.01" value="0.10"></div></div><button class="saveBtn" onclick="saveSettings()">SAVE SETTINGS</button><div style="font-size:12px;color:#00d68f;margin-top:8px;text-align:center" id="capitalInfo">Calculating allocation...</div></div>
+<div class="card"><div class="row"><b>Trade History</b><span style="font-size:12px;color:#8a9ab5" id="winRate">Win Rate: 0%</span></div><table><thead><tr><th>#</th><th>Pair / Entry → Exit</th><th>Net P/L</th><th>Exit</th></tr></thead><tbody id="history"><tr><td colspan="4" style="text-align:center;color:#8a9ab5">No closed trades yet</td></tr></tbody></table><div class="stats"><span id="balDisplay">Free Cash: $10.00</span><span id="winsDisplay">Wins: 0 | Losses: 0</span></div></div>
+<div class="footer">V11.3 PRO FIXED • $10.00 • Real Start $81.49 from Binance</div>
+<script>
+var COINS = { SOL:{sym:'SOLUSDT',dec:2,qtyDec:4,price:81.49}, SUI:{sym:'SUIUSDT',dec:4,qtyDec:2,price:1.85}, DOGE:{sym:'DOGEUSDT',dec:4,qtyDec:1,price:0.165}, XRP:{sym:'XRPUSDT',dec:4,qtyDec:2,price:2.35}, PEPE:{sym:'PEPEUSDT',dec:8,qtyDec:0,price:0.0000085}, BTC:{sym:'BTCUSDT',dec:2,qtyDec:6,price:88500}, ETH:{sym:'ETHUSDT',dec:2,qtyDec:5,price:2150} };
+var currentCoin='SOL', freeCash=10.00, running=true, openTrades=[], nextTradeNum=1, closedCount=0, wins=0, profit=0, totalCapital=10.00, tradeSizeUSD=9.50, maxOpenTrades=1, autoMode='manual', TP_PCT=0.35, SL_PCT=0.50, FEE_PCT=0.10, DAILY_TARGET=3.00, DAILY_STOP=-2.00, TODAY=new Date().toDateString(), KEY='binance_v113_real8149', statusText='Fetching live price...', lastFetch=0;
+function fmtUSD(n){ n=parseFloat(n); if(isNaN(n)||!isFinite(n)) n=0; return '$'+n.toFixed(2); }
+function fmtCoinPrice(n,coinCode){ var cfg=COINS[coinCode||currentCoin]||COINS.SOL; n=parseFloat(n); if(isNaN(n)||!isFinite(n)||n<=0) n=cfg.price; return '$'+n.toFixed(cfg.dec); }
+function safeNum(v,d){ v=parseFloat(v); if(isNaN(v)||!isFinite(v)) return d; return v; }
+function changeCoin(){ currentCoin=document.getElementById('coinSelect').value; document.getElementById('buyBtnText').textContent='🟢 ADD '+currentCoin+' TRADE'; fetchBinancePrices(); render(); }
+function saveSettings(){ if(openTrades.length>0){ alert('Close all trades before changing settings.'); return; } var cap=safeNum(document.getElementById('capitalInput').value,0); var sz=safeNum(document.getElementById('sizeInput').value,0); var mx=Math.floor(safeNum(document.getElementById('maxTradesInput').value,1)); var am=document.getElementById('autoModeInput').value; var tp=safeNum(document.getElementById('tpInput').value,0); var sl=safeNum(document.getElementById('slInput').value,0); var fee=safeNum(document.getElementById('feeInput').value,0); if(cap<5){ alert('Minimum capital $5'); return; } if(sz>cap){ alert('Size cannot be bigger than Capital'); return; } if(tp<=fee){ alert('TP must be > Fee'); return; } totalCapital=cap; tradeSizeUSD=sz; maxOpenTrades=Math.max(1,mx); autoMode=am; TP_PCT=tp; SL_PCT=sl; FEE_PCT=fee; freeCash=cap; profit=0; closedCount=0; wins=0; saveState(); render(); alert('Settings saved! Capital $'+cap.toFixed(2)); }
+function saveState(){ try{ localStorage.setItem(KEY, JSON.stringify({freeCash,profit,closedCount,wins,openTrades,nextTradeNum,running,date:TODAY,totalCapital,tradeSizeUSD,maxOpenTrades,autoMode,TP_PCT,SL_PCT,FEE_PCT,hist:document.getElementById('history').innerHTML})); }catch(e){} }
+function loadState(){ try{ var s=JSON.parse(localStorage.getItem(KEY)||'null'); if(!s) return; totalCapital=safeNum(s.totalCapital,10); tradeSizeUSD=safeNum(s.tradeSizeUSD,9.50); maxOpenTrades=safeNum(s.maxOpenTrades,1); autoMode=s.autoMode||'manual'; TP_PCT=safeNum(s.TP_PCT,0.35); SL_PCT=safeNum(s.SL_PCT,0.50); FEE_PCT=safeNum(s.FEE_PCT,0.10); document.getElementById('capitalInput').value=totalCapital; document.getElementById('sizeInput').value=tradeSizeUSD; document.getElementById('maxTradesInput').value=maxOpenTrades; document.getElementById('autoModeInput').value=autoMode; document.getElementById('tpInput').value=TP_PCT; document.getElementById('slInput').value=SL_PCT; document.getElementById('feeInput').value=FEE_PCT; if(s.date!==TODAY){ freeCash=totalCapital; profit=0; closedCount=0; wins=0; openTrades=[]; return; } freeCash=safeNum(s.freeCash,totalCapital); profit=safeNum(s.profit,0); closedCount=safeNum(s.closedCount,0); wins=safeNum(s.wins,0); openTrades=s.openTrades||[]; nextTradeNum=safeNum(s.nextTradeNum,1); running=s.running!==false; if(s.hist && closedCount>0) document.getElementById('history').innerHTML=s.hist; }catch(e){} }
+function getPrice(){ return COINS[currentCoin].price; }
+function render(){ var p=getPrice(); document.getElementById('priceTop').textContent=currentCoin+': '+fmtCoinPrice(p,currentCoin)+' • Live'; var badge=document.getElementById('sourceBadge'); badge.textContent=statusText; badge.className='badge'+(statusText.indexOf('SIM')!==-1?' sim':''); var pct=Math.max(0,Math.min(100,(profit/DAILY_TARGET)*100)); document.getElementById('dailyTop').textContent='Daily '+(profit>=0?'+':'')+fmtUSD(profit)+' / '+fmtUSD(DAILY_TARGET)+' ('+Math.floor(pct)+'%)'; document.getElementById('progBar').style.width=pct+'%'; var estWin=tradeSizeUSD*((TP_PCT-FEE_PCT)/100); var leftTrades=estWin>0?Math.max(0,Math.ceil((DAILY_TARGET-profit)/estWin)):0; document.getElementById('leftText').textContent='~'+leftTrades+' wins left to '+fmtUSD(DAILY_TARGET)+' • '+closedCount+' closed trades'; document.getElementById('capitalInfo').textContent='Size: '+fmtUSD(tradeSizeUSD)+' per trade • Max '+maxOpenTrades+' open • Est Win: +'+fmtUSD(estWin)+' | Free: '+fmtUSD(freeCash); document.getElementById('statusLabel').textContent=running?'● MONITORING ('+openTrades.length+' Open)':'⏸ PAUSED ('+openTrades.length+' Open)'; document.getElementById('statusLabel').style.color=running?'#00d68f':'#ff2d55'; var mb=document.getElementById('mainBtn'); mb.textContent=running?'● MONITORING - Tap to PAUSE':'⏸ PAUSED - Tap to START'; mb.className='mainBtn'+(running?'':' paused'); var totalPL=0, html=''; if(openTrades.length===0){ html='<div style="font-size:13px;color:#8a9ab5">No active trades. Tap the green button to open a manual trade.</div>'; } else { openTrades.forEach(function(t,i){ var cp=COINS[t.coin].price; var gross=(cp-t.entry)*t.qty; var fee=(t.entry*t.qty)*(FEE_PCT/100); var net=gross-fee; totalPL+=net; html+='<div class="tradeItem"><div class="tradeTop"><span>'+t.coin+' #'+t.num+' ('+t.qty.toFixed(COINS[t.coin].qtyDec)+' '+t.coin+')</span><span style="color:'+(net>=0?'#00d68f':'#ff2d55')+'">'+(net>=0?'+':'')+fmtUSD(net)+'</span></div><div class="tradeSub">Entry '+fmtCoinPrice(t.entry,t.coin)+' → TP '+fmtCoinPrice(t.tp,t.coin)+' | SL '+fmtCoinPrice(t.sl,t.coin)+'<br>Now '+fmtCoinPrice(cp,t.coin)+' • Size '+fmtUSD(t.sizeUSD)+'</div><button class="miniClose" onclick="closeOneTrade('+i+',\'MANUAL\')">Close This</button></div>'; }); } document.getElementById('openTradesList').innerHTML=html; document.getElementById('openPL').textContent='Open P/L: '+(totalPL>=0?'+':'')+fmtUSD(totalPL); document.getElementById('openPL').className=totalPL>=0?'green':'red'; document.querySelector('.btnSell').textContent='🔴 CLOSE ALL ('+openTrades.length+')'; document.getElementById('loopInfo').innerHTML='READY • Next Size: '+fmtUSD(tradeSizeUSD)+' | TP: +'+TP_PCT+'% | SL: -'+SL_PCT+'% | Mode: '+autoMode.toUpperCase()+'<br>Daily Target: +'+fmtUSD(DAILY_TARGET)+' | Daily Stop: '+fmtUSD(DAILY_STOP); var wr=closedCount>0?Math.round((wins/closedCount)*100):0; document.getElementById('winRate').textContent='Win Rate: '+wr+'%'; document.getElementById('balDisplay').textContent='Free Cash: '+fmtUSD(freeCash); document.getElementById('winsDisplay').textContent='Wins: '+wins+' | Losses: '+(closedCount-wins); saveState(); }
+function toggleBot(){ running=!running; render(); }
+function manualBuy(){ if(!running){ running=true; } if(openTrades.length>=maxOpenTrades){ alert('Max '+maxOpenTrades+' open trade(s). Close one first.'); return; } if(freeCash<tradeSizeUSD){ alert('Not enough Free Cash. Free: '+fmtUSD(freeCash)+' Need: '+fmtUSD(tradeSizeUSD)); return; } var p=getPrice(); var qty=tradeSizeUSD/p; var t={num:nextTradeNum++,coin:currentCoin,entry:p,qty:qty,sizeUSD:tradeSizeUSD,tp:p*(1+TP_PCT/100),sl:p*(1-SL_PCT/100)}; freeCash-=tradeSizeUSD; openTrades.push(t); render(); }
+function closeOneTrade(idx,reason){ var t=openTrades[idx]; if(!t) return; var cp=COINS[t.coin].price; var gross=(cp-t.entry)*t.qty; var fee=(t.entry*t.qty)*(FEE_PCT/100); var net=gross-fee; freeCash+=t.sizeUSD+net; profit+=net; closedCount++; if(net>0) wins++; var hb=document.getElementById('history'); if(closedCount===1) hb.innerHTML=''; var row=document.createElement('tr'); row.innerHTML='<td>#'+closedCount+'</td><td>'+t.coin+' '+fmtCoinPrice(t.entry,t.coin)+' → '+fmtCoinPrice(cp,t.coin)+'</td><td style="font-weight:700;color:'+(net>=0?'#00d68f':'#ff2d55')+'">'+(net>=0?'+':'')+fmtUSD(net)+'</td><td>'+reason+'</td>'; hb.prepend(row); openTrades.splice(idx,1); render(); if(profit>=DAILY_TARGET){ running=false; render(); alert('Target $3 HIT!'); } else if(profit<=DAILY_STOP){ running=false; render(); alert('Daily Stop -$2 hit!'); } }
+function closeAllTrades(reason){ if(openTrades.length===0){ alert('No open trades'); return; } while(openTrades.length>0){ closeOneTrade(0,reason); } }
+function resetDay(){ if(!confirm('Reset daily P/L?')) return; profit=0; closedCount=0; wins=0; openTrades=[]; freeCash=totalCapital; running=false; document.getElementById('history').innerHTML='<tr><td colspan="4" style="text-align:center;color:#8a9ab5">No closed trades yet</td></tr>'; render(); }
+function hardReset(){ if(!confirm('Reset everything to $10.00?')) return; localStorage.removeItem(KEY); location.reload(); }
+async function fetchBinancePrices(){ var coin=currentCoin; var sym=COINS[coin].sym; var urls=[ ['https://api.coinbase.com/v2/prices/'+coin+'-USD/spot', function(j){ return parseFloat(j.data.amount); }, 'Coinbase Live'], ['https://api.binance.com/api/v3/ticker/price?symbol='+sym, function(j){ return parseFloat(j.price); }, 'Binance Live'], ['https://api.coingecko.com/api/v3/simple/price?ids='+({SOL:'solana',SUI:'sui',DOGE:'dogecoin',XRP:'ripple',PEPE:'pepe',BTC:'bitcoin',ETH:'ethereum'}[coin])+'&vs_currencies=usd', function(j){ var k=Object.keys(j)[0]; return parseFloat(j[k].usd); }, 'CoinGecko Live'] ]; for(var i=0;i<urls.length;i++){ try{ var r=await fetch(urls[i][0],{cache:'no-store'}); if(!r.ok) continue; var j=await r.json(); var p=urls[i][1](j); if(p>0 && p<1000000){ COINS[coin].price=p; statusText=urls[i][2]; lastFetch=Date.now(); render(); return; } }catch(e){} } }
+function tick(){ if(Date.now()-lastFetch>8000 && lastFetch!==0){ var cfg=COINS[currentCoin]; var vol=cfg.price*0.0015; cfg.price=safeNum(cfg.price+(Math.random()-0.48)*vol,cfg.price); statusText='SIM MODE (APIs Offline)'; } if(running && autoMode==='auto' && openTrades.length<maxOpenTrades && freeCash>=tradeSizeUSD){ manualBuy(); } for(var i=openTrades.length-1;i>=0;i--){ var t=openTrades[i]; var cp=COINS[t.coin].price; if(cp>=t.tp) closeOneTrade(i,'TP HIT'); else if(cp<=t.sl) closeOneTrade(i,'SL HIT'); } render(); }
+window.addEventListener('beforeunload', saveState);
+loadState(); render(); fetchBinancePrices(); setInterval(fetchBinancePrices,5000); setInterval(tick,2000);
+</script>
+</body>
+</html>
