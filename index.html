@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CRYPTO BOT V11.3 PRO • STABLE</title>
+<title>CRYPTO BOT V11.3 PRO • FIXED $10</title>
 <style>
 *{box-sizing:border-box}
 body{background:#0b0e14;color:#fff;font-family:system-ui,-apple-system,Arial,sans-serif;padding:14px;margin:0;max-width:500px;margin-inline:auto}
@@ -13,11 +13,11 @@ body{background:#0b0e14;color:#fff;font-family:system-ui,-apple-system,Arial,san
 .top b{color:#f0b90b;font-size:19px;display:block}
 .top small{color:#8a9ab5;display:block;margin-top:4px;font-size:12px}
 .badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;margin-top:6px;background:#1e2438;color:#00d68f}
+.badge.sim{color:#e6a817}
 .card{background:#121626;border-radius:14px;padding:14px;margin-top:12px;border:1px solid #1e2438}
 .row{display:flex;justify-content:space-between;align-items:center;font-size:14px}
 .red{color:#ff2d55;font-weight:900}
 .green{color:#00d68f;font-weight:900}
-.gold{color:#f0b90b;font-weight:900}
 .btns{display:flex;gap:10px;margin-top:12px}
 .btnBuy{flex:1;background:#00d68f;color:#000;border:0;padding:15px;border-radius:14px;font-weight:900;font-size:15px;cursor:pointer}
 .btnSell{flex:1;background:#ff2d55;color:#fff;border:0;padding:15px;border-radius:14px;font-weight:900;font-size:15px;cursor:pointer}
@@ -56,9 +56,9 @@ td{padding:7px 0;border-top:1px solid #222a44}
       <option value="ETH">ETH / USDT</option>
     </select>
   </div>
-  <b id="priceTop">SOL: $81.60 • Live</b>
-  <span class="badge" id="sourceBadge">Binance Engine Active</span>
-  <small id="dailyTop" style="margin-top:6px">Daily $0.00 / $3.00 (0%)</small>
+  <b id="priceTop">SOL: $182.00 • Live</b>
+  <span class="badge" id="sourceBadge">Fetching live price...</span>
+  <small id="dailyTop">Daily $0.00 / $3.00 (0%)</small>
   <div class="progress"><div id="progBar"></div></div>
   <small id="leftText" style="color:#00d68f;margin-top:5px">Target: $3.00 • 0 closed trades</small>
 </div>
@@ -78,9 +78,7 @@ td{padding:7px 0;border-top:1px solid #222a44}
   <button class="btnSell" onclick="closeAllTrades('MANUAL ALL')">🔴 CLOSE ALL (0)</button>
 </div>
 
-<div class="card" id="loopInfo" style="font-size:12px;color:#cbd5e1;line-height:1.5">
-  Manual multi-trade engine active.
-</div>
+<div class="card" id="loopInfo" style="font-size:12px;color:#cbd5e1;line-height:1.5">Manual multi-trade engine active.</div>
 
 <button class="mainBtn" id="mainBtn" onclick="toggleBot()">● MONITORING - Tap to PAUSE</button>
 
@@ -95,15 +93,15 @@ td{padding:7px 0;border-top:1px solid #222a44}
   <div class="grid">
     <div class="field">
       <label>Total Capital ($ USD)</label>
-      <input type="number" id="capitalInput" step="0.1" value="30.00">
+      <input type="number" id="capitalInput" step="0.1" value="10.00">
     </div>
     <div class="field">
       <label>Size Per Trade ($ USD)</label>
-      <input type="number" id="sizeInput" step="0.5" value="10.00">
+      <input type="number" id="sizeInput" step="0.5" value="9.50">
     </div>
     <div class="field">
       <label>Max Open Trades</label>
-      <input type="number" id="maxTradesInput" min="1" max="25" step="1" value="5">
+      <input type="number" id="maxTradesInput" min="1" max="25" step="1" value="1">
     </div>
     <div class="field">
       <label>Auto-Entry Mode</label>
@@ -126,90 +124,4 @@ td{padding:7px 0;border-top:1px solid #222a44}
     </div>
   </div>
   <button class="saveBtn" onclick="saveSettings()">SAVE SETTINGS</button>
-  <div style="font-size:12px;color:#00d68f;margin-top:8px;text-align:center" id="capitalInfo">
-    Calculating allocation...
-  </div>
-</div>
-
-<div class="card">
-  <div class="row">
-    <b>Trade History</b>
-    <span style="font-size:12px;color:#8a9ab5" id="winRate">Win Rate: 0%</span>
-  </div>
-  <table>
-    <thead><tr><th>#</th><th>Pair / Entry → Exit</th><th>Net P/L</th><th>Exit</th></tr></thead>
-    <tbody id="history">
-      <tr><td colspan="4" style="text-align:center;color:#8a9ab5">No closed trades yet</td></tr>
-    </tbody>
-  </table>
-  <div class="stats">
-    <span id="balDisplay">Free Cash: $30.00</span>
-    <span id="winsDisplay">Wins: 0 | Losses: 0</span>
-  </div>
-</div>
-
-<div class="footer">V11.3 PRO • Stable Layout & Engine</div>
-
-<script>
-var COINS = {
-  SOL:  { sym: 'SOLUSDT',  dec: 2, qtyDec: 4, price: 81.60 },
-  SUI:  { sym: 'SUIUSDT',  dec: 4, qtyDec: 2, price: 1.85 },
-  DOGE: { sym: 'DOGEUSDT', dec: 4, qtyDec: 1, price: 0.165 },
-  XRP:  { sym: 'XRPUSDT',  dec: 4, qtyDec: 2, price: 2.35 },
-  PEPE: { sym: 'PEPEUSDT', dec: 8, qtyDec: 0, price: 0.0000085 },
-  BTC:  { sym: 'BTCUSDT',  dec: 2, qtyDec: 6, price: 88500 },
-  ETH:  { sym: 'ETHUSDT',  dec: 2, qtyDec: 5, price: 2150 }
-};
-
-var currentCoin = 'SOL';
-var freeCash = 30.00;
-var running = true;
-var openTrades = [];
-var nextTradeNum = 1;
-var closedCount = 0;
-var wins = 0;
-var profit = 0;
-
-var totalCapital = 30.00;
-var tradeSizeUSD = 10.00;
-var maxOpenTrades = 5;
-var autoMode = 'manual';
-var TP_PCT = 0.35;
-var SL_PCT = 0.50;
-var FEE_PCT = 0.10;
-var DAILY_TARGET = 3.00;
-var DAILY_STOP = -2.00;
-
-var TODAY = new Date().toDateString();
-var KEY = 'binance_v113_stable';
-var statusText = 'Binance Engine Active';
-
-function fmtUSD(n) {
-  n = parseFloat(n);
-  if (isNaN(n) || !isFinite(n)) n = 0;
-  return '$' + n.toFixed(2);
-}
-
-function fmtCoinPrice(n, coinCode) {
-  var cfg = COINS[coinCode || currentCoin] || COINS.SOL;
-  n = parseFloat(n);
-  if (isNaN(n) || !isFinite(n) || n <= 0) n = cfg.price;
-  return '$' + n.toFixed(cfg.dec);
-}
-
-function safeNum(v, d) {
-  v = parseFloat(v);
-  if (isNaN(v) || !isFinite(v)) return d;
-  return v;
-}
-
-function changeCoin() {
-  currentCoin = document.getElementById('coinSelect').value;
-  render();
-}
-
-function saveSettings() {
-  var cap = safeNum(document.getElementById('capitalInput').value, 0);
-  var sz = safeNum(document.getElementById('sizeInput').value, 0);
-  var mx = Math.floor(safeNum(document.getElementById('maxTradesInput').value, 1));
-  var
+  <div style="font-size:12px;color:#00d
