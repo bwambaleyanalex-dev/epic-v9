@@ -19,45 +19,4 @@ select,input{width:100%;padding:12px;border-radius:10px;border:0;margin-top:8px;
 <label>Choose Coin:</label>
 <select id="coin"><option value="DOGEUSDT">DOGE - The King</option><option value="PEPEUSDT">PEPE - The Pumper</option><option value="1000SHIBUSDT">SHIB - The Middle</option></select>
 <div class="cards">
-<div class="card"><b>DOGE</b><div class="price" id="pDOGE">...</div><div id="cDOGE">...</div></div>
-<div class="card"><b>PEPE</b><div class="price" id="pPEPE">...</div><div id="cPEPE">...</div></div>
-<div class="card"><b>SHIB</b><div class="price" id="pSHIB">...</div><div id="cSHIB">...</div></div>
-</div>
-<div class="signal">
-<h2 id="sig">SCANNING... BOS + FVG</h2>
-<p id="sigDetail">Waiting for break of structure + pullback into FVG. Do not chase pump.</p>
-<div class="grid">
-<div><span>ENTRY</span><br><b id="entry">-</b></div>
-<div><span>SL -1.0%</span><br><b id="sl">-</b></div>
-<div><span>MAX LOSS</span><br><b style="color:#7CFF00">$0.60</b></div>
-<div><span>LEVERAGE</span><br><b style="color:#7CFF00">5x Isolated</b></div>
-</div>
-<div style="font-size:13px">Your Margin in Binance: <b>$10</b> | Position Size: $50 | If SL hits you lose $0.60 only</div>
-<button class="btn" onclick="alert('TAKE HALF NOW: Close 50% in Binance. Move SL to Entry.')">TAKE HALF AT +100% →</button>
-</div>
-<div class="small">HOW TO USE: 1. Wait for LONG NOW 2. Open Binance Futures 5x Isolated 3. Buy with $10 4. Set SL from above 5. Take Half at +100%<br>⚠️ V13 has NO margin. Margin lives in Binance only. Never use 20x.</div>
-<script>
-async function getPrice(s){let r=await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol='+s);let j=await r.json();return j;}
-async function scan(){
-try{
-let d=await getPrice('DOGEUSDT');let p=await getPrice('PEPEUSDT');let s=await getPrice('1000SHIBUSDT');
-document.getElementById('pDOGE').textContent='$'+parseFloat(d.lastPrice).toFixed(4);
-document.getElementById('pPEPE').textContent='$'+parseFloat(p.lastPrice).toFixed(8);
-document.getElementById('pSHIB').textContent='$'+parseFloat(s.lastPrice).toFixed(4);
-document.getElementById('cDOGE').textContent=parseFloat(d.priceChangePercent).toFixed(2)+'%';document.getElementById('cDOGE').className=parseFloat(d.priceChangePercent)>=0?'up':'down';
-document.getElementById('cPEPE').textContent=parseFloat(p.priceChangePercent).toFixed(2)+'%';document.getElementById('cPEPE').className=parseFloat(p.priceChangePercent)>=0?'up':'down';
-document.getElementById('cSHIB').textContent=parseFloat(s.priceChangePercent).toFixed(2)+'%';document.getElementById('cSHIB').className=parseFloat(s.priceChangePercent)>=0?'up':'down';
-// Simple BOS+FVG logic: if 24h change > +2% and price above open = BOS
-let coin=document.getElementById('coin').value;
-let cur = coin=='DOGEUSDT'?d:coin=='PEPEUSDT'?p:s;
-let chg=parseFloat(cur.priceChangePercent);let price=parseFloat(cur.lastPrice);
-let sl=price*0.99;
-document.getElementById('entry').textContent=price.toFixed(8);
-document.getElementById('sl').textContent=sl.toFixed(8);
-if(chg>1.5){document.getElementById('sig').textContent='BOS + FVG FOUND — LONG NOW';document.getElementById('sigDetail').textContent=coin+' broke structure + pulled back. Entry now. SL -1.0% = -$0.60 max loss.';}
-else if(chg<-1.5){document.getElementById('sig').textContent='WAIT - NO SETUP';document.getElementById('sigDetail').textContent=coin+' is dumping. Do NOT long. Wait for BOS up.';}
-else{document.getElementById('sig').textContent='SCANNING... NO TRADE';document.getElementById('sigDetail').textContent=coin+' is ranging. Wait for BOS + FVG. No trade is also a trade.';}
-}catch(e){document.getElementById('sig').textContent='No internet / Binance blocked - Refresh';}}
-scan();setInterval(scan,10000);
-document.getElementById('coin').onchange=scan;
-</script></body></html>
+<div class
