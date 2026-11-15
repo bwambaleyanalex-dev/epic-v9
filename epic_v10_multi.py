@@ -1,250 +1,418 @@
-import os, json, time, threading, urllib.request
-from datetime import datetime, timezone
-from flask import Flask, request, jsonify
 
-# EPIC V10: PAPER ONLY. No exchange orders are ever submitted.
-PORT = int(os.environ.get("PORT", 5000))
-START_BALANCE = 100.0
-FEE = 0.001
-TP = 0.006
-SL = 0.004
-RISK = 0.10
-MAX_LIMIT = 10
-STATE_FILE = "v10_state.json"
-TRADES_FILE = "v10_trades.json"
-app = Flask(__name__)
-lock = threading.RLock()
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BEAST BOTH - PAPER TRADING</title>
+<style>
+body{background:#000;color:#fff;font-family:Arial;padding:10px}
+h1{color:#7CFF00;margin:0;text-align:center;font-size:30px}
+.beast{background:#1a1a1a;border:3px solid #7CFF00;border-radius:16px;padding:12px;margin-top:12px}
+.beast.pepe{border-color:#00FF88}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:10px 0}
+.grid div{background:#000;border-radius:8px;padding:7px;overflow-wrap:anywhere}
+.grid span{color:#aaa;font-size:10px}
+.b{width:100%;padding:13px;border-radius:10px;font-weight:900;border:0;font-size:16px}
+.row{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid #333;font-size:12px}
+.small{font-size:12px;color:#aaa;text-align:center}
+</style>
+</head>
+<body>
 
-def fresh():
-    return {"cash": START_BALANCE, "symbol": "BTCUSDT", "positions": [],
-            "max_positions": 5, "armed": False, "auto": False,
-            "last_signal": None, "last_signal_candle": None,
-            "realized_today": 0.0, "day": datetime.now(timezone.utc).date().isoformat(),
-            "status": "WAITING", "message": "Select a pair and give an initial instruction."}
+<h1>🤖 BEAST BOTH</h1>
+<p class="small">REAL MARKET PRICES • PAPER TRADING • NO DERIV • NO MT5</p>
 
-def read_json(path, default):
-    try:
-        with open(path) as f: return json.load(f)
-    except Exception: return default
+<div style="background:#1a1a1a;border-radius:14px;padding:12px;text-align:center;border:2px solid #7CFF00">
+<div>MY VIRTUAL BALANCE</div>
+<div style="font-size:38px;color:#7CFF00">$<b id="bal">20.00</b></div>
+<div>Started $20.00 | Profit: $<b id="profit">0.00</b></div>
+<div>Wins: <b id="wT" style="color:#00ff00">0</b> |
+Losses: <b id="lT" style="color:#ff3b30">0</b> |
+Trades: <b id="trades">0</b></div>
+<div>Open positions: <b id="openCount">0</b>/2</div>
+<button class="b" style="background:#7CFF00;margin-top:8px" onclick="toggleAuto()">
+▶️ <span id="autoBtn">START AUTO BEAST</span>
+</button>
+<p class="small">Checks market prices every 15 seconds. Signals use observed price movement. TP and SL are checked against actual fetched prices.</p>
+<div id="status" style="color:#aaa;font-size:12px">Waiting for market data...</div>
+</div>
 
-state = read_json(STATE_FILE, fresh())
-for k, v in fresh().items(): state.setdefault(k, v)
+<div class="beast">
+<h2>🐶 DOGE BEAST - <span id="sigDOGE">WAITING...</span></h2>
+<div>Price: <b id="pDOGE" style="color:#7CFF00">...</b>
+<span id="cDOGE"></span></div>
+<div class="grid">
+<div><span>ENTRY</span><br><b id="eDOGE">-</b></div>
+<div><span>TP</span><br><b id="tpDOGE" style="color:#7CFF00">-</b></div>
+<div><span>SL</span><br><b id="slDOGE" style="color:#ff3b30">-</b></div>
+<div><span>STAKE</span><br><b id="stakeDOGE">$1.00</b></div>
+<div><span>LAST RESULT</span><br><b id="lastDOGE">-</b></div>
+<div><span>STREAK</span><br><b id="streakDOGE">0</b></div>
+</div>
+</div>
 
-def save():
-    tmp = STATE_FILE + ".tmp"
-    with open(tmp, "w") as f: json.dump(state, f, indent=2)
-    os.replace(tmp, STATE_FILE)
+<div class="beast pepe">
+<h2>🐸 PEPE BEAST - <span id="sigPEPE">WAITING...</span></h2>
+<div>Price: <b id="pPEPE" style="color:#00FF88">...</b>
+<span id="cPEPE"></span></div>
+<div class="grid">
+<div><span>ENTRY</span><br><b id="ePEPE">-</b></div>
+<div><span>TP</span><br><b id="tpPEPE" style="color:#00FF88">-</b></div>
+<div><span>SL</span><br><b id="slPEPE" style="color:#ff3b30">-</b></div>
+<div><span>STAKE</span><br><b id="stakePEPE">$1.00</b></div>
+<div><span>LAST RESULT</span><br><b id="lastPEPE">-</b></div>
+<div><span>STREAK</span><br><b id="streakPEPE">0</b></div>
+</div>
+</div>
 
-def log_trade(t):
-    trades = read_json(TRADES_FILE, [])
-    trades.append(t)
-    with open(TRADES_FILE + ".tmp", "w") as f: json.dump(trades[-1000:], f, indent=2)
-    os.replace(TRADES_FILE + ".tmp", TRADES_FILE)
+<div style="background:#1a1a1a;border-radius:14px;padding:12px;margin-top:12px">
+<h3 style="color:#7CFF00;margin:0">📓 LIVE TRADE FEED</h3>
+<div id="log">Waiting for first market scan...</div>
+<button class="b" style="background:#fff;margin-top:8px" onclick="resetAll()">
+RESET BALANCE TO $20
+</button>
+</div>
 
-def now(): return datetime.now(timezone.utc).isoformat()
+<p class="small">
+Fixed stake: $1 per position. TP: 0.5%. SL: 0.3%.
+No martingale and no random wins.
+This is a virtual trading experiment, not real-money trading.
+Keep Chrome open while running. Browser background restrictions may pause it.
+</p>
 
-def candles(symbol):
-    if not symbol.endswith("USDT") or not symbol[:-4].isalnum():
-        raise ValueError("Use a USDT pair such as BTCUSDT.")
-    url = f"https://api.binance.com/api/v3/klines?symbol={symbol}&interval=5m&limit=250"
-    req = urllib.request.Request(url, headers={"User-Agent": "EPIC-V10-PAPER"})
-    with urllib.request.urlopen(req, timeout=12) as r: return json.loads(r.read())
+<script>
+const START_BALANCE = 20;
+const STAKE = 1;
+const TP_PERCENT = 0.005;
+const SL_PERCENT = 0.003;
+const SIGNAL_PERCENT = 0.0002;
+const INTERVAL = 15000;
+const STORAGE_KEY = "beast_both_fixed_v1";
 
-def ema(xs, n):
-    a = 2 / (n + 1); v = xs[0]
-    for x in xs[1:]: v += a * (x - v)
-    return v
+const names = ["DOGE","PEPE"];
 
-def rsi(xs, n=14):
-    changes = [xs[i] - xs[i-1] for i in range(1, len(xs))]
-    gains = [max(x, 0) for x in changes[-n:]]
-    losses = [max(-x, 0) for x in changes[-n:]]
-    ag, al = sum(gains)/n, sum(losses)/n
-    if al == 0: return 100 if ag else 50
-    return 100 - 100/(1 + ag/al)
+let state = {
+ balance: START_BALANCE,
+ wins: 0,
+ losses: 0,
+ positions: {DOGE:null,PEPE:null},
+ streak: {DOGE:0,PEPE:0},
+ lastResult: {DOGE:"-",PEPE:"-"},
+ log: []
+};
 
-def signal_for(data):
-    # Ignore the still-forming final candle.
-    xs = [float(c[4]) for c in data[:-1]]
-    if len(xs) < 205: return None, None, None
-    f0, s0 = ema(xs[-30:], 9), ema(xs[-60:], 21)
-    f1, s1 = ema(xs[-31:-1], 9), ema(xs[-61:-1], 21)
-    trend, mom = ema(xs[-220:], 200), rsi(xs)
-    side = None
-    if f1 <= s1 and f0 > s0 and xs[-1] > trend and 50 <= mom <= 72: side = "BUY"
-    if f1 >= s1 and f0 < s0 and xs[-1] < trend and 28 <= mom <= 50: side = "SELL"
-    return side, xs[-1], int(data[-2][0])
+let previous = {DOGE:null,PEPE:null};
+let auto = false;
+let busy = false;
+let timer = null;
 
-def equity():
-    value = state["cash"]
-    for p in state["positions"]:
-        d = 1 if p["side"] == "BUY" else -1
-        value += p["margin"] + d * (p["last"] - p["entry"]) * p["qty"]
-    return value
+function loadState(){
+ try{
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+  if(saved && typeof saved.balance === "number"){
+   state = {...state,...saved};
+   state.positions = {...state.positions};
+   state.streak = {...state.streak};
+   state.lastResult = {...state.lastResult};
+  }
+ }catch(e){}
+}
 
-def open_pos(side, price, source):
-    if len(state["positions"]) >= state["max_positions"]: return False
-    margin = min(equity() * RISK, state["cash"])
-    fee_in = margin * FEE
-    qty = (margin - fee_in) / price
-    if margin <= 1 or qty <= 0: return False
-    state["cash"] -= margin
-    state["positions"].append({
-        "id": str(time.time_ns()), "symbol": state["symbol"], "side": side,
-        "entry": price, "last": price, "qty": qty, "margin": margin,
-        "fee_in": fee_in,
-        "tp": price * (1 + TP if side == "BUY" else 1 - TP),
-        "sl": price * (1 - SL if side == "BUY" else 1 + SL),
-        "opened": now(), "source": source})
-    return True
+function saveState(){
+ try{
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+ }catch(e){}
+}
 
-def close_pos(p, price, reason):
-    d = 1 if p["side"] == "BUY" else -1
-    gross = d * (price - p["entry"]) * p["qty"]
-    fee_out = p["qty"] * price * FEE
-    pnl = gross - p["fee_in"] - fee_out
-    state["cash"] += p["margin"] + gross - fee_out
-    state["realized_today"] += pnl
-    log_trade({"time": now(), "symbol": p["symbol"], "side": p["side"],
-               "entry": p["entry"], "exit": price, "reason": reason,
-               "net_pnl": round(pnl, 6), "cash": round(state["cash"], 6)})
-    state["positions"].remove(p)
-    print(reason, p["side"], p["symbol"], "net P/L", round(pnl, 4), flush=True)
+function money(n){
+ return Number(n).toFixed(2);
+}
 
-def loop():
-    print("EPIC V10 PAPER ONLY - REAL TRADING DISABLED", flush=True)
-    while True:
-        try:
-            with lock: sym = state["symbol"]
-            data = candles(sym)
-            side, price, candle_id = signal_for(data)
-            bar = data[-2]
-            high, low, close = float(bar[2]), float(bar[3]), float(bar[4])
-            with lock:
-                today = datetime.now(timezone.utc).date().isoformat()
-                if state["day"] != today:
-                    state["day"], state["realized_today"] = today, 0.0
-                for p in list(state["positions"]):
-                    p["last"] = close
-                    if p["side"] == "BUY":
-                        if low <= p["sl"]: close_pos(p, p["sl"], "STOP_LOSS")
-                        elif high >= p["tp"]: close_pos(p, p["tp"], "TAKE_PROFIT")
-                    else:
-                        if high >= p["sl"]: close_pos(p, p["sl"], "STOP_LOSS")
-                        elif low <= p["tp"]: close_pos(p, p["tp"], "TAKE_PROFIT")
-                if state["armed"] and state["auto"] and side and candle_id != state["last_signal_candle"]:
-                    # Only act once per completed candle; require a fresh signal direction.
-                    if side != state["last_signal"]:
-                        if open_pos(side, price, "AUTO"):
-                            state["last_signal"] = side
-                            state["last_signal_candle"] = candle_id
-                            state["message"] = f"Automatic {side} position opened."
-                    state["last_signal_candle"] = candle_id
-                state["status"] = "ACTIVE" if state["armed"] and state["auto"] else "PAUSED"
-                save()
-            time.sleep(15)
-        except Exception as e:
-            with lock:
-                state["status"], state["message"] = "DATA ERROR", str(e)
-                save()
-            print("Scan error:", e, flush=True)
-            time.sleep(15)
+function priceText(n){
+ return Number(n).toFixed(8);
+}
 
-@app.route("/")
-def home():
-    return """<!doctype html><meta name=viewport content='width=device-width,initial-scale=1'>
-    <title>EPIC V10</title><style>body{font:16px Arial;background:#101820;color:#fff;padding:16px;max-width:650px;margin:auto}
-    section{background:#20303c;padding:14px;border-radius:12px;margin:12px 0}input,select,button{width:100%;box-sizing:border-box;padding:12px;margin:5px 0;font-size:16px}
-    button{background:#16885e;color:white;border:0;border-radius:8px}.stop{background:#a33}</style>
-    <h2>EPIC V10 PAPER BOT</h2><b>REAL TRADING DISABLED</b>
-    <section id=status>Loading...</section>
-    <section><h3>Choose ONE pair</h3><input id=symbol value=BTCUSDT>
-    <select id=limit><option>1</option><option>2</option><option selected>5</option><option>10</option></select>
-    <button onclick=configure()>Save pair and position limit</button></section>
-    <section><h3>Your initial instruction</h3><select id=side><option>BUY</option><option>SELL</option></select>
-    <select id=count><option>1</option><option>2</option><option selected>3</option><option>5</option><option>10</option></select>
-    <button onclick=arm()>Open initial positions and enable automatic signals</button>
-    <button class=stop onclick=pauseBot()>Pause new entries</button>
-    <button class=stop onclick=closeAll()>Close all paper positions</button></section>
-    <section><h3>Open positions</h3><div id=positions></div></section><section><h3>Recent closed trades</h3><div id=trades></div></section>
-    <script>
-    async function post(path,obj){let r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(obj)});let j=await r.json();alert(j.message||j.error);refresh()}
-    function configure(){post('/configure',{symbol:symbol.value.toUpperCase(),max_positions:+limit.value})}
-    function arm(){post('/arm',{side:side.value,count:+count.value})}
-    function pauseBot(){post('/pause',{})}
-    function closeAll(){if(confirm('Close all paper positions?'))post('/close_all',{})}
-    async function refresh(){try{let s=await(await fetch('/status')).json();status.innerHTML=s.status+'<br>Pair: '+s.symbol+'<br>Cash: $'+s.cash.toFixed(2)+' | Equity: $'+s.equity.toFixed(2)+'<br>Today realized: $'+s.realized_today.toFixed(2)+'<br>Positions: '+s.positions.length+'/'+s.max_positions+'<br>'+s.message;
-    positions.innerHTML=s.positions.map(p=>p.side+' '+p.symbol+' entry '+p.entry.toFixed(5)+' TP '+p.tp.toFixed(5)+' SL '+p.sl.toFixed(5)).join('<br>')||'None';
-    let t=await(await fetch('/trades')).json();trades.innerHTML=t.slice(-8).reverse().map(x=>x.side+' '+x.reason+' P/L $'+x.net_pnl).join('<br>')||'None';
-    }catch(e){status.innerText=e}}refresh();setInterval(refresh,10000)</script>"""
+function addLog(message,color="#fff"){
+ const log = document.getElementById("log");
+ const div = document.createElement("div");
+ div.className = "row";
+ const span = document.createElement("span");
+ span.textContent = new Date().toLocaleTimeString()+" "+message;
+ const result = document.createElement("span");
+ result.textContent = "";
+ result.style.color = color;
+ div.append(span,result);
+ log.prepend(div);
+ state.log.unshift(new Date().toLocaleTimeString()+" "+message);
+ state.log = state.log.slice(0,30);
+ saveState();
+}
 
-@app.route("/status")
-def status():
-    with lock:
-        return jsonify({"status": state["status"], "symbol": state["symbol"],
-          "cash": state["cash"], "equity": equity(), "realized_today": state["realized_today"],
-          "positions": state["positions"], "max_positions": state["max_positions"],
-          "message": state["message"]})
+function update(){
+ document.getElementById("bal").textContent=money(state.balance);
+ document.getElementById("profit").textContent=money(state.balance-START_BALANCE);
+ document.getElementById("wT").textContent=state.wins;
+ document.getElementById("lT").textContent=state.losses;
+ document.getElementById("trades").textContent=state.wins+state.losses;
 
-@app.route("/configure", methods=["POST"])
-def configure():
-    d = request.get_json(silent=True) or {}
-    sym, maximum = str(d.get("symbol", "")).upper().strip(), int(d.get("max_positions", 5))
-    if not sym.endswith("USDT") or not sym[:-4].isalnum():
-        return jsonify(error="Enter a valid USDT pair, e.g. BTCUSDT."), 400
-    if not 1 <= maximum <= MAX_LIMIT: return jsonify(error="Limit must be 1 to 10."), 400
-    with lock:
-        if state["positions"]: return jsonify(error="Close positions before changing pair."), 400
-        state.update(symbol=sym, max_positions=maximum, last_signal=None, last_signal_candle=None,
-                     message=f"Selected {sym}. Ready for your initial instruction.")
-        save()
-    return jsonify(message=f"Selected {sym}.")
+ let count=names.filter(n=>state.positions[n]).length;
+ document.getElementById("openCount").textContent=count;
 
-@app.route("/arm", methods=["POST"])
-def arm():
-    d = request.get_json(silent=True) or {}
-    side, count = str(d.get("side", "")).upper(), int(d.get("count", 1))
-    if side not in ("BUY", "SELL") or not 1 <= count <= MAX_LIMIT:
-        return jsonify(error="Choose BUY or SELL and 1 to 10 positions."), 400
-    with lock:
-        if state["positions"]: return jsonify(error="Close existing positions first."), 400
-        if count > state["max_positions"]: return jsonify(error="Count exceeds position limit."), 400
-        try: price = float(candles(state["symbol"])[-2][4])
-        except Exception as e: return jsonify(error=f"Market data error: {e}"), 503
-        opened = sum(1 for _ in range(count) if open_pos(side, price, "MANUAL"))
-        if not opened: return jsonify(error="Insufficient paper balance."), 400
-        state.update(armed=True, auto=True, last_signal=side,
-                     last_signal_candle=None,
-                     message=f"Opened {opened} initial {side} paper positions; auto signals enabled.")
-        save()
-    return jsonify(message=state["message"])
+ names.forEach(n=>{
+  const p=state.positions[n];
+  document.getElementById("stake"+n).textContent="$"+money(STAKE);
+  document.getElementById("streak"+n).textContent=state.streak[n];
+  document.getElementById("last"+n).textContent=state.lastResult[n];
 
-@app.route("/pause", methods=["POST"])
-def pause():
-    with lock:
-        state.update(armed=False, auto=False, message="New entries paused; open positions remain monitored.")
-        save()
-    return jsonify(message=state["message"])
+  if(p){
+   document.getElementById("e"+n).textContent=priceText(p.entry);
+   document.getElementById("tp"+n).textContent=priceText(p.tp);
+   document.getElementById("sl"+n).textContent=priceText(p.sl);
+   document.getElementById("sig"+n).textContent="OPEN "+p.side;
+  }else{
+   document.getElementById("e"+n).textContent="-";
+   document.getElementById("tp"+n).textContent="-";
+   document.getElementById("sl"+n).textContent="-";
+  }
+ });
+ saveState();
+}
 
-@app.route("/close_all", methods=["POST"])
-def close_all():
-    with lock:
-        if not state["positions"]: return jsonify(message="No open positions.")
-        try: price = float(candles(state["symbol"])[-2][4])
-        except Exception as e: return jsonify(error=f"Market data error: {e}"), 503
-        for p in list(state["positions"]): close_pos(p, price, "MANUAL_CLOSE")
-        state.update(armed=False, auto=False, message="All paper positions closed; bot paused.")
-        save()
-    return jsonify(message=state["message"])
+function openPosition(name,side,price){
+ const tp=side==="BUY"
+  ?price*(1+TP_PERCENT)
+  :price*(1-TP_PERCENT);
 
-@app.route("/trades")
-def trades():
-    return jsonify(read_json(TRADES_FILE, []))
+ const sl=side==="BUY"
+  ?price*(1-SL_PERCENT)
+  :price*(1+SL_PERCENT);
 
-@app.route("/health")
-def health():
-    return "OK"
+ state.positions[name]={
+  side,
+  entry:price,
+  tp,
+  sl,
+  stake:STAKE
+ };
 
-if __name__ == "__main__":
-    threading.Thread(target=loop, daemon=True).start()
-    app.run(host="0.0.0.0", port=PORT, debug=False, use_reloader=False)
+ document.getElementById("sig"+name).textContent="OPEN "+side;
+ addLog(name+" "+side+" OPENED @ $"+priceText(price));
+ update();
+}
+
+function closePosition(name,exitPrice,reason){
+ const p=state.positions[name];
+ if(!p)return;
+
+ let change=p.side==="BUY"
+  ?(exitPrice-p.entry)/p.entry
+  :(p.entry-exitPrice)/p.entry;
+
+ const profit=p.stake*change;
+ state.balance+=profit;
+
+ if(profit>=0){
+  state.wins++;
+  state.streak[name]=Math.max(0,state.streak[name])+1;
+  state.lastResult[name]="WIN +$"+money(profit);
+ }else{
+  state.losses++;
+  state.streak[name]=Math.min(0,state.streak[name])-1;
+  state.lastResult[name]="LOSS -$"+money(Math.abs(profit));
+ }
+
+ document.getElementById("last"+name).style.color=
+  profit>=0?"#00ff00":"#ff3b30";
+
+ state.positions[name]=null;
+ document.getElementById("sig"+name).textContent=reason;
+
+ addLog(
+  name+" "+reason+" | "+(profit>=0?"WIN":"LOSS")+
+  " $"+money(profit),
+  profit>=0?"#00ff00":"#ff3b30"
+ );
+
+ update();
+}
+
+function checkPosition(name,price){
+ const p=state.positions[name];
+ if(!p)return false;
+
+ if(p.side==="BUY"){
+  if(price>=p.tp){
+   closePosition(name,p.tp,"TAKE PROFIT");
+   return true;
+  }
+  if(price<=p.sl){
+   closePosition(name,p.sl,"STOP LOSS");
+   return true;
+  }
+ }else{
+  if(price<=p.tp){
+   closePosition(name,p.tp,"TAKE PROFIT");
+   return true;
+  }
+  if(price>=p.sl){
+   closePosition(name,p.sl,"STOP LOSS");
+   return true;
+  }
+ }
+ return false;
+}
+
+function analyze(name,price){
+ const old=previous[name];
+
+ if(old===null){
+  document.getElementById("sig"+name).textContent="LEARNING";
+  return;
+ }
+
+ if(state.positions[name]){
+  checkPosition(name,price);
+  return;
+ }
+
+ const movement=(price-old)/old;
+
+ if(movement>=SIGNAL_PERCENT){
+  document.getElementById("sig"+name).textContent="BUY SIGNAL";
+  openPosition(name,"BUY",price);
+ }else if(movement<=-SIGNAL_PERCENT){
+  document.getElementById("sig"+name).textContent="SELL SIGNAL";
+  openPosition(name,"SELL",price);
+ }else{
+  document.getElementById("sig"+name).textContent="WAITING";
+ }
+}
+
+async function scan(){
+ if(busy)return;
+ busy=true;
+
+ try{
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),10000);
+
+  let response;
+  try{
+   response=await fetch(
+    "https://api.coingecko.com/api/v3/simple/price?ids=dogecoin,pepe&vs_currencies=usd&include_24hr_change=true",
+    {signal:controller.signal,cache:"no-store"}
+   );
+  }finally{
+   clearTimeout(timeout);
+  }
+
+  if(!response.ok){
+   throw new Error("Market API error: "+response.status);
+  }
+
+  const data=await response.json();
+
+  if(!data.dogecoin || !data.pepe ||
+     !Number.isFinite(data.dogecoin.usd) ||
+     !Number.isFinite(data.pepe.usd)){
+   throw new Error("Invalid market price data");
+  }
+
+  const prices={
+   DOGE:data.dogecoin.usd,
+   PEPE:data.pepe.usd
+  };
+
+  const changes={
+   DOGE:data.dogecoin.usd_24h_change,
+   PEPE:data.pepe.usd_24h_change
+  };
+
+  names.forEach(name=>{
+   const price=prices[name];
+
+   document.getElementById("p"+name).textContent="$"+priceText(price);
+
+   const change=Number(changes[name]);
+   document.getElementById("c"+name).textContent=
+    Number.isFinite(change)?change.toFixed(2)+"% (24h)":"";
+
+   if(auto){
+    analyze(name,price);
+   }else if(state.positions[name]){
+    checkPosition(name,price);
+   }
+
+   previous[name]=price;
+  });
+
+  document.getElementById("status").textContent=
+   "Market connected • Updated "+new Date().toLocaleTimeString();
+
+  update();
+
+ }catch(error){
+  document.getElementById("status").textContent=
+   "Market unavailable: "+error.message+" • Retrying...";
+ }finally{
+  busy=false;
+ }
+}
+
+function toggleAuto(){
+ if(auto){
+  auto=false;
+  clearInterval(timer);
+  timer=null;
+  document.getElementById("autoBtn").textContent="START AUTO BEAST";
+  document.getElementById("status").textContent="Auto trading paused";
+  names.forEach(n=>{
+   if(!state.positions[n])
+    document.getElementById("sig"+n).textContent="PAUSED";
+  });
+ }else{
+  auto=true;
+  document.getElementById("autoBtn").textContent="STOP AUTO BEAST";
+  document.getElementById("status").textContent="Starting market scans...";
+  scan();
+  timer=setInterval(scan,INTERVAL);
+ }
+}
+
+function resetAll(){
+ auto=false;
+ clearInterval(timer);
+ timer=null;
+ previous={DOGE:null,PEPE:null};
+
+ state={
+  balance:START_BALANCE,
+  wins:0,
+  losses:0,
+  positions:{DOGE:null,PEPE:null},
+  streak:{DOGE:0,PEPE:0},
+  lastResult:{DOGE:"-",PEPE:"-"},
+  log:[]
+ };
+
+ localStorage.removeItem(STORAGE_KEY);
+ document.getElementById("autoBtn").textContent="START AUTO BEAST";
+ document.getElementById("log").textContent="Reset to $20. Press START to begin.";
+ document.getElementById("status").textContent="Reset complete";
+ names.forEach(n=>{
+  document.getElementById("sig"+n).textContent="WAITING...";
+  document.getElementById("last"+n).style.color="#fff";
+ });
+ update();
+ scan();
+}
+
+loadState();
+update();
+scan();
+setInterval(()=>{if(!auto)scan();},INTERVAL);
+
+</script>
+</body>
+</html>
