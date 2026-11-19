@@ -1,1 +1,355 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>V13 MEME FULL</title><style>body{background:#14002b;color:#fff;font-family:Arial;padding:12px;margin:0}h1{color:#7CFF00;margin:0;font-size:30px}.sub{color:#bfa8ff;font-size:13px}select{width:100%;padding:12px;border-radius:10px;margin:10px 0;font-size:16px}.c{display:flex;gap:7px}.k{flex:1;background:#22004d;border:2px solid #7CFF00;border-radius:12px;padding:9px;text-align:center}.k b{font-size:15px}.k div{font-size:12px}.s{background:#22004d;border:3px solid #7CFF00;border-radius:16px;padding:14px;margin-top:12px;text-align:center}.s h2{color:#7CFF00;margin:0}.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}.grid div{background:#14002b;border-radius:10px;padding:8px}.grid span{color:#bfa8ff;font-size:11px}.b{background:#7CFF00;color:#14002b;border:0;width:100%;padding:14px;border-radius:12px;font-weight:900;font-size:16px}.b2{background:#fff;color:#14002b;border:0;width:100%;padding:12px;border-radius:12px;font-weight:900;margin-top:8px}.box{background:#22004d;border-radius:14px;padding:12px;margin-top:12px}.box h3{margin:0 0 8px;color:#7CFF00;font-size:16px}.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #3a1166;font-size:13px}.small{font-size:12px;color:#bfa8ff;text-align:center}</style></head><body><h1>⚡ V13 MEME</h1><div class="sub">FULL SCANNER • BOS + FVG + TP • EYES ONLY • NO MARGIN HERE</div><select id="coin"><option value="DOGE">DOGE - The King</option><option value="PEPE">PEPE - The Pumper</option><option value="SHIB">SHIB - The Middle</option></select><div class="c"><div class="k"><b>DOGE</b><div id="pDOGE">...</div><div id="cDOGE">...</div><div id="tDOGE">Trend: -</div></div><div class="k"><b>PEPE</b><div id="pPEPE">...</div><div id="cPEPE">...</div><div id="tPEPE">Trend: -</div></div><div class="k"><b>SHIB</b><div id="pSHIB">...</div><div id="cSHIB">...</div><div id="tSHIB">Trend: -</div></div></div><div class="s"><h2 id="sig">SCANNING...</h2><p id="sigDetail">Waiting for BOS + FVG</p><div class="grid"><div><span>ENTRY</span><br><b id="entry">-</b></div><div><span>STOP LOSS -1%</span><br><b id="sl">-</b></div><div><span>MAX LOSS</span><br><b style="color:#7CFF00">$0.60</b></div><div><span>TP1 +100% TAKE HALF</span><br><b id="tp1" style="color:#7CFF00">-</b></div><div><span>TP2 +200% LET RUN</span><br><b id="tp2" style="color:#7CFF00">-</b></div><div><span>LEVERAGE</span><br><b style="color:#7CFF00">5x Isolated</b></div></div><div id="conf" style="font-size:13px">BOS: - | FVG: - | CONFIDENCE: -</div><button class="b" onclick="takeHalf()">TAKE HALF AT TP1 →</button><button class="b2" onclick="logTrade('WIN')">✅ I WON - Log Win</button><button class="b2" onclick="logTrade('LOSS')">❌ I LOST - Log Loss</button></div><div class="box"><h3>📊 BOS + FVG EXPLAINED</h3><div class="row"><span>BOS (Break of Structure)</span><span id="bos">-</span></div><div class="row"><span>FVG (Fair Value Gap)</span><span id="fvg">-</span></div><div class="row"><span>Trend (24h)</span><span id="trend">-</span></div><div class="row"><span>Session (Kampala)</span><span id="session">-</span></div><div class="row"><span>Risk : Reward</span><span>1 : 2 - Good</span></div><div class="row"><span>Margin in Binance</span><span>$10 → Position $50</span></div></div><div class="box"><h3>📓 MY 14-DAY LOG <button onclick="clearLog()" style="float:right;background:#ff4d6d;color:#fff;border:0;border-radius:6px;padding:4px 8px">Clear</button></h3><div id="log">No trades yet. Take 1 trade, log it here.</div><div class="small" style="margin-top:8px">Wins: <b id="wins" style="color:#7CFF00">0</b> | Losses: <b id="losses" style="color:#ff4d6d">0</b> | Win Rate: <b id="wr">0%</b></div></div><p class="small">HOW TO USE: 1. Wait for LONG NOW 2. Buy in Binance Futures 5x Isolated $10 3. Set SL + TP1 from above 4. At TP1 press TAKE HALF 5. Log Win/Loss<br>⚠️ If NO SETUP, NO TRADE. Max 2 trades/day. If 2 losses, STOP today.</p><script>let W=0,L=0;function loadLog(){try{let d=JSON.parse(localStorage.getItem('v13log')||'[]');W=d.filter(x=>x.r=='WIN').length;L=d.filter(x=>x.r=='LOSS').length;document.getElementById('wins').textContent=W;document.getElementById('losses').textContent=L;document.getElementById('wr').textContent=(W+L?Math.round(W/(W+L)*100):0)+'%';document.getElementById('log').innerHTML=d.length?d.slice(-5).reverse().map(x=>'<div class="row"><span>'+x.d+' '+x.c+' @ '+x.e+'</span><span style="color:'+(x.r=='WIN'?'#7CFF00':'#ff4d6d')+'">'+x.r+'</span></div>').join(''):'No trades yet.';}catch(e){}}function logTrade(r){let c=document.getElementById('coin').value,e=document.getElementById('entry').textContent;let d=JSON.parse(localStorage.getItem('v13log')||'[]');d.push({d:new Date().toLocaleDateString(),c:c,e:e,r:r});localStorage.setItem('v13log',JSON.stringify(d));loadLog();alert('Logged: '+r+' - Good discipline!');}function clearLog(){localStorage.removeItem('v13log');loadLog();}function takeHalf(){alert('IN BINANCE: Close 50% now. Move SL to Entry. You are now risk-free!');}async function scan(){try{let r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=dogecoin,pepe,shiba-inu&vs_currencies=usd&include_24hr_change=true');let j=await r.json();let d={p:j.dogecoin.usd,c:j.dogecoin.usd_24h_change},p={p:j.pepe.usd,c:j.pepe.usd_24h_change},s={p:j['shiba-inu'].usd*1000,c:j['shiba-inu'].usd_24h_change};document.getElementById('pDOGE').textContent='$'+d.p;document.getElementById('pPEPE').textContent='$'+p.p;document.getElementById('pSHIB').textContent='$'+s.p;document.getElementById('cDOGE').textContent=d.c.toFixed(2)+'%';document.getElementById('cPEPE').textContent=p.c.toFixed(2)+'%';document.getElementById('cSHIB').textContent=s.c.toFixed(2)+'%';document.getElementById('tDOGE').textContent='Trend: '+(d.c>0?'UP 🟢':'DOWN 🔴');document.getElementById('tPEPE').textContent='Trend: '+(p.c>0?'UP 🟢':'DOWN 🔴');document.getElementById('tSHIB').textContent='Trend: '+(s.c>0?'UP 🟢':'DOWN 🔴');let coin=document.getElementById('coin').value;let cur=coin=='DOGE'?d:coin=='PEPE'?p:s;let entry=cur.p,sl=entry*0.99,tp1=entry*1.02,tp2=entry*1.04;document.getElementById('entry').textContent=entry;document.getElementById('sl').textContent=sl.toFixed(8);document.getElementById('tp1').textContent=tp1.toFixed(8);document.getElementById('tp2').textContent=tp2.toFixed(8);document.getElementById('trend').textContent=cur.c>0?'UPTREND 🟢':'DOWNTREND 🔴';let h=new Date().getHours();document.getElementById('session').textContent=(h>=9&&h<=11)?'MORNING SESSION ✅':(h>=19&&h<=21)?'EVENING SESSION ✅':'OUTSIDE SESSION - Wait';if(cur.c>1.5){document.getElementById('sig').textContent='BOS+FVG FOUND - LONG NOW';document.getElementById('sigDetail').textContent=coin+' broke structure + pulled back into FVG. Entry now.';document.getElementById('bos').textContent='✅ BROKE';document.getElementById('fvg').textContent='✅ FILLED';document.getElementById('conf').textContent='BOS: ✅ | FVG: ✅ | CONFIDENCE: HIGH 85%';}else if(cur.c<-1.5){document.getElementById('sig').textContent='WAIT - NO SETUP';document.getElementById('sigDetail').textContent=coin+' dumping. Do NOT long.';document.getElementById('bos').textContent='❌ NO BREAK';document.getElementById('fvg').textContent='❌ NO GAP';document.getElementById('conf').textContent='BOS: ❌ | FVG: ❌ | CONFIDENCE: LOW';}else{document.getElementById('sig').textContent='SCANNING... NO TRADE';document.getElementById('sigDetail').textContent=coin+' ranging. Wait for BOS+FVG.';document.getElementById('bos').textContent='⏳ WAITING';document.getElementById('fvg').textContent='⏳ WAITING';document.getElementById('conf').textContent='BOS: ⏳ | FVG: ⏳ | CONFIDENCE: MEDIUM';}}catch(e){document.getElementById('sig').textContent='Loading... Wait 30 sec';}}loadLog();scan();setInterval(scan,30000);document.getElementById('coin').onchange=scan;</script></body></html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GOLD BEAST V1</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#10141d;color:#fff;font-family:Arial;padding:14px}
+main{max-width:750px;margin:auto}
+h1{text-align:center;color:#f5c542}
+.card{background:#1b2330;padding:16px;border-radius:13px;margin:12px 0;border:1px solid #303b4b}
+.price{font-size:34px;color:#f5c542;font-weight:bold}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metric{background:#111a26;padding:12px;border-radius:9px}
+small{color:#aab4c3}
+.metric strong{display:block;font-size:19px;margin-top:7px}
+.green{color:#39dc91}.red{color:#ff6565}
+button{width:100%;padding:14px;border:0;border-radius:9px;background:#d8a929;font-weight:bold;margin-top:8px}
+.stop{background:#a93d3d;color:white}
+table{width:100%;border-collapse:collapse;font-size:12px}
+td,th{padding:9px 5px;text-align:left;border-bottom:1px solid #344052}
+.scroll{overflow-x:auto}
+.note{font-size:12px;color:#aab4c3;line-height:1.6}
+</style>
+</head>
+<body>
+<main>
+
+<h1>🤖 GOLD BEAST V1</h1>
+<p style="text-align:center;color:#aaa">XAUUSD • PUBLIC DATA • PAPER TRADING</p>
+
+<div class="card">
+<small>GOLD PRICE (USD/OZ)</small>
+<div class="price" id="price">Connecting...</div>
+<p id="updated" class="note">Waiting for data</p>
+<p id="connection">CONNECTING</p>
+</div>
+
+<div class="card">
+<h3>💰 VIRTUAL ACCOUNT</h3>
+<div class="grid">
+<div class="metric"><small>Equity</small><strong id="equity">$20.00</strong></div>
+<div class="metric"><small>Free cash</small><strong id="cash">$20.00</strong></div>
+<div class="metric"><small>Realized P/L</small><strong id="profit">$0.00</strong></div>
+<div class="metric"><small>Unrealized P/L</small><strong id="unrealized">$0.00</strong></div>
+</div>
+</div>
+
+<div class="card">
+<h3>📊 SIGNAL ENGINE</h3>
+<div class="grid">
+<div class="metric"><small>EMA 9</small><strong id="ema9">--</strong></div>
+<div class="metric"><small>EMA 21</small><strong id="ema21">--</strong></div>
+<div class="metric"><small>RSI 14</small><strong id="rsi">--</strong></div>
+<div class="metric"><small>Signal</small><strong id="signal">WAIT</strong></div>
+</div>
+<p id="historyStatus" class="note">Collecting price history.</p>
+</div>
+
+<div class="card">
+<h3>⚙️ SETTINGS</h3>
+<div class="grid">
+<div class="metric"><small>Starting balance</small><strong>$20</strong></div>
+<div class="metric"><small>Stake</small><strong>$1</strong></div>
+<div class="metric"><small>Take profit</small><strong class="green">1.00%</strong></div>
+<div class="metric"><small>Stop loss</small><strong class="red">0.50%</strong></div>
+<div class="metric"><small>Max positions</small><strong>2</strong></div>
+<div class="metric"><small>Timeframe</small><strong>5 MIN</strong></div>
+</div>
+</div>
+
+<div class="card">
+<h3>🎮 CONTROLS</h3>
+<button onclick="startBot()" id="start">▶ START AUTO BEAST</button>
+<button onclick="stopBot()" class="stop">⏸ PAUSE BOT</button>
+<button onclick="resetBot()">RESET PAPER ACCOUNT</button>
+<p class="note">Paper trading only. No real orders are sent.</p>
+</div>
+
+<div class="card">
+<h3>📂 OPEN POSITIONS</h3>
+<div class="scroll">
+<table>
+<thead><tr><th>Side</th><th>Entry</th><th>Price</th><th>TP</th><th>SL</th><th>P/L</th></tr></thead>
+<tbody id="openTrades"><tr><td colspan="6">No positions</td></tr></tbody>
+</table>
+</div>
+</div>
+
+<div class="card">
+<h3>🏆 PERFORMANCE</h3>
+<div class="grid">
+<div class="metric"><small>Wins</small><strong id="wins">0</strong></div>
+<div class="metric"><small>Losses</small><strong id="losses">0</strong></div>
+<div class="metric"><small>Closed</small><strong id="closed">0</strong></div>
+<div class="metric"><small>Open</small><strong id="positions">0</strong></div>
+</div>
+</div>
+
+<div class="card">
+<h3>📜 TRADE HISTORY</h3>
+<div class="scroll">
+<table>
+<thead><tr><th>Side</th><th>Entry</th><th>Exit</th><th>P/L</th><th>Reason</th></tr></thead>
+<tbody id="history"><tr><td colspan="5">No trades</td></tr></tbody>
+</table>
+</div>
+</div>
+
+<div class="card">
+<h3>📡 MARKET ENGINE</h3>
+<p id="engine" class="note">Waiting to start...</p>
+<p class="note">Public source: api.gold-api.com/price/XAU<br>Market check every 30 seconds.<br>Paper trading only.</p>
+</div>
+</main>
+
+<script>
+const API="https://api.gold-api.com/price/XAU";
+const STAKE=1,MAX_POSITIONS=2,TP=1,SL=0.5;
+const INTERVAL=30000;
+
+let bot={
+cash:20,realized:0,wins:0,losses:0,
+positions:[],history:[],candles:[],
+current:null,lastPrice:0,lastBucket:0,
+running:false,lastSignalBucket:0
+};
+
+let timer=null;
+
+function save(){
+try{localStorage.setItem("goldBeastV1",JSON.stringify(bot))}
+catch(e){}
+}
+
+function load(){
+try{
+let x=JSON.parse(localStorage.getItem("goldBeastV1"));
+if(x)bot={...bot,...x};
+}catch(e){}
+}
+load();
+
+function money(x){return "$"+x.toFixed(2)}
+
+function ema(values,n){
+let k=2/(n+1),v=values[0];
+for(let i=1;i<values.length;i++)v=values[i]*k+v*(1-k);
+return v;
+}
+
+function rsi(values){
+if(values.length<15)return null;
+let g=0,l=0;
+for(let i=values.length-14;i<values.length;i++){
+let d=values[i]-values[i-1];
+if(d>0)g+=d;else l-=d;
+}
+if(l===0)return 100;
+return 100-100/(1+g/l);
+}
+
+async function getPrice(){
+let response=await fetch(API,{cache:"no-store"});
+if(!response.ok)throw Error("Gold data unavailable");
+let data=await response.json();
+let p=Number(data.price);
+if(!Number.isFinite(p)||p<=0)throw Error("Invalid price");
+return p;
+}
+
+function candle(price){
+let bucket=Math.floor(Date.now()/300000)*300000;
+if(!bot.current){
+bot.current={time:bucket,close:price};
+save();return false;
+}
+if(bucket!==bot.current.time){
+bot.candles.push(bot.current.close);
+bot.candles=bot.candles.slice(-200);
+bot.current={time:bucket,close:price};
+save();return true;
+}
+bot.current.close=price;
+return false;
+}
+
+function signal(){
+let v=bot.candles;
+if(v.length<25)return null;
+
+let prev=v.slice(0,-1);
+let e9old=ema(prev.slice(-30),9);
+let e21old=ema(prev.slice(-50),21);
+let e9=ema(v.slice(-30),9);
+let e21=ema(v.slice(-50),21);
+let r=rsi(v);
+
+document.getElementById("ema9").textContent=e9.toFixed(2);
+document.getElementById("ema21").textContent=e21.toFixed(2);
+document.getElementById("rsi").textContent=r.toFixed(2);
+
+if(e9old<=e21old&&e9>e21&&r>50&&r<70)return "BUY";
+if(e9old>=e21old&&e9<e21&&r<50&&r>30)return "SELL";
+return null;
+}
+
+function openTrade(side,price){
+if(bot.positions.length>=MAX_POSITIONS||bot.cash<STAKE)return;
+let tp=side==="BUY"?price*(1+TP/100):price*(1-TP/100);
+let sl=side==="BUY"?price*(1-SL/100):price*(1+SL/100);
+bot.cash-=STAKE;
+bot.positions.push({side,entry:price,tp,sl,stake:STAKE});
+save();render();
+}
+
+function profit(p,price){
+return p.stake*(p.side==="BUY"?(price-p.entry)/p.entry:(p.entry-price)/p.entry);
+}
+
+function closeTrade(p,price,reason){
+let pl=profit(p,price);
+bot.cash+=p.stake+pl;
+bot.realized+=pl;
+if(pl>0)bot.wins++;else bot.losses++;
+bot.history.unshift({side:p.side,entry:p.entry,exit:price,profit:pl,reason});
+bot.history=bot.history.slice(0,50);
+bot.positions=bot.positions.filter(x=>x!==p);
+save();
+}
+
+function manage(price){
+for(let p of [...bot.positions]){
+let reason=null;
+if(p.side==="BUY"){
+if(price>=p.tp)reason="TAKE PROFIT";
+else if(price<=p.sl)reason="STOP LOSS";
+}else{
+if(price<=p.tp)reason="TAKE PROFIT";
+else if(price>=p.sl)reason="STOP LOSS";
+}
+if(reason)closeTrade(p,price,reason);
+}
+}
+
+function render(){
+let price=bot.lastPrice;
+let unreal=bot.positions.reduce((s,p)=>s+profit(p,price),0);
+let equity=bot.cash+bot.positions.reduce((s,p)=>s+p.stake,0)+unreal;
+
+document.getElementById("cash").textContent=money(bot.cash);
+document.getElementById("equity").textContent=money(equity);
+document.getElementById("profit").textContent=money(bot.realized);
+document.getElementById("unrealized").textContent=money(unreal);
+document.getElementById("wins").textContent=bot.wins;
+document.getElementById("losses").textContent=bot.losses;
+document.getElementById("closed").textContent=bot.history.length;
+document.getElementById("positions").textContent=bot.positions.length;
+
+let o=document.getElementById("openTrades");
+o.innerHTML="";
+if(!bot.positions.length)o.innerHTML='<tr><td colspan="6">No open positions</td></tr>';
+bot.positions.forEach(p=>{
+let pl=profit(p,price);
+o.innerHTML+=`<tr><td>${p.side}</td><td>${p.entry.toFixed(2)}</td><td>${price.toFixed(2)}</td><td>${p.tp.toFixed(2)}</td><td>${p.sl.toFixed(2)}</td><td class="${pl>=0?'green':'red'}">${money(pl)}</td></tr>`;
+});
+
+let h=document.getElementById("history");
+h.innerHTML="";
+if(!bot.history.length)h.innerHTML='<tr><td colspan="5">No closed trades</td></tr>';
+bot.history.slice(0,15).forEach(t=>{
+h.innerHTML+=`<tr><td>${t.side}</td><td>${t.entry.toFixed(2)}</td><td>${t.exit.toFixed(2)}</td><td>${money(t.profit)}</td><td>${t.reason}</td></tr>`;
+});
+document.getElementById("start").textContent=bot.running?"🟢 BEAST RUNNING":"▶ START AUTO BEAST";
+}
+
+async function marketCheck(){
+try{
+let price=await getPrice();
+bot.lastPrice=price;
+document.getElementById("price").textContent="$"+price.toFixed(2);
+document.getElementById("updated").textContent="Updated: "+new Date().toLocaleTimeString();
+document.getElementById("connection").textContent="CONNECTED";
+document.getElementById("connection").className="green";
+
+manage(price);
+let changed=candle(price);
+let s=changed?signal():null;
+document.getElementById("signal").textContent=s||"WAIT";
+
+document.getElementById("historyStatus").textContent=
+bot.candles.length<25?
+"Collecting completed candles: "+bot.candles.length+"/25":
+"Signal engine ready. Candles: "+bot.candles.length;
+
+if(bot.running&&changed&&s){
+if(bot.lastSignalBucket!==bot.current.time){
+openTrade(s,price);
+bot.lastSignalBucket=bot.current.time;
+}
+}
+
+document.getElementById("engine").textContent=
+bot.running?"AUTO BEAST ACTIVE":"BOT PAUSED";
+save();render();
+
+}catch(e){
+document.getElementById("connection").textContent="DATA ERROR";
+document.getElementById("connection").className="red";
+document.getElementById("engine").textContent=e.message;
+}
+}
+
+function startBot(){
+bot.running=true;
+save();
+if(!timer){
+marketCheck();
+timer=setInterval(marketCheck,INTERVAL);
+}
+render();
+}
+
+function stopBot(){
+bot.running=false;
+save();
+if(timer){clearInterval(timer);timer=null;}
+document.getElementById("engine").textContent="PAUSED";
+render();
+}
+
+function resetBot(){
+if(!confirm("Erase paper account and trade history?"))return;
+stopBot();
+bot={
+cash:20,realized:0,wins:0,losses:0,
+positions:[],history:[],candles:[],
+current:null,lastPrice:0,lastBucket:0,
+running:false,lastSignalBucket:0
+};
+save();render();
+document.getElementById("signal").textContent="WAIT";
+document.getElementById("ema9").textContent="--";
+document.getElementById("ema21").textContent="--";
+document.getElementById("rsi").textContent="--";
+document.getElementById("historyStatus").textContent="Collecting new candles.";
+}
+
+render();
+marketCheck();
+</script>
+</body>
+</html>
