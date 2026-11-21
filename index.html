@@ -1,7 +1,79 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BEAST BOTH - NO DERIV</title><style>body{background:#000;color:#fff;font-family:Arial;padding:10px}h1{color:#7CFF00;margin:0;text-align:center;font-size:30px}.beast{background:#1a1a1a;border:3px solid #7CFF00;border-radius:16px;padding:12px;margin-top:12px}.beast.pepe{border-color:#00FF88}.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:10px 0}.grid div{background:#000;border-radius:8px;padding:7px}.grid span{color:#aaa;font-size:10px}.b{width:100%;padding:13px;border-radius:10px;font-weight:900;border:0;font-size:16px}.row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #333;font-size:13px}.small{font-size:12px;color:#aaa;text-align:center}</style></head><body><h1>🤖 BEAST BOTH</h1><p class="small">NO DERIV • NO MT5 • NO BINANCE • JUST OPEN & WATCH • FAKE MONEY GAME</p><div style="background:#1a1a1a;border-radius:14px;padding:12px;text-align:center;border:2px solid #7CFF00"><div style="font-size:14px">MY VIRTUAL BALANCE</div><div style="font-size:38px;color:#7CFF00">$<b id="bal">20.00</b></div><div>Started $20.00 | Profit: $<b id="profit">0.00</b></div><div>Wins: <b id="wT" style="color:#00ff00">0</b> | Losses: <b id="lT" style="color:#ff3b30">0</b> | Trades: <b id="trades">0</b></div><button class="b" style="background:#7CFF00;margin-top:8px" onclick="toggleAuto()">▶️ <span id="autoBtn">START AUTO BEAST</span></button><p style="font-size:11px">Auto Beast = Bot trades by itself every 15 sec, no Deriv, no clicking. Just watch balance.</p></div>
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BEAST SIGNAL - REAL STRATEGY</title>
+<style>
+body{background:#000;color:#fff;font-family:Arial;padding:10px}
+h1{color:#7CFF00;text-align:center;margin:0}
+.beast{background:#1a1a1a;border:3px solid #7CFF00;border-radius:16px;padding:12px;margin-top:12px}
+.beast.pepe{border-color:#00FF88}
+.b{width:100%;padding:13px;border-radius:10px;font-weight:900;border:0;font-size:16px;background:#7CFF00}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:10px 0}
+.grid div{background:#000;border-radius:8px;padding:7px}
+.grid span{color:#aaa;font-size:10px}
+input{width:100%;padding:10px;background:#000;color:#fff;border:1px solid #555;border-radius:8px;margin:4px 0}
+.small{font-size:12px;color:#aaa;text-align:center}
+</style></head><body>
+<h1>🤖 BEAST SIGNAL</h1>
+<p class="small">NO RANDOM • NO MARTINGALE • FLAT $1 • YOU CLICK ON DERIV/MT5 YOURSELF<br>Like your BTC trade: Wait for BOX -> Enter -> TP 2% / SL 1%</p>
 
-<div class="beast"><h2>🐶 DOGE BEAST - <span id="sigDOGE">WAITING...</span></h2><div>Price: <b id="pDOGE" style="color:#7CFF00">...</b> <span id="cDOGE"></span></div><div class="grid"><div><span>ENTRY</span><br><b id="eDOGE">-</b></div><div><span>TP</span><br><b id="tpDOGE" style="color:#7CFF00">-</b></div><div><span>SL</span><br><b id="slDOGE" style="color:#ff3b30">-</b></div><div><span>STAKE</span><br><b id="stakeDOGE" style="color:#7CFF00">$1.00</b></div><div><span>LAST RESULT</span><br><b id="lastDOGE">-</b></div><div><span>STREAK</span><br><b id="streakDOGE">0</b></div></div></div>
+<div class="beast"><h2>🐶 DOGE - <span id="sigDOGE">WAITING FOR BOX...</span></h2>
+<div>Price: <b id="pDOGE">...</b></div>
+<label>BUY BOX (Support) <input id="boxDOGE" value="0.12" type="number" step="0.0001"></label>
+<div class="grid">
+<div><span>ENTRY</span><br><b id="eDOGE">-</b></div>
+<div><span>TP +2%</span><br><b id="tpDOGE" style="color:#7CFF00">-</b></div>
+<div><span>SL -1%</span><br><b id="slDOGE" style="color:#ff3b30">-</b></div>
+</div>
+<div>Stake: <b>$1.00 FLAT - NEVER CHANGES</b></div>
+</div>
 
-<div class="beast pepe"><h2>🐸 PEPE BEAST - <span id="sigPEPE">WAITING...</span></h2><div>Price: <b id="pPEPE" style="color:#00FF88">...</b> <span id="cPEPE"></span></div><div class="grid"><div><span>ENTRY</span><br><b id="ePEPE">-</b></div><div><span>TP</span><br><b id="tpPEPE" style="color:#00FF88">-</b></div><div><span>SL</span><br><b id="slPEPE" style="color:#ff3b30">-</b></div><div><span>STAKE</span><br><b id="stakePEPE" style="color:#00FF88">$1.00</b></div><div><span>LAST RESULT</span><br><b id="lastPEPE">-</b></div><div><span>STREAK</span><br><b id="streakPEPE">0</b></div></div></div>
+<div class="beast pepe"><h2>🐸 PEPE - <span id="sigPEPE">WAITING FOR BOX...</span></h2>
+<div>Price: <b id="pPEPE">...</b></div>
+<label>BUY BOX (Support) <input id="boxPEPE" value="0.000007" type="number" step="0.0000001"></label>
+<div class="grid">
+<div><span>ENTRY</span><br><b id="ePEPE">-</b></div>
+<div><span>TP +2%</span><br><b id="tpPEPE" style="color:#00FF88">-</b></div>
+<div><span>SL -1%</span><br><b id="slPEPE" style="color:#ff3b30">-</b></div>
+</div>
+<div>Stake: <b>$1.00 FLAT - NEVER CHANGES</b></div>
+</div>
 
-<div style="background:#1a1a1a;border-radius:14px;padding:12px;margin-top:12px"><h3 style="color:#7CFF00;margin:0">📓 LIVE TRADE FEED - No Deriv Needed</h3><div id="log">Press START AUTO BEAST to start. Bot will trade alone.</div><button class="b" style="background:#fff;margin-top:8px" onclick="resetAll()">RESET BALANCE TO $20</button></div><p class="small">LIKE BEFORE: Just like V13 MEME, you just open the link. No login, no Deriv, no MT5, no deposit. Phone stays on, bot keeps running in Chrome. If you close Chrome, it pauses. If you open again, it continues.<br>When balance goes from $20 → $40 → $100, you will see profit WITHOUT Deriv. If you later want real money, THEN we connect Deriv. Not now.</p><script>let bal=20,seq=[1,2,4,8,16,32],idx={DOGE:0,PEPE:0},streak={DOGE:0,PEPE:0},W=0,L=0,auto=false,timer=null;function toggleAuto(){auto=!auto;document.getElementById('autoBtn').textContent=auto?'⏸️ STOP AUTO BEAST':'▶️ START AUTO BEAST';if(auto){autoTrade();timer=setInterval(autoTrade,15000);}else{clearInterval(timer);}}function resetAll(){bal=20;idx={DOGE:0,PEPE:0};W=0;L=0;update();document.getElementById('log').innerHTML='Reset to $20. Press START again.';}function update(){document.getElementById('bal').textContent=bal.toFixed(2);document.getElementById('profit').textContent=(bal-20).toFixed(2);document.getElementById('wT').textContent=W;document.getElementById('lT').textContent=L;document.getElementById('trades').textContent=W+L;}async function autoTrade(){try{let r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=dogecoin,pepe&vs_currencies=usd&include_24hr_change=true');let j=await r.json();let data={DOGE:{p:j.dogecoin.usd,c:j.dogecoin.usd_24h_change},PEPE:{p:j.pepe.usd,c:j.pepe.usd_24h_change}};['DOGE','PEPE'].forEach(name=>{let cur=data[name],e=cur.p;document.getElementById('p'+name).textContent='$'+e;document.getElementById('c'+name).textContent=cur.c.toFixed(2)+'%';document.getElementById('e'+name).textContent=e;let isBuy=Math.random()>0.5;document.getElementById('sig'+name).textContent=isBuy?'🔥 BUY NOW':'🔥 SELL NOW';document.getElementById('tp'+name).textContent=(isBuy?e*1.02:e*0.98).toFixed(8);document.getElementById('sl'+name).textContent=(isBuy?e*0.99:e*1.01).toFixed(8);let stake=seq[idx[name]];document.getElementById('stake'+name).textContent='$'+stake.toFixed(2);let win=Math.random()>0.45;let profit=win?stake*0.2:-stake*0.1;bal+=profit;if(win){W++;idx[name]=0;streak[name]=0;document.getElementById('last'+name).textContent='✅ WIN +$'+profit.toFixed(2);document.getElementById('last'+name).style.color='#00ff00';}else{L++;idx[name]=Math.min(idx[name]+1,seq.length-1);streak[name]++;document.getElementById('last'+name).textContent='❌ LOSS '+profit.toFixed(2);document.getElementById('last'+name).style.color='#ff3b30';}document.getElementById('streak'+name).textContent=streak[name];let log=document.getElementById('log');let div='<div class="row"><span>'+new Date().toLocaleTimeString()+' '+name+' '+(isBuy?'BUY':'SELL')+' $'+stake+'</span><span style="color:'+(win?'#00ff00':'#ff3b30')+'">'+(win?'WIN +$'+profit.toFixed(2):'LOSS '+profit.toFixed(2))+'</span></div>';log.innerHTML=div+log.innerHTML;});update();if(bal<=0){document.getElementById('log').innerHTML='<div style="color:#ff3b30;text-align:center;padding:10px">💥 BUSTED! Balance $0. Press RESET to play again.</div>'+document.getElementById('log').innerHTML;toggleAuto();}}catch(e){}}scanOnly();async function scanOnly(){try{let r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=dogecoin,pepe&vs_currencies=usd&include_24hr_change=true');let j=await r.json();document.getElementById('pDOGE').textContent='$'+j.dogecoin.usd;document.getElementById('pPEPE').textContent='$'+j.pepe.usd;}catch(e){}}setInterval(scanOnly,15000);</script></body></html>
+<div style="background:#1a1a1a;border-radius:14px;padding:12px;margin-top:12px">
+<h3 style="color:#7CFF00;margin:0">📓 SIGNAL LOG</h3>
+<div id="log">Bot is watching. It will only signal when price touches your BOX.</div>
+</div>
+<p class="small">HOW TO USE:<br>1. Put your BOX price = your Green Box like you did on BTC 58,315<br>2. When price touches box, bot says BUY NOW + gives TP/SL<br>3. YOU open Deriv/MT5 and take it yourself with $1<br>4. If price goes away from box, bot says WAITING - do nothing. No chasing.</p>
+
+<script>
+async function scan(){
+  try{
+    let r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=dogecoin,pepe&vs_currencies=usd');
+    let j=await r.json();
+    check('DOGE', j.dogecoin.usd);
+    check('PEPE', j.pepe.usd);
+  }catch(e){}
+}
+function check(name, price){
+  document.getElementById('p'+name).textContent='$'+price;
+  let box = parseFloat(document.getElementById('box'+name).value);
+  let sigEl = document.getElementById('sig'+name);
+  // Only signal if price is within 0.5% of box - like your BTC retest
+  let diff = Math.abs(price - box) / box;
+  if(diff <= 0.005){
+    let tp = (price*1.02).toFixed(8);
+    let sl = (price*0.99).toFixed(8);
+    sigEl.textContent='🔥 BUY NOW - BOX TOUCHED';
+    sigEl.style.color='#7CFF00';
+    document.getElementById('e'+name).textContent='$'+price;
+    document.getElementById('tp'+name).textContent='$'+tp;
+    document.getElementById('sl'+name).textContent='$'+sl;
+    let log=document.getElementById('log');
+    let msg='<div>'+new Date().toLocaleTimeString()+' '+name+' BOX TOUCH $'+price+' -> TP $'+tp+' SL $'+sl+'</div>';
+    if(!log.innerHTML.includes(name+' BOX TOUCH $'+price)) log.innerHTML=msg+log.innerHTML;
+  } else {
+    sigEl.textContent='WAITING FOR BOX $'+box+' - Price $'+price;
+    sigEl.style.color='#aaa';
+  }
+}
+scan(); setInterval(scan,15000);
+</script></body></html>
