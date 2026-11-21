@@ -1,79 +1,78 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BEAST SIGNAL - REAL STRATEGY</title>
+<title>BEAST SIGNAL V2</title>
 <style>
 body{background:#000;color:#fff;font-family:Arial;padding:10px}
 h1{color:#7CFF00;text-align:center;margin:0}
 .beast{background:#1a1a1a;border:3px solid #7CFF00;border-radius:16px;padding:12px;margin-top:12px}
 .beast.pepe{border-color:#00FF88}
-.b{width:100%;padding:13px;border-radius:10px;font-weight:900;border:0;font-size:16px;background:#7CFF00}
+.b{width:100%;padding:13px;border-radius:10px;font-weight:900;border:0;font-size:16px;background:#7CFF00;margin-top:8px}
+.b2{width:100%;padding:12px;border-radius:10px;font-weight:900;border:0;font-size:15px;background:#fff;margin-top:6px}
 .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:10px 0}
 .grid div{background:#000;border-radius:8px;padding:7px}
 .grid span{color:#aaa;font-size:10px}
 input{width:100%;padding:10px;background:#000;color:#fff;border:1px solid #555;border-radius:8px;margin:4px 0}
 .small{font-size:12px;color:#aaa;text-align:center}
 </style></head><body>
-<h1>🤖 BEAST SIGNAL</h1>
-<p class="small">NO RANDOM • NO MARTINGALE • FLAT $1 • YOU CLICK ON DERIV/MT5 YOURSELF<br>Like your BTC trade: Wait for BOX -> Enter -> TP 2% / SL 1%</p>
+<h1>🤖 BEAST SIGNAL V2</h1>
+<p class="small">FLAT $1 • BOX STRATEGY • YOU CLICK ON DERIV/BINANCE</p>
 
-<div class="beast"><h2>🐶 DOGE - <span id="sigDOGE">WAITING FOR BOX...</span></h2>
+<button class="b" id="startBtn" onclick="toggleStart()">▶️ START BEAST</button>
+<div style="display:flex;gap:6px;margin-top:6px">
+<button class="b2" onclick="window.open('https://app.deriv.com','_blank')">🔗 OPEN DERIV</button>
+<button class="b2" onclick="window.open('https://www.binance.com/en/trade/DOGE_USDT','_blank')">🔗 OPEN BINANCE</button>
+</div>
+<p class="small" id="status">Status: STOPPED - Press START</p>
+
+<div class="beast"><h2>🐶 DOGE - <span id="sigDOGE">STOPPED</span></h2>
 <div>Price: <b id="pDOGE">...</b></div>
-<label>BUY BOX (Support) <input id="boxDOGE" value="0.12" type="number" step="0.0001"></label>
-<div class="grid">
-<div><span>ENTRY</span><br><b id="eDOGE">-</b></div>
-<div><span>TP +2%</span><br><b id="tpDOGE" style="color:#7CFF00">-</b></div>
-<div><span>SL -1%</span><br><b id="slDOGE" style="color:#ff3b30">-</b></div>
-</div>
-<div>Stake: <b>$1.00 FLAT - NEVER CHANGES</b></div>
+<label>BUY BOX (Support) <input id="boxDOGE" value="0.055" type="number" step="0.0001"></label>
+<div class="grid"><div><span>ENTRY</span><br><b id="eDOGE">-</b></div><div><span>TP +2%</span><br><b id="tpDOGE" style="color:#7CFF00">-</b></div><div><span>SL -1%</span><br><b id="slDOGE" style="color:#ff3b30">-</b></div></div>
+<div>Stake: <b>$1.00 FLAT</b></div>
+<button class="b2" onclick="window.open('https://app.deriv.com','_blank')">TAKE THIS TRADE ON DERIV →</button>
 </div>
 
-<div class="beast pepe"><h2>🐸 PEPE - <span id="sigPEPE">WAITING FOR BOX...</span></h2>
+<div class="beast pepe"><h2>🐸 PEPE - <span id="sigPEPE">STOPPED</span></h2>
 <div>Price: <b id="pPEPE">...</b></div>
-<label>BUY BOX (Support) <input id="boxPEPE" value="0.000007" type="number" step="0.0000001"></label>
-<div class="grid">
-<div><span>ENTRY</span><br><b id="ePEPE">-</b></div>
-<div><span>TP +2%</span><br><b id="tpPEPE" style="color:#00FF88">-</b></div>
-<div><span>SL -1%</span><br><b id="slPEPE" style="color:#ff3b30">-</b></div>
-</div>
-<div>Stake: <b>$1.00 FLAT - NEVER CHANGES</b></div>
+<label>BUY BOX (Support) <input id="boxPEPE" value="0.0000034" type="number" step="0.0000001"></label>
+<div class="grid"><div><span>ENTRY</span><br><b id="ePEPE">-</b></div><div><span>TP +2%</span><br><b id="tpPEPE" style="color:#00FF88">-</b></div><div><span>SL -1%</span><br><b id="slPEPE" style="color:#ff3b30">-</b></div></div>
+<div>Stake: <b>$1.00 FLAT</b></div>
+<button class="b2" onclick="window.open('https://www.binance.com/en/trade/PEPE_USDT','_blank')">TAKE THIS TRADE ON BINANCE →</button>
 </div>
 
-<div style="background:#1a1a1a;border-radius:14px;padding:12px;margin-top:12px">
-<h3 style="color:#7CFF00;margin:0">📓 SIGNAL LOG</h3>
-<div id="log">Bot is watching. It will only signal when price touches your BOX.</div>
-</div>
-<p class="small">HOW TO USE:<br>1. Put your BOX price = your Green Box like you did on BTC 58,315<br>2. When price touches box, bot says BUY NOW + gives TP/SL<br>3. YOU open Deriv/MT5 and take it yourself with $1<br>4. If price goes away from box, bot says WAITING - do nothing. No chasing.</p>
+<div style="background:#1a1a1a;border-radius:14px;padding:12px;margin-top:12px"><h3 style="color:#7CFF00;margin:0">📓 LOG</h3><div id="log">Press START BEAST</div></div>
 
 <script>
+let running=false, timer=null;
+function toggleStart(){
+  running=!running;
+  document.getElementById('startBtn').textContent=running?'⏸️ STOP BEAST':'▶️ START BEAST';
+  document.getElementById('status').textContent=running?'Status: RUNNING - Watching boxes every 15s':'Status: STOPPED';
+  if(running){ scan(); timer=setInterval(scan,15000); } else { clearInterval(timer); }
+}
 async function scan(){
   try{
     let r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=dogecoin,pepe&vs_currencies=usd');
     let j=await r.json();
-    check('DOGE', j.dogecoin.usd);
-    check('PEPE', j.pepe.usd);
+    check('DOGE', j.dogecoin.usd); check('PEPE', j.pepe.usd);
   }catch(e){}
 }
 function check(name, price){
   document.getElementById('p'+name).textContent='$'+price;
-  let box = parseFloat(document.getElementById('box'+name).value);
-  let sigEl = document.getElementById('sig'+name);
-  // Only signal if price is within 0.5% of box - like your BTC retest
-  let diff = Math.abs(price - box) / box;
-  if(diff <= 0.005){
-    let tp = (price*1.02).toFixed(8);
-    let sl = (price*0.99).toFixed(8);
-    sigEl.textContent='🔥 BUY NOW - BOX TOUCHED';
-    sigEl.style.color='#7CFF00';
+  let box=parseFloat(document.getElementById('box'+name).value);
+  let sig=document.getElementById('sig'+name);
+  let diff=Math.abs(price-box)/box;
+  if(diff<=0.005){
+    let tp=(price*1.02).toFixed(8), sl=(price*0.99).toFixed(8);
+    sig.textContent='🔥 BUY NOW - BOX TOUCHED! Click DERIV/BINANCE below';
+    sig.style.color='#7CFF00';
     document.getElementById('e'+name).textContent='$'+price;
     document.getElementById('tp'+name).textContent='$'+tp;
     document.getElementById('sl'+name).textContent='$'+sl;
-    let log=document.getElementById('log');
-    let msg='<div>'+new Date().toLocaleTimeString()+' '+name+' BOX TOUCH $'+price+' -> TP $'+tp+' SL $'+sl+'</div>';
-    if(!log.innerHTML.includes(name+' BOX TOUCH $'+price)) log.innerHTML=msg+log.innerHTML;
+    document.getElementById('log').innerHTML='<div>'+new Date().toLocaleTimeString()+' '+name+' SIGNAL $'+price+' TP $'+tp+' SL $'+sl+'</div>'+document.getElementById('log').innerHTML;
   } else {
-    sigEl.textContent='WAITING FOR BOX $'+box+' - Price $'+price;
-    sigEl.style.color='#aaa';
+    sig.textContent='WAITING FOR BOX $'+box+' - Price $'+price;
+    sig.style.color='#aaa';
   }
 }
-scan(); setInterval(scan,15000);
 </script></body></html>
